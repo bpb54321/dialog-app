@@ -17,7 +17,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "e2e": "cypress open"
+    "e2e": "cypress open",
+    "unit": "jest test/**/*.spec.js"
   },
   "eslintConfig": {
     "extends": "react-app"
