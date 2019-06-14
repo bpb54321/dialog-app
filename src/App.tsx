@@ -1,14 +1,23 @@
 import React from 'react';
 import './App.css';
 
-class App extends React.Component {
-  render() {
-    return (
-        <div className="App">
-            Hello, world!
-        </div>
-    );
-  }
+interface Props {}
+
+interface State {
+    name: string;
 }
 
-export default App;
+export default class App extends React.Component<Props, State> {
+
+    state: State = {
+        name: "viewers",
+    };
+
+    render() {
+        return (
+            <div className="App">
+                <span>Hello, {this.state.name}!</span>
+            </div>
+        );
+    }
+}
