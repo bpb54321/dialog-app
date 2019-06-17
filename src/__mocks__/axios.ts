@@ -6,6 +6,7 @@ let mockResponse: AxiosResponse<{dialogs: Dialog[]}> = {
         dialogs: [
             {
                 name: "testDialog",
+                roles: ["Role 0", "Role 1"],
                 lines: [
                     {
                         text: "Text for line 0.",

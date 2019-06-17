@@ -22,6 +22,7 @@ describe('App', () => {
   it("gets expected data from the API when it is mounted", function () {
     expect(app.instance().state.currentDialog).toEqual({
       name: "testDialog",
+      roles: ["Role 0", "Role 1"],
       lines: [
         {
           text: "Text for line 0.",
