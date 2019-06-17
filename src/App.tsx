@@ -1,17 +1,18 @@
 import React from 'react';
 import './App.css';
 
-import { testDialog } from "./data/test-dialog";
 import Dialog from "./types/Dialog";
 import LineData from "./types/LineData";
 import Line from "./Line";
 import Button from "./Button";
 
-interface Props {
+import axios from "axios";
+
+export interface AppProps {
 
 }
 
-interface State {
+export interface AppState {
     currentDialog: Dialog;
     userRoleLineIndex: number;
     userRole: string;
@@ -19,10 +20,11 @@ interface State {
 }
 
 
-export default class App extends React.Component<Props, State> {
+export class App extends React.Component<AppProps, AppState> {
 
-    state: State = {
+    state: AppState = {
         currentDialog: {
+            name: "",
             lines: [],
         },
         userRoleLineIndex: 0,
@@ -38,10 +40,12 @@ export default class App extends React.Component<Props, State> {
         // })
     };
 
-    componentDidMount(): void {
-        this.setState((previousState: State) : object => {
+    async componentDidMount() {
+        let response = await axios.get("http://localhost/dialogs/0/");
+
+        this.setState((previousState: AppState) : object => {
             return {
-                currentDialog: testDialog,
+                currentDialog: response.data.dialogs[0]
             };
         });
     }

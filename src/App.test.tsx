@@ -1,18 +1,50 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import App from './App';
+import {shallow, ShallowWrapper} from 'enzyme';
+import {App, AppProps, AppState} from "./App";
+
 import Line from "./Line";
 
 // Sample dialog data
 import { testDialog } from "./data/test-dialog";
-import LineData from "./types/LineData";
 import Button from "./Button";
+
+// Mock the AJAX response that we get using the axios module
+jest.mock("axios");
 
 describe('App', () => {
 
-  const app = shallow<App>(<App />);
-  app.instance().setState({
-    currentDialog: testDialog,
+  let app: ShallowWrapper<AppProps, AppState, App>;
+
+  beforeEach(async () => {
+    app = await shallow<App, AppProps, AppState>(<App />);
+  });
+
+  it("gets expected data from the API when it is mounted", function () {
+    expect(app.instance().state.currentDialog).toEqual({
+      name: "testDialog",
+      lines: [
+        {
+          text: "Text for line 0.",
+          role: "Role 0",
+          key: 0,
+        },
+        {
+          text: "Text for line 1.",
+          role: "Role 1",
+          key: 1,
+        },
+        {
+          text: "Text for line 2.",
+          role: "Role 0",
+          key: 2,
+        },
+        {
+          text: "Text for line 3.",
+          role: "Role 1",
+          key: 3,
+        },
+      ],
+    });
   });
 
   it("has a default current line number of 0", () => {
