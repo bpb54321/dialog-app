@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 
-import { auMarche } from "./data/au-marche-dialog";
+import { testDialog } from "./data/test-dialog";
 import Dialog from "./types/Dialog";
 import LineData from "./types/LineData";
 import Line from "./Line";
@@ -10,7 +10,8 @@ interface Props {}
 
 interface State {
     currentDialog: Dialog;
-    currentLineNumber: number;
+    currentUserLineNumber: number;
+    userRole: string;
 }
 
 
@@ -20,14 +21,14 @@ export default class App extends React.Component<Props, State> {
         currentDialog: {
             lines: [],
         },
-        currentLineNumber: 0,
+        currentUserLineNumber: 0,
+        userRole: "",
     };
 
     componentDidMount(): void {
-
         this.setState((previousState: State) : object => {
             return {
-                currentDialog: auMarche,
+                currentDialog: testDialog,
             };
         });
     }
@@ -37,8 +38,10 @@ export default class App extends React.Component<Props, State> {
             <div className="App">
                 <ul>
                     {this.state.currentDialog.lines.map((lineData: LineData) => {
-                        if (lineData.key <= this.state.currentLineNumber) {
+                        if (lineData.key <= this.state.currentUserLineNumber) {
                             return (<Line key={lineData.key} text={lineData.text} />);
+                        } else {
+                            return "";
                         }
                     })}
                 </ul>
