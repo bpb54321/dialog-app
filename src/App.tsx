@@ -5,13 +5,17 @@ import { testDialog } from "./data/test-dialog";
 import Dialog from "./types/Dialog";
 import LineData from "./types/LineData";
 import Line from "./Line";
+import Button from "./Button";
 
-interface Props {}
+interface Props {
+
+}
 
 interface State {
     currentDialog: Dialog;
-    currentUserLineNumber: number;
+    userRoleLineIndex: number;
     userRole: string;
+    userRoleLineNumbers: number[];
 }
 
 
@@ -21,8 +25,17 @@ export default class App extends React.Component<Props, State> {
         currentDialog: {
             lines: [],
         },
-        currentUserLineNumber: 0,
+        userRoleLineIndex: 0,
         userRole: "",
+        userRoleLineNumbers: [],
+    };
+
+    incrementUserRoleLineIndex: () => void = () => {
+        // this.setState((previousState) => {
+        //     return {
+        //         userRoleLineIndex: previousState.userRoleLineIndex + 1,
+        //     };
+        // })
     };
 
     componentDidMount(): void {
@@ -33,18 +46,28 @@ export default class App extends React.Component<Props, State> {
         });
     }
 
+//     userRoleLineNumbers: testDialog.lines.filter((line: LineData) => {
+//     if (line)
+// }).map((line: LineData, index: number) => {
+//     return 3;
+// })
+
+
+
     render() {
         return (
             <div className="App">
                 <ul>
                     {this.state.currentDialog.lines.map((lineData: LineData) => {
-                        if (lineData.key <= this.state.currentUserLineNumber) {
+                        if (lineData.key <= this.state.userRoleLineIndex ||
+                            lineData.role === this.state.userRole) {
                             return (<Line key={lineData.key} text={lineData.text} />);
                         } else {
                             return "";
                         }
                     })}
                 </ul>
+                <Button text={"Show Next Line"} handleClick={this.incrementUserRoleLineIndex}/>
             </div>
         );
     }

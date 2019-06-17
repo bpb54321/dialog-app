@@ -5,6 +5,8 @@ import Line from "./Line";
 
 // Sample dialog data
 import { testDialog } from "./data/test-dialog";
+import LineData from "./types/LineData";
+import Button from "./Button";
 
 describe('App', () => {
 
@@ -14,42 +16,49 @@ describe('App', () => {
   });
 
   it("has a default current line number of 0", () => {
-    expect(app.instance().state.currentUserLineNumber).toEqual(0);
+    expect(app.instance().state.userRoleLineIndex).toEqual(0);
   });
 
-  // it("prints all the lines up to the current line", () => {
-  //   expect(app.find(Line)).toHaveLength(1);
-  //
-  //   app.instance().setState({
-  //     currentUserLineNumber: 1,
-  //   });
-  //   expect(app.find(Line)).toHaveLength(2);
-  //
-  //   app.instance().setState({
-  //     currentUserLineNumber: 2,
-  //   });
-  //   expect(app.find(Line)).toHaveLength(3);
-  //
-  // });
-
-  it("should print, on initialization, all the lines up to the first line of the user's role", function () {
+  it("should print all the lines up to the first line of the User1", function () {
     // Given that the user role is User1
     // And that User1 has the first line in the dialogue
     app.instance().setState({
-      userRole: "User1",
+      userRole: "Role 0",
     });
-
-    // let foundLines = app.find(Line);
-
-    // let foundHtml = app.find(<p>Text for line 0.</p>);
-
-
-    // app.children();
 
     // Then I expect that the first line in the dialogue will be displayed
     expect(app.contains(<Line text={"Text for line 0."} key={0} />)).toBe(true);
   });
 
+  it("should print all the lines up to the first line of the User1", function () {
+    // Given that the user role is User2
+    // And that User2 has the second line in the dialogue
+    app.instance().setState({
+      userRole: "Role 1",
+    });
+
+    // Then I expect that the first and second line in the dialogue will be displayed
+    expect(app.contains(<Line text={"Text for line 0."} key={0} />)).toBe(true);
+    expect(app.contains(<Line text={"Text for line 1."} key={1} />)).toBe(true);
+  });
+
+  it('should print all the lines up to the second line of Role 0 if userRoleLineIndex = 1 and userRole = "Role 0" ', function () {
+    app.instance().setState({
+      userRole: "Role 1",
+      userRoleLineIndex: 1,
+    });
+
+    expect(app.contains(<Line text={"Text for line 0."} key={0} />)).toBe(true);
+    expect(app.contains(<Line text={"Text for line 1."} key={1} />)).toBe(true);
+    expect(app.contains(<Line text={"Text for line 2."} key={2} />)).toBe(true);
+
+  });
+
+  it("should have a button with text 'Show Next Line'", function () {
+    const button = app.find(Button);
+    expect(button).toHaveLength(1);
+    expect(button.prop("text")).toBe("Show Next Line");
+  });
 
 });
 

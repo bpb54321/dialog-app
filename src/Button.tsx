@@ -10,9 +10,7 @@ export default class Button extends React.Component<Props> {
         return (
             <button
                 onClick={this.props.handleClick}
-            >
-                {this.props.text}
-            </button>
+            >{this.props.text}</button>
         );
     }
 }
