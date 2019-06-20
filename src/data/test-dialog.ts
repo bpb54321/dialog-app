@@ -1,6 +1,8 @@
 import Dialog from "../types/Dialog";
 
 export const testDialog: Dialog = {
+    name: "Test Dialog",
+    roles: ["Role 0", "Role 1"],
     lines: [
         {
             text: "Text for line 0.",

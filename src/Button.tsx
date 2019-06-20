@@ -9,6 +9,7 @@ export default class Button extends React.Component<Props> {
     render(): React.ReactElement {
         return (
             <button
+                data-testid={"button"}
                 onClick={this.props.handleClick}
             >{this.props.text}</button>
         );

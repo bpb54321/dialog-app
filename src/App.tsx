@@ -24,6 +24,7 @@ export class App extends React.Component<AppProps, AppState> {
 
     state: AppState = {
         currentDialog: {
+            roles: ["No Role"],
             name: "",
             lines: [],
         },
