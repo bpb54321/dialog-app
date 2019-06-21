@@ -41,6 +41,28 @@ export class App extends React.Component<AppProps, AppState> {
         // })
     };
 
+    /**
+     * Given a dialog and a role, returns an array of the line numbers that the role has in the dialog.
+     *
+     * @param dialog {Dialog} A dialog.
+     * @param role {string} The name of a role that is present in the dialog.
+     *
+     * @return {number[]} An array of line numbers of the lines that are assigned to the given role in the dialog.
+     */
+    calculateUserLineNumbers(dialog: Dialog, role: string): number[] {
+            let userRoleLines: LineData[] = dialog.lines.filter((line: LineData) => {
+                return (line.role === role);
+            });
+
+            return userRoleLines.map((line: LineData) => {
+                return line.key;
+            });
+    }
+
+    getUserRoleLineNumbers(): number[] {
+        return this.state.userRoleLineNumbers;
+    }
+
     async componentDidMount() {
         let response = await axios.get("http://localhost/dialogs/0/");
 
@@ -76,4 +98,7 @@ export class App extends React.Component<AppProps, AppState> {
             </div>
         );
     }
+
+
+
 }

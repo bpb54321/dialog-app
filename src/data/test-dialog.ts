@@ -21,7 +21,7 @@ export const testDialog: Dialog = {
         },
         {
             text: "Text for line 3.",
-            role: "ROle 1",
+            role: "Role 1",
             key: 3,
         },
     ],
