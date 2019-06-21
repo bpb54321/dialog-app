@@ -21,18 +21,6 @@ describe('App', () => {
     wrapper = render(<App />)
   });
 
-  it('has a method which transforms a Dialog into an array of user role line numbers, given a Dialog and a user role', () => {
-    appInstance = new App({}, {
-      currentDialog: {
-        roles: ["No Role"],
-        name: "",
-        lines: [],
-      }
-    });
-
-    expect(typeof appInstance.calculateUserLineNumbers).toBe("function");
-  });
-
   it("should calculate the line numbers for the user's role", function () {
 
     appInstance = new App({});
@@ -49,8 +37,7 @@ describe('App', () => {
 
   });
 
-
-  // it("gets expected data from the API when it is mounted", function () {
+  // it("displays the lines up to but not including the first line of Role 1", function () {
   //   expect(app.instance().state.currentDialog).toEqual({
   //     name: "testDialog",
   //     roles: ["Role 0", "Role 1"],
@@ -79,7 +66,14 @@ describe('App', () => {
   //   });
   // });
 
+  it('should display a role picker form when rendered', function () {
+    expect(wrapper.queryByTestId("role-picker")).not.toBeNull();
+  });
 
+  it('should have it\'s lines hidden initially, before a role is picked', function () {
+    const lines: HTMLElement = wrapper.getByTestId("lines");
+    expect(lines.style.display).toBe("none");
+  });
 
 
   // it("has a default current line number of 0", () => {

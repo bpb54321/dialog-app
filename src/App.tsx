@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {CSSProperties} from 'react';
 import './App.css';
 
 import Dialog from "./types/Dialog";
@@ -7,6 +7,7 @@ import Line from "./Line";
 import Button from "./Button";
 
 import axios from "axios";
+import RolePicker from "./RolePicker";
 
 export interface AppProps {
 
@@ -84,7 +85,8 @@ export class App extends React.Component<AppProps, AppState> {
     render() {
         return (
             <div className="App">
-                <ul>
+                <RolePicker />
+                <ul data-testid={"lines"} style={{display: "none"}}>
                     {this.state.currentDialog.lines.map((lineData: LineData) => {
                         if (lineData.key <= this.state.userRoleLineIndex ||
                             lineData.role === this.state.userRole) {
