@@ -42,6 +42,14 @@ export class App extends React.Component<AppProps, AppState> {
         // })
     };
 
+    setUserRole = (role: string) => {
+        this.setState({
+            userRole: role,
+      });
+    };
+
+
+
     /**
      * Given a dialog and a role, returns an array of the line numbers that the role has in the dialog.
      *
@@ -90,7 +98,7 @@ export class App extends React.Component<AppProps, AppState> {
                     <h2>Dialog data</h2>
                     <pre>{JSON.stringify(this.state.currentDialog)}</pre>
                 </div>
-                <RolePicker roles={this.state.currentDialog.roles}/>
+                <RolePicker roles={this.state.currentDialog.roles} onSubmit={this.setUserRole}/>
                 <ul data-testid={"lines"} style={{display: "none"}}>
                     {this.state.currentDialog.lines.map((lineData: LineData) => {
                         if (lineData.key <= this.state.userRoleLineIndex ||
