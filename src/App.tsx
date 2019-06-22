@@ -65,11 +65,12 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     async componentDidMount() {
-        let response = await axios.get("http://localhost/dialogs/0/");
+        let responseBody = await fetch("http://localhost/dialogs/0/");
+        let responseJson = await responseBody.json();
 
         this.setState((previousState: AppState) : object => {
             return {
-                currentDialog: response.data.dialogs[0]
+                currentDialog: responseJson,
             };
         });
     }
@@ -85,7 +86,7 @@ export class App extends React.Component<AppProps, AppState> {
     render() {
         return (
             <div className="App">
-                <RolePicker />
+                <RolePicker roles={this.state.currentDialog.roles}/>
                 <ul data-testid={"lines"} style={{display: "none"}}>
                     {this.state.currentDialog.lines.map((lineData: LineData) => {
                         if (lineData.key <= this.state.userRoleLineIndex ||

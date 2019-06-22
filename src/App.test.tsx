@@ -8,9 +8,12 @@ import Line from "./Line";
 import { testDialog } from "./data/test-dialog";
 import Button from "./Button";
 import {render, RenderResult} from "@testing-library/react";
+import {FetchMock} from "jest-fetch-mock";
+const fetchMock = fetch as FetchMock;
 
 // Mock the AJAX response that we get using the axios module
 jest.mock("axios");
+
 
 describe('App', () => {
 
@@ -18,7 +21,7 @@ describe('App', () => {
   let appInstance: App;
 
   beforeEach(async () => {
-    wrapper = render(<App />)
+    fetchMock.resetMocks();
   });
 
   it("should calculate the line numbers for the user's role", function () {
@@ -73,6 +76,11 @@ describe('App', () => {
   it('should have it\'s lines hidden initially, before a role is picked', function () {
     const lines: HTMLElement = wrapper.getByTestId("lines");
     expect(lines.style.display).toBe("none");
+  });
+
+  it('should mock fetch', function () {
+    fetchMock.mockResponseOnce(JSON.stringify({ data: '12345' }));
+    const app = render(<App />);
   });
 
 
