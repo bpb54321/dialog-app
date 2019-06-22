@@ -7,7 +7,12 @@ import Line from "./Line";
 // Sample dialog data
 import { testDialog } from "./data/test-dialog";
 import Button from "./Button";
-import {render, RenderResult} from "@testing-library/react";
+import {
+  prettyDOM,
+  render, 
+  RenderResult,
+  waitForElement,
+} from "@testing-library/react";
 import {FetchMock} from "jest-fetch-mock";
 const fetchMock = fetch as FetchMock;
 
@@ -78,9 +83,11 @@ describe('App', () => {
     expect(lines.style.display).toBe("none");
   });
 
-  it('should mock fetch', function () {
-    fetchMock.mockResponseOnce(JSON.stringify({ data: '12345' }));
+  it('should print the contents of the current dialog', async function () {
+    fetchMock.mockResponseOnce(JSON.stringify(testDialog));
     const app = render(<App />);
+    const dialogData = await waitForElement(() => app.getByTestId("dialog-data"));
+    console.log(prettyDOM(dialogData));
   });
 
 
