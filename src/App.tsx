@@ -94,10 +94,6 @@ export class App extends React.Component<AppProps, AppState> {
     render() {
         return (
             <div className="App">
-                <div data-testid={"dialog-data"}>
-                    <h2>Dialog data</h2>
-                    <pre>{JSON.stringify(this.state.currentDialog)}</pre>
-                </div>
                 <RolePicker roles={this.state.currentDialog.roles} onSubmit={this.setUserRole}/>
                 <ul data-testid={"lines"} style={{display: "none"}}>
                     {this.state.currentDialog.lines.map((lineData: LineData) => {

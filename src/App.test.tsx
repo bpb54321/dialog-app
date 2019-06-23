@@ -1,5 +1,4 @@
 import React from 'react';
-import {shallow, ShallowWrapper} from 'enzyme';
 import {App, AppProps, AppState} from "./App";
 
 import Line from "./Line";
@@ -8,6 +7,7 @@ import Line from "./Line";
 import { testDialog } from "./data/test-dialog";
 import Button from "./Button";
 import {
+  fireEvent,
   prettyDOM,
   render, 
   RenderResult,
@@ -83,11 +83,32 @@ describe('App', () => {
     expect(lines.style.display).toBe("none");
   });
 
-  it('should print the contents of the current dialog', async function () {
+  it('should print out the other roles\' lines after a role is picked', async function () {
     fetchMock.mockResponseOnce(JSON.stringify(testDialog));
     const app = render(<App />);
-    const dialogData = await waitForElement(() => app.getByTestId("dialog-data"));
-    console.log(prettyDOM(dialogData));
+
+    // Wait for the first role of the test dialog to display in the role picker (which signifies
+    // that the data was loaded.
+    const roleSelect = await waitForElement(() => app.getByDisplayValue(testDialog.roles[0]));
+
+    // Confirm that the first line of the dialog is not displayed before a user role is picked
+    let line0 = app.queryByText(testDialog.lines[0].text);
+    expect(line0).toBeNull();
+
+    // Select Role 1 (the second role in testDialog)
+    fireEvent.change(roleSelect, {
+      target: {
+        value: testDialog.roles[1]
+      }
+    });
+
+    // Click submit to confirm role selection
+    fireEvent.click(app.getByTestId("role-picker__submit"));
+
+    app.debug();
+
+    // Wait for line0 to be displayed
+    line0 = await waitForElement(() => app.getByText(testDialog.lines[0].text));
   });
 
 
