@@ -4,9 +4,10 @@ import {App} from "./App";
 // Sample dialog data
 import { testDialog } from "./data/test-dialog";
 import {
+  cleanup,
   fireEvent,
   prettyDOM,
-  render, 
+  render,
   RenderResult,
   waitForElement,
 } from "@testing-library/react";
@@ -15,12 +16,16 @@ const fetchMock = fetch as FetchMock;
 
 describe('App', () => {
 
-  let wrapper: RenderResult;
+  let app: RenderResult;
   let appInstance: App;
 
   beforeEach(async () => {
     fetchMock.resetMocks();
+    fetchMock.mockResponseOnce(JSON.stringify(testDialog));
+    app = render(<App />);
   });
+
+  afterEach(cleanup);
 
   it("should calculate the line numbers for the user's role", function () {
 
@@ -39,18 +44,15 @@ describe('App', () => {
   });
 
   it('should display a role picker form when rendered', function () {
-    expect(wrapper.queryByTestId("role-picker")).not.toBeNull();
+    expect(app.queryByTestId("role-picker")).not.toBeNull();
   });
 
-  it('should have it\'s lines hidden initially, before a role is picked', function () {
-    const lines: HTMLElement = wrapper.getByTestId("lines");
-    expect(lines.style.display).toBe("none");
+  it('should have it\'s lines not shown initially, before a role is picked', function () {
+    const lines = app.queryAllByTestId("line");
+    expect(lines).toEqual([]);
   });
 
   it('should print out the other roles\' lines after a role is picked', async function () {
-    fetchMock.mockResponseOnce(JSON.stringify(testDialog));
-    const app = render(<App />);
-
     // Wait for the first role of the test dialog to display in the role picker (which signifies
     // that the data was loaded.
     const roleSelect = await waitForElement(() => app.getByDisplayValue(testDialog.roles[0]));

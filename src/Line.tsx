@@ -11,6 +11,6 @@ interface State {
 
 export default class Line extends React.Component<Props, State> {
     render() {
-        return (<p>{this.props.text}</p>);
+        return (<li data-testid={"line"}>{this.props.text}</li>);
     };
 }
