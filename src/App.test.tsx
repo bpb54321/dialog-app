@@ -52,7 +52,10 @@ describe('App', () => {
     expect(lines).toEqual([]);
   });
 
-  it('should print out the other roles\' lines after a role is picked', async function () {
+  /**
+   * This is because in the test dialog, Role 0 has one line before Role 1's first line.
+   */
+  it("should print out Role 0's first line after Role 1 is picked", async function () {
     // Wait for the first role of the test dialog to display in the role picker (which signifies
     // that the data was loaded.
     const roleSelect = await waitForElement(() => app.getByDisplayValue(testDialog.roles[0]));
@@ -71,10 +74,32 @@ describe('App', () => {
     // Click submit to confirm role selection
     fireEvent.click(app.getByTestId("role-picker__submit"));
 
-    app.debug();
-
     // Wait for line0 to be displayed
-    line0 = await waitForElement(() => app.getByText(testDialog.lines[0].text));
+    await waitForElement(() => app.getByText(testDialog.lines[0].text));
+  });
+
+  /**
+   * This is because Role 0 has the first line, so the app has no lines to print before the user
+   * has to guess his line.
+   */
+  it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", async function () {
+    //
+    /**
+     * Wait for the first role of the test dialog to display in the role picker (which signifies
+     * that the data was loaded.
+     * This is the default role that will be submitted when the submit button is clicked.
+     */
+    await waitForElement(() => app.getByDisplayValue(testDialog.roles[0]));
+
+    // Confirm that the first line of the dialog is not displayed before a user role is picked
+    let line0 = app.queryByText(testDialog.lines[0].text);
+    expect(line0).toBeNull();
+
+    // Click submit to confirm role selection of default role (Role 0)
+    fireEvent.click(app.getByTestId("role-picker__submit"));
+
+    const line0Guess = await waitForElement(() => app.getByText("Role 0, Line 0 Guess:"));
+
   });
 
 
