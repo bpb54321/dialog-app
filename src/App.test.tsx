@@ -1,11 +1,8 @@
 import React from 'react';
-import {App, AppProps, AppState} from "./App";
-
-import Line from "./Line";
+import {App} from "./App";
 
 // Sample dialog data
 import { testDialog } from "./data/test-dialog";
-import Button from "./Button";
 import {
   fireEvent,
   prettyDOM,
@@ -15,10 +12,6 @@ import {
 } from "@testing-library/react";
 import {FetchMock} from "jest-fetch-mock";
 const fetchMock = fetch as FetchMock;
-
-// Mock the AJAX response that we get using the axios module
-jest.mock("axios");
-
 
 describe('App', () => {
 
