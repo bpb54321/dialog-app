@@ -27,7 +27,7 @@ describe('RolePicker', () => {
         " when the submit button is pressed", function () {
         // I need to mock a function
         const mockFunction = jest.fn();
-        const rolePicker = render(<RolePicker roles={testDialog.roles} onSubmit={mockFunction}/>);
+        const rolePicker = render(<RolePicker roles={testDialog.roles} setUserRoleAndChangeMode={mockFunction}/>);
 
         fireEvent.change(rolePicker.getByTestId("role-picker__select"), {
             target: {

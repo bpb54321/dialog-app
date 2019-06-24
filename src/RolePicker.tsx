@@ -2,7 +2,7 @@ import React, {ChangeEvent, SyntheticEvent} from 'react';
 
 interface Props {
     roles: string[];
-    onSubmit: (role: string) => void
+    setUserRoleAndChangeMode: (role: string) => void
 }
 
 interface State {
@@ -11,9 +11,19 @@ interface State {
 
 export default class RolePicker extends React.Component<Props, State> {
 
-    state: State = {
+    state: State;
+
+    constructor(props: Props) {
+      super(props);
+
+      this.state = {
         role: '',
-    };
+      };
+
+      if (this.props.roles.length > 0) {
+        this.state.role = this.props.roles[0];
+      }
+    }
 
     handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
         this.setState({
@@ -26,7 +36,7 @@ export default class RolePicker extends React.Component<Props, State> {
             <form data-testid={"role-picker"}
                   onSubmit={(event) => {
                       event.preventDefault();
-                      this.props.onSubmit(this.state.role);
+                      this.props.setUserRoleAndChangeMode(this.state.role);
                   }}>
                 <select
                     name="role"

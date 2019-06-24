@@ -7,6 +7,7 @@ import Line from "./Line";
 import Button from "./Button";
 
 import RolePicker from "./RolePicker";
+import LineGuess from './LineGuess';
 
 export interface AppProps {
 
@@ -21,6 +22,7 @@ export interface AppState {
 }
 
 enum InteractionMode {
+    LoadingData = "LOADING_DATA",
     ChoosingRole = "CHOOSING_ROLE",
     PracticingLines = "PRACTICING_LINES",
 }
@@ -37,7 +39,7 @@ export class App extends React.Component<AppProps, AppState> {
         userRoleLineIndex: 0,
         userRole: "",
         userRoleLineNumbers: [],
-        mode: InteractionMode.ChoosingRole,
+        mode: InteractionMode.LoadingData,
     };
 
     incrementUserRoleLineIndex: () => void = () => {
@@ -48,7 +50,7 @@ export class App extends React.Component<AppProps, AppState> {
         // })
     };
 
-    setUserRoleAndChangeModeToPracticingLines = (role: string) => {
+    setUserRoleAndChangeMode = (role: string) => {
         const userRoleLineNumbers = this.calculateUserLineNumbers(
             this.state.currentDialog, role
         );
@@ -79,10 +81,6 @@ export class App extends React.Component<AppProps, AppState> {
             });
     }
 
-    getUserRoleLineNumbers(): number[] {
-        return this.state.userRoleLineNumbers;
-    }
-
     async componentDidMount() {
         let responseBody = await fetch("http://localhost/dialogs/0/");
         let responseJson = await responseBody.json();
@@ -90,34 +88,39 @@ export class App extends React.Component<AppProps, AppState> {
         this.setState((previousState: AppState) : object => {
             return {
                 currentDialog: responseJson,
+                mode: InteractionMode.ChoosingRole,
             };
         });
     }
 
-//     userRoleLineNumbers: testDialog.lines.filter((line: LineData) => {
-//     if (line)
-// }).map((line: LineData, index: number) => {
-//     return 3;
-// })
-
-
-
     render() {
-        const currentUserRoleLine = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
-        return (
-            <div className="App">
-                <RolePicker roles={this.state.currentDialog.roles} onSubmit={this.setUserRoleAndChangeModeToPracticingLines}/>
-                <ul data-testid={"lines"} >
-                    {this.state.currentDialog.lines.filter((lineData: LineData) => {
-                        return this.state.mode === InteractionMode.PracticingLines &&
-                            lineData.key < currentUserRoleLine
-                    }).map((lineData: LineData) => {
-                        return (<Line key={lineData.key} text={lineData.text} />);
-                    })}
-                </ul>
-                <Button text={"Show Next Line"} handleClick={this.incrementUserRoleLineIndex}/>
-            </div>
-        );
+        switch (this.state.mode) {
+            case InteractionMode.LoadingData:
+                return <p data-testid={"loading-message"}>Waiting for the dialog to load...</p>;
+            case InteractionMode.ChoosingRole:
+                return (
+                  <RolePicker
+                    roles={this.state.currentDialog.roles}
+                    setUserRoleAndChangeMode={this.setUserRoleAndChangeMode}
+                  />
+                );
+            case InteractionMode.PracticingLines:
+                const currentUserRoleLineNumber = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
+                const currentUserRoleLine = this.state.currentDialog.lines[currentUserRoleLineNumber];
+                return (
+                  <div>
+                    <ul data-testid={"lines"} >
+                        {this.state.currentDialog.lines.filter((lineData: LineData) => {
+                            return this.state.mode === InteractionMode.PracticingLines &&
+                              lineData.key < currentUserRoleLineNumber
+                        }).map((lineData: LineData) => {
+                            return (<Line key={lineData.key} text={lineData.text} />);
+                        })}
+                    </ul>
+                    <LineGuess lineToGuess={currentUserRoleLine} />
+                  </div>
+                );
+        }
     }
 
 

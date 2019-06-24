@@ -10,6 +10,7 @@ import {
   render,
   RenderResult,
   waitForElement,
+  waitForElementToBeRemoved,
 } from "@testing-library/react";
 import {FetchMock} from "jest-fetch-mock";
 const fetchMock = fetch as FetchMock;
@@ -23,6 +24,8 @@ describe('App', () => {
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify(testDialog));
     app = render(<App />);
+    app.debug();
+    await waitForElementToBeRemoved(() => app.getByTestId("loading-message"));
   });
 
   afterEach(cleanup);
@@ -43,11 +46,12 @@ describe('App', () => {
 
   });
 
-  it('should display a role picker form when rendered', function () {
-    expect(app.queryByTestId("role-picker")).not.toBeNull();
+  it('should display a role picker when rendered', async function () {
+    app.debug();
+    await waitForElement(() => app.getByTestId("role-picker"));
   });
 
-  it('should have it\'s lines not shown initially, before a role is picked', function () {
+  it('should have it\'s lines not shown initially, before a role is picked', async function () {
     const lines = app.queryAllByTestId("line");
     expect(lines).toEqual([]);
   });
@@ -56,13 +60,11 @@ describe('App', () => {
    * This is because in the test dialog, Role 0 has one line before Role 1's first line.
    */
   it("should print out Role 0's first line after Role 1 is picked", async function () {
-    // Wait for the first role of the test dialog to display in the role picker (which signifies
-    // that the data was loaded.
-    const roleSelect = await waitForElement(() => app.getByDisplayValue(testDialog.roles[0]));
-
     // Confirm that the first line of the dialog is not displayed before a user role is picked
     let line0 = app.queryByText(testDialog.lines[0].text);
     expect(line0).toBeNull();
+
+    const roleSelect = app.getByTestId("role-picker__select");
 
     // Select Role 1 (the second role in testDialog)
     fireEvent.change(roleSelect, {
@@ -83,14 +85,6 @@ describe('App', () => {
    * has to guess his line.
    */
   it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", async function () {
-    //
-    /**
-     * Wait for the first role of the test dialog to display in the role picker (which signifies
-     * that the data was loaded.
-     * This is the default role that will be submitted when the submit button is clicked.
-     */
-    await waitForElement(() => app.getByDisplayValue(testDialog.roles[0]));
-
     // Confirm that the first line of the dialog is not displayed before a user role is picked
     let line0 = app.queryByText(testDialog.lines[0].text);
     expect(line0).toBeNull();
@@ -98,7 +92,7 @@ describe('App', () => {
     // Click submit to confirm role selection of default role (Role 0)
     fireEvent.click(app.getByTestId("role-picker__submit"));
 
-    const line0Guess = await waitForElement(() => app.getByText("Role 0, Line 0 Guess:"));
+    const line0Guess = await waitForElement(() => app.getByTestId("line-guess"));
 
   });
 
