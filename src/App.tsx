@@ -1,4 +1,4 @@
-import React, {CSSProperties} from 'react';
+import React from 'react';
 import './App.css';
 
 import Dialog from "./types/Dialog";
@@ -6,7 +6,6 @@ import LineData from "./types/LineData";
 import Line from "./Line";
 import Button from "./Button";
 
-import axios from "axios";
 import RolePicker from "./RolePicker";
 
 export interface AppProps {
@@ -18,6 +17,12 @@ export interface AppState {
     userRoleLineIndex: number;
     userRole: string;
     userRoleLineNumbers: number[];
+    mode: InteractionMode;
+}
+
+enum InteractionMode {
+    ChoosingRole = "CHOOSING_ROLE",
+    PracticingLines = "PRACTICING_LINES",
 }
 
 
@@ -32,6 +37,7 @@ export class App extends React.Component<AppProps, AppState> {
         userRoleLineIndex: 0,
         userRole: "",
         userRoleLineNumbers: [],
+        mode: InteractionMode.ChoosingRole,
     };
 
     incrementUserRoleLineIndex: () => void = () => {
@@ -42,12 +48,17 @@ export class App extends React.Component<AppProps, AppState> {
         // })
     };
 
-    setUserRole = (role: string) => {
+    setUserRoleAndChangeModeToPracticingLines = (role: string) => {
+        const userRoleLineNumbers = this.calculateUserLineNumbers(
+            this.state.currentDialog, role
+        );
+
         this.setState({
             userRole: role,
+            userRoleLineNumbers: userRoleLineNumbers,
+            mode: InteractionMode.PracticingLines,
       });
     };
-
 
 
     /**
@@ -92,17 +103,16 @@ export class App extends React.Component<AppProps, AppState> {
 
 
     render() {
+        const currentUserRoleLine = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
         return (
             <div className="App">
-                <RolePicker roles={this.state.currentDialog.roles} onSubmit={this.setUserRole}/>
-                <ul data-testid={"lines"} style={{display: "none"}}>
-                    {this.state.currentDialog.lines.map((lineData: LineData) => {
-                        if (lineData.key <= this.state.userRoleLineIndex ||
-                            lineData.role === this.state.userRole) {
-                            return (<Line key={lineData.key} text={lineData.text} />);
-                        } else {
-                            return "";
-                        }
+                <RolePicker roles={this.state.currentDialog.roles} onSubmit={this.setUserRoleAndChangeModeToPracticingLines}/>
+                <ul data-testid={"lines"} >
+                    {this.state.currentDialog.lines.filter((lineData: LineData) => {
+                        return this.state.mode === InteractionMode.PracticingLines &&
+                            lineData.key < currentUserRoleLine
+                    }).map((lineData: LineData) => {
+                        return (<Line key={lineData.key} text={lineData.text} />);
                     })}
                 </ul>
                 <Button text={"Show Next Line"} handleClick={this.incrementUserRoleLineIndex}/>
