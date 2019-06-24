@@ -3,40 +3,48 @@ import {
     render,
     RenderResult,
     fireEvent,
-    waitForElement,
+    waitForElement, cleanup,
 } from "@testing-library/react";
 import RolePicker from "./RolePicker";
 import {testDialog} from "./data/test-dialog";
 
 describe('RolePicker', () => {
+    let rolePicker: RenderResult;
+    let mockFunction: jest.Mock;
+    const roles: string[] = ["Role 0", "Role 1"];
+
+    beforeEach(() => {
+        mockFunction = jest.fn();
+        rolePicker = render(<RolePicker roles={roles} setUserRoleAndChangeMode={mockFunction}/>);
+    });
+
+    afterEach(cleanup);
+
     it('should render a form which contains a select and a submit input', function () {
-        const wrapper = render(<RolePicker roles={[]}/>);
-        wrapper.getByTestId("role-picker");
-        wrapper.getByTestId("role-picker__select");
-        wrapper.getByTestId("role-picker__submit");
+        rolePicker.getByTestId("role-picker");
+        rolePicker.getByTestId("role-picker__select");
+        rolePicker.getByTestId("role-picker__submit");
     });
 
-    it('should display the roles passed into as <option>\'s in it\'s select element', function () {
-        const roles = ["Role 0", "Role 1"];
-        const wrapper = render(<RolePicker roles={roles} />);
-        wrapper.getByText(roles[0]);
-        wrapper.getByText(roles[1]);
+    it("should display the roles passed into as options in it's select element", function () {
+        const firstRoleOption = rolePicker.getByText(roles[0]);
+        expect(firstRoleOption.tagName).toBe("OPTION");
+
+        const secondRoleOption = rolePicker.getByText(roles[1]);
+        expect(secondRoleOption.tagName).toBe("OPTION");
     });
 
-    it("should call a function passed to it with the form data as function parameters" +
+    it("should call a function passed to it with the role data as function parameters" +
         " when the submit button is pressed", function () {
-        // I need to mock a function
-        const mockFunction = jest.fn();
-        const rolePicker = render(<RolePicker roles={testDialog.roles} setUserRoleAndChangeMode={mockFunction}/>);
 
         fireEvent.change(rolePicker.getByTestId("role-picker__select"), {
             target: {
-                value: "Role 1",
+                value: roles[1],
             },
         });
 
         fireEvent.click(rolePicker.getByTestId("role-picker__submit"));
 
-        expect(mockFunction).toHaveBeenCalledWith("Role 1");
+        expect(mockFunction).toHaveBeenCalledWith(roles[1]);
     });
 });
