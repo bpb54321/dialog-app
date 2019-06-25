@@ -5,7 +5,7 @@ import {
     cleanup,
     RenderResult,
 } from '@testing-library/react';
-import Button from "./Button";
+import Button from "../Button";
 
 describe('Button', () => {
     let buttonText: string;

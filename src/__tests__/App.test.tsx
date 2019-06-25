@@ -1,8 +1,8 @@
 import React from 'react';
-import {App} from "./App";
+import {App} from "../App";
 
 // Sample dialog data
-import { testDialog } from "./data/test-dialog";
+import { testDialog } from "../data/test-dialog";
 import {
   cleanup,
   fireEvent,

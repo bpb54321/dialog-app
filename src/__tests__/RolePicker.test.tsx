@@ -5,8 +5,8 @@ import {
     fireEvent,
     waitForElement, cleanup,
 } from "@testing-library/react";
-import RolePicker from "./RolePicker";
-import {testDialog} from "./data/test-dialog";
+import RolePicker from "../RolePicker";
+import {testDialog} from "../data/test-dialog";
 
 describe('RolePicker', () => {
     let rolePicker: RenderResult;

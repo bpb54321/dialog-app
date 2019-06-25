@@ -5,8 +5,8 @@ import {
     fireEvent,
     waitForElement,
 } from "@testing-library/react";
-import LineGuess from "./LineGuess";
-import {testDialog} from "./data/test-dialog";
+import LineGuess from "../LineGuess";
+import {testDialog} from "../data/test-dialog";
 import {Simulate} from "react-dom/test-utils";
 
 describe('LineGuess', () => {
