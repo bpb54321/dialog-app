@@ -24,8 +24,7 @@ describe('App', () => {
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify(testDialog));
     app = render(<App />);
-    app.debug();
-    await waitForElementToBeRemoved(() => app.getByTestId("loading-message"));
+    await waitForElementToBeRemoved(() => app.getByText("Waiting for the dialog to load..."));
   });
 
   afterEach(cleanup);
@@ -46,25 +45,32 @@ describe('App', () => {
 
   });
 
-  it('should display a role picker when rendered', async function () {
-    app.debug();
-    await waitForElement(() => app.getByTestId("role-picker"));
+  it("should display a role picker when rendered", async function () {
+    app.getByText("Role Picker");
   });
 
-  it('should have it\'s lines not shown initially, before a role is picked', async function () {
-    const lines = app.queryAllByTestId("line");
-    expect(lines).toEqual([]);
+  it("should not show any lines before a role is picked", async function () {
+
+    const lines = testDialog.lines;
+
+    for (const line of lines) {
+      expect(app.queryByText(line.text)).toBeNull();
+    }
   });
 
-  /**
-   * This is because in the test dialog, Role 0 has one line before Role 1's first line.
-   */
+
   it("should print out Role 0's first line after Role 1 is picked", async function () {
+
+    /**
+     * This is because in the test dialog, Role 0 has one line before Role 1's first line.
+     */
+
     // Confirm that the first line of the dialog is not displayed before a user role is picked
     let line0 = app.queryByText(testDialog.lines[0].text);
     expect(line0).toBeNull();
 
-    const roleSelect = app.getByTestId("role-picker__select");
+    // Get the role select by searching for an input, textarea, or select with the default role as display value
+    const roleSelect = app.getByDisplayValue(testDialog.roles[0]);
 
     // Select Role 1 (the second role in testDialog)
     fireEvent.change(roleSelect, {
@@ -74,25 +80,23 @@ describe('App', () => {
     });
 
     // Click submit to confirm role selection
-    fireEvent.click(app.getByTestId("role-picker__submit"));
+    fireEvent.click(app.getByText("Confirm Role Selection"));
 
     // Wait for line0 to be displayed
     await waitForElement(() => app.getByText(testDialog.lines[0].text));
   });
 
-  /**
-   * This is because Role 0 has the first line, so the app has no lines to print before the user
-   * has to guess his line.
-   */
   it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", async function () {
+
     // Confirm that the first line of the dialog is not displayed before a user role is picked
     let line0 = app.queryByText(testDialog.lines[0].text);
     expect(line0).toBeNull();
 
     // Click submit to confirm role selection of default role (Role 0)
-    fireEvent.click(app.getByTestId("role-picker__submit"));
+    fireEvent.click(app.getByText("Confirm Role Selection"));
 
-    const line0Guess = await waitForElement(() => app.getByTestId("line-guess"));
+    const line0Guess = await waitForElement(() => app.getByPlaceholderText(`Text of the next line for ` +
+      `${testDialog.roles[0]}`));
 
   });
 

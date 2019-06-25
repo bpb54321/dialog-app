@@ -38,6 +38,8 @@ export default class RolePicker extends React.Component<Props, State> {
                       event.preventDefault();
                       this.props.setUserRoleAndChangeMode(this.state.role);
                   }}>
+                <h2>Role Picker</h2>
+                <label htmlFor="role-picker__select">Available Roles</label>
                 <select
                     name="role"
                     id="role-picker__select"
@@ -49,7 +51,7 @@ export default class RolePicker extends React.Component<Props, State> {
                         return <option key={index}>{role}</option>
                     })}
                 </select>
-                <input type={"submit"} data-testid={"role-picker__submit"} />
+                <input type={"submit"} data-testid={"role-picker__submit"} value={"Confirm Role Selection"} />
             </form>
         );
     }
