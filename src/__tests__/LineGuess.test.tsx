@@ -15,9 +15,10 @@ describe('LineGuess', () => {
     let guessText: string;
 
     beforeEach(() => {
-        lineGuess = render(<LineGuess lineToGuess={testDialog.lines[0]} />);
         mockFunction = jest.fn();
         guessText = "This is my guess for the line";
+        lineGuess = render(<LineGuess lineToGuess={testDialog.lines[0]}
+                                      addLineGuessToLastLine={mockFunction}/>);
     });
 
     it('should render an input with placeholder text that specifies the role', function () {
