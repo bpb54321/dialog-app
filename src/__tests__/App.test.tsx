@@ -100,6 +100,29 @@ describe('App', () => {
 
   });
 
+  it("When I make a guess and submit the guess, the guess and the correct line appear " +
+    "in a line", async function () {
+
+    // Click submit to confirm role selection of default role (Role 0)
+    fireEvent.click(app.getByText("Confirm Role Selection"));
+
+    const line0Guess = await waitForElement(() => app.getByPlaceholderText(`Text of the next line for ` +
+      `${testDialog.roles[0]}`));
+
+    const guess = "This is my guess for Line 0";
+
+    fireEvent.change(line0Guess, {
+      target: {
+        value: guess,
+      }
+    });
+
+    const line0 = await waitForElement(() => [
+      app.getByText(`Line text: ${testDialog.lines[0].text}`),
+      app.getByText(`Guess: ${guess}`),
+    ]);
+  });
+
 
 });
 
