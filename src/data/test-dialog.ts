@@ -6,21 +6,25 @@ export const testDialog: Dialog = {
     lines: [
         {
             text: "Text for line 0.",
+            guess: "",
             role: "Role 0",
             key: 0,
         },
         {
             text: "Text for line 1.",
+            guess: "",
             role: "Role 1",
             key: 1,
         },
         {
             text: "Text for line 2.",
+            guess: "",
             role: "Role 0",
             key: 2,
         },
         {
             text: "Text for line 3.",
+            guess: "",
             role: "Role 1",
             key: 3,
         },

@@ -117,6 +117,8 @@ describe('App', () => {
       }
     });
 
+    fireEvent.click(app.getByDisplayValue("Submit Guess"))
+
     const line0 = await waitForElement(() => [
       app.getByText(`Line text: ${testDialog.lines[0].text}`),
       app.getByText(`Guess: ${guess}`),

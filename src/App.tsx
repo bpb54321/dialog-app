@@ -8,6 +8,9 @@ import Button from "./Button";
 
 import RolePicker from "./RolePicker";
 import LineGuess from './LineGuess';
+import {array} from "prop-types";
+
+import { Map, List, fromJS } from 'immutable';
 
 export interface AppProps {
 
@@ -42,13 +45,17 @@ export class App extends React.Component<AppProps, AppState> {
         mode: InteractionMode.LoadingData,
     };
 
-    incrementUserRoleLineIndex: () => void = () => {
-        // this.setState((previousState) => {
-        //     return {
-        //         userRoleLineIndex: previousState.userRoleLineIndex + 1,
-        //     };
-        // })
-    };
+    async componentDidMount() {
+        let responseBody = await fetch("http://localhost/dialogs/0/");
+        let responseJson = await responseBody.json();
+
+        this.setState((previousState: AppState) : object => {
+            return {
+                currentDialog: responseJson,
+                mode: InteractionMode.ChoosingRole,
+            };
+        });
+    }
 
     setUserRoleAndChangeMode = (role: string) => {
         const userRoleLineNumbers = this.calculateUserLineNumbers(
@@ -62,7 +69,6 @@ export class App extends React.Component<AppProps, AppState> {
       });
     };
 
-
     /**
      * Given a dialog and a role, returns an array of the line numbers that the role has in the dialog.
      *
@@ -72,26 +78,39 @@ export class App extends React.Component<AppProps, AppState> {
      * @return {number[]} An array of line numbers of the lines that are assigned to the given role in the dialog.
      */
     calculateUserLineNumbers(dialog: Dialog, role: string): number[] {
-            let userRoleLines: LineData[] = dialog.lines.filter((line: LineData) => {
-                return (line.role === role);
-            });
+        let userRoleLines: LineData[] = dialog.lines.filter((line: LineData) => {
+            return (line.role === role);
+        });
 
-            return userRoleLines.map((line: LineData) => {
-                return line.key;
-            });
-    }
-
-    async componentDidMount() {
-        let responseBody = await fetch("http://localhost/dialogs/0/");
-        let responseJson = await responseBody.json();
-
-        this.setState((previousState: AppState) : object => {
-            return {
-                currentDialog: responseJson,
-                mode: InteractionMode.ChoosingRole,
-            };
+        return userRoleLines.map((line: LineData) => {
+            return line.key;
         });
     }
+
+    addGuessToCurrentLineAndIncrementLineNumber = (lineGuess: string) => {
+        this.setState((previousState) => {
+            const currentUserRoleLineNumber = previousState.userRoleLineNumbers[this.state.userRoleLineIndex];
+            const currentUserRoleLine = previousState.currentDialog.lines[currentUserRoleLineNumber];
+
+            const newDialog = {
+              ...previousState.currentDialog
+            };
+
+            const newLine: LineData = {
+                text: currentUserRoleLine.text,
+                guess: lineGuess,
+                role: currentUserRoleLine.role,
+                key: currentUserRoleLine.key,
+            };
+
+            newDialog.lines[currentUserRoleLineNumber] = newLine;
+
+            return {
+                currentDialog: newDialog,
+                userRoleLineIndex: previousState.userRoleLineIndex + 1,
+            };
+        });
+    };
 
     render() {
         switch (this.state.mode) {
@@ -114,10 +133,16 @@ export class App extends React.Component<AppProps, AppState> {
                             return this.state.mode === InteractionMode.PracticingLines &&
                               lineData.key < currentUserRoleLineNumber
                         }).map((lineData: LineData) => {
-                            return (<Line key={lineData.key} text={lineData.text} />);
+                            return (
+                              <Line
+                                key={lineData.key}
+                                text={lineData.text}
+                                guess={lineData.guess}
+                              />
+                            );
                         })}
                     </ul>
-                    <LineGuess lineToGuess={currentUserRoleLine} />
+                    <LineGuess lineToGuess={currentUserRoleLine} addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber} />
                   </div>
                 );
         }

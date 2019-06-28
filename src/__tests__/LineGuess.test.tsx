@@ -4,6 +4,7 @@ import {
     RenderResult,
     fireEvent,
     waitForElement,
+    cleanup,
 } from "@testing-library/react";
 import LineGuess from "../LineGuess";
 import {testDialog} from "../data/test-dialog";
@@ -20,6 +21,8 @@ describe('LineGuess', () => {
         lineGuess = render(<LineGuess lineToGuess={testDialog.lines[0]}
                                       addLineGuessToLastLine={mockFunction}/>);
     });
+
+    afterEach(cleanup)
 
     it('should render an input with placeholder text that specifies the role', function () {
         lineGuess.getByPlaceholderText(`Text of the next line for ${testDialog.roles[0]}`);
