@@ -100,8 +100,8 @@ describe('App', () => {
 
   });
 
-  it("When I make a guess and submit the guess, the guess and the correct line appear " +
-    "in a line", async function () {
+  it("When I make a guess and submit the guess, the guess and the correct text for " +
+    "the line are displayed.", async function () {
 
     // Click submit to confirm role selection of default role (Role 0)
     fireEvent.click(app.getByText("Confirm Role Selection"));

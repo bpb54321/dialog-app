@@ -138,6 +138,7 @@ export class App extends React.Component<AppProps, AppState> {
                                 key={lineData.key}
                                 text={lineData.text}
                                 guess={lineData.guess}
+                                role={lineData.role}
                               />
                             );
                         })}

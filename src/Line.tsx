@@ -4,6 +4,7 @@ interface Props {
     text: string;
     key: number;
     guess?: string;
+    role: string;
 }
 
 interface State {
@@ -14,8 +15,9 @@ export default class Line extends React.Component<Props, State> {
     render() {
         return (
           <li data-testid={"line"}>
-              {this.props.guess ? <div>Guess: {this.props.guess}</div> : null}
-              <div>Line text: {this.props.text}</div>
+            <span>{this.props.role}</span>
+            {this.props.guess ? <div>Guess: {this.props.guess}</div> : null}
+            <div>Line text: {this.props.text}</div>
           </li>
         );
     };
