@@ -1,6 +1,7 @@
 import React, {ChangeEvent} from 'react';
 import LineData from "./types/LineData";
 import {testDialog} from "./data/test-dialog";
+import "./LineGuess.css";
 
 interface Props {
     lineToGuess: LineData;
@@ -34,6 +35,7 @@ export default class LineGuess extends React.Component<Props, State> {
             >
                 <label htmlFor="line-guess__text-input" data-testid={"line-guess__label"}>Line Guess</label>
                 <input
+                  className={"line-guess__text-input"}
                   data-testid={"line-guess__text-input"}
                   id={"line-guess__text-input"}
                   onChange={this.handleInputChange}
