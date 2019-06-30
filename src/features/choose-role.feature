@@ -21,15 +21,24 @@ Feature: Study a dialog
   The app then continues to display the lines of the non-user roles, until it gets to the next user
   line. The app continues in this way until the dialog is over.
 
+  Background:
+    Given the app is loaded with the following dialog
+      | role        | text                                                                     |
+      | Mme Colbert | Qu'est-ce que tu as envie de manger demain midi?                         |
+      | M Colbert   | Je ne sais pas, c'est comme tu veux.                                     |
+      | Mme Colbert | C'est toujours moi qui doit choisir. Un rosbif-haricots verts, ca te va? |
+      | M Colbert   | Tres bien.                                                               |
+
+
+
   Scenario: The user picks a role
-    Given the app is loaded with a dialog which has the roles ""Role 0", "Role 1"
     When the user selects "Role 0"
     Then "User Role: Role 0" should be displayed
 
   Scenario: The user guesses his lines
-    Given the app is loaded with a dialog
-    And the user is prompted to guess his line
-    When The user submits a guess for his first line
+    Given the user selects the role of Mme Colbert
+    And the user is prompted to guess her first line
+    When the user guesses "Qu'est ce que tu veux manger demain midi"?
     Then the app displays the user's guess, along with the correct text for the line
 
   
