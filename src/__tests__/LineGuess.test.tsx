@@ -14,12 +14,17 @@ describe('LineGuess', () => {
     let lineGuess: RenderResult;
     let mockFunction: jest.Mock;
     let guessText: string;
+    let userRole: string;
 
     beforeEach(() => {
         mockFunction = jest.fn();
         guessText = "This is my guess for the line";
-        lineGuess = render(<LineGuess lineToGuess={testDialog.lines[0]}
-                                      addLineGuessToLastLine={mockFunction}/>);
+        userRole = "Role 0";
+        lineGuess = render(
+          <LineGuess
+            userRole={userRole}
+            addLineGuessToLastLine={mockFunction}/>
+        );
     });
 
     afterEach(cleanup)
@@ -43,5 +48,23 @@ describe('LineGuess', () => {
         fireEvent.click(guessSubmit);
 
         expect(mockFunction).toHaveBeenCalledWith(guessText);
+    });
+
+    it('should reset the guess to an empty string after a guess is submitted', function () {
+        const guessInput = lineGuess.getByPlaceholderText(`Text of the next line for ${testDialog.roles[0]}`) as
+          HTMLInputElement;
+        const guessSubmit = lineGuess.getByText("Submit Guess");
+
+
+        fireEvent.change(guessInput, {
+            target: {
+                value: guessText,
+            },
+        });
+
+        fireEvent.click(guessSubmit);
+
+        expect(guessInput.value).toBe("");
+
     });
 });

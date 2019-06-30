@@ -4,7 +4,7 @@ import {testDialog} from "./data/test-dialog";
 import "./LineGuess.css";
 
 interface Props {
-    lineToGuess: LineData;
+    userRole: string;
     addLineGuessToLastLine: (lineGuess: string) => void;
 }
 
@@ -31,6 +31,9 @@ export default class LineGuess extends React.Component<Props, State> {
               onSubmit={(event) => {
                 event.preventDefault();
                 this.props.addLineGuessToLastLine(this.state.guess);
+                this.setState({
+                  guess: "",
+                });
               }}
             >
                 <label htmlFor="line-guess__text-input" data-testid={"line-guess__label"}>Line Guess</label>
@@ -39,7 +42,7 @@ export default class LineGuess extends React.Component<Props, State> {
                   data-testid={"line-guess__text-input"}
                   id={"line-guess__text-input"}
                   onChange={this.handleInputChange}
-                  placeholder={`Text of the next line for ${this.props.lineToGuess.role}`}
+                  placeholder={`Text of the next line for ${this.props.userRole}`}
                   type="text"
                   value={this.state.guess}
                 />

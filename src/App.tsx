@@ -143,7 +143,10 @@ export class App extends React.Component<AppProps, AppState> {
                             );
                         })}
                     </ul>
-                    <LineGuess lineToGuess={currentUserRoleLine} addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber} />
+                    <LineGuess
+                      userRole={this.state.userRole}
+                      addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
+                    />
                   </div>
                 );
         }
