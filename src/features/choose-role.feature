@@ -25,3 +25,11 @@ Feature: Study a dialog
     Given the app is loaded with a dialog which has the roles ""Role 0", "Role 1"
     When the user selects "Role 0"
     Then "User Role: Role 0" should be displayed
+
+  Scenario: The user guesses his lines
+    Given the app is loaded with a dialog
+    And the user is prompted to guess his line
+    When The user submits a guess for his first line
+    Then the app displays the user's guess, along with the correct text for the line
+
+  
