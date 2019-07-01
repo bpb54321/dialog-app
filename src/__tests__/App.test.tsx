@@ -82,7 +82,7 @@ describe('App', () => {
     fireEvent.click(app.getByText("Confirm Role Selection"));
 
     // Wait for line0 to be displayed
-    await waitForElement(() => app.getByText(`Line text: ${testDialog.lines[2].text}`));
+    await waitForElement(() => app.getByText(`Line text: ${testDialog.lines[0].text}`));
   });
 
   it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", async function () {
