@@ -23,11 +23,11 @@ Feature: Study a dialog
 
   Background:
     Given the app is loaded with the following dialog
-      | role        | text                                                                     |
-      | Mme Colbert | Qu'est-ce que tu as envie de manger demain midi?                         |
-      | M Colbert   | Je ne sais pas, c'est comme tu veux.                                     |
-      | Mme Colbert | C'est toujours moi qui doit choisir. Un rosbif-haricots verts, ca te va? |
-      | M Colbert   | Tres bien.                                                               |
+      | role   | text             |
+      | Role 0 | Text for line 0. |
+      | Role 1 | Text for line 1. |
+      | Role 0 | Text for line 2. |
+      | Role 1 | Text for line 3. |
 
 
 
@@ -35,10 +35,19 @@ Feature: Study a dialog
     When the user selects "Role 0"
     Then "User Role: Role 0" should be displayed
 
-  Scenario: The user guesses his lines
+  Scenario: The user guesses his first line
     Given the user selects the role of Mme Colbert
     And the user is prompted to guess her first line
     When the user guesses "Qu'est ce que tu veux manger demain midi"?
     Then the app displays the user's guess, along with the correct text for the line
+
+  Scenario: The user guesses his second line
+    Given the user selects the role of Mme Colbert
+    And the user guesses "This is my guess for the first line"
+    And the correct text for line 0 is displayed
+    And the guess is displayed
+    When the user guesses "This is my guess for the second line"
+    Then the correct text for line 2 is displayed
+    And the guess is displayed
 
   
