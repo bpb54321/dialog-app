@@ -16,6 +16,7 @@ export interface AppProps {
 
 export interface AppState {
   currentDialog: Dialog;
+  numberOfLinesInDialog: number;
   userRoleLineIndex: number;
   userRole: string;
   userRoleLineNumbers: number[];
@@ -31,6 +32,7 @@ export class App extends React.Component<AppProps, AppState> {
       name: "",
       lines: [],
     },
+    numberOfLinesInDialog: 0,
     userRoleLineIndex: 0,
     userRole: "",
     userRoleLineNumbers: [],
@@ -39,11 +41,12 @@ export class App extends React.Component<AppProps, AppState> {
 
   async componentDidMount() {
     let responseBody = await fetch("http://localhost/dialogs/0/");
-    let responseJson = await responseBody.json();
+    let responseJson: Dialog = await responseBody.json();
 
     this.setState((previousState: AppState) : object => {
       return {
         currentDialog: responseJson,
+        numberOfLinesInDialog: responseJson.lines.length,
         mode: InteractionMode.ChoosingRole,
       };
     });
@@ -103,24 +106,15 @@ export class App extends React.Component<AppProps, AppState> {
 
       nextUserRoleLineIndex = previousState.userRoleLineIndex + 1;
 
-      if (nextUserRoleLineIndex < previousState.userRoleLineNumbers.length) {
-
-        nextMode = InteractionMode.PracticingLines;
-
-        return ({
-          currentDialog: nextDialog,
-          userRoleLineIndex: nextUserRoleLineIndex,
-          mode: nextMode,
-        });
-      } else {
-        nextMode = InteractionMode.DialogComplete;
-
-        return ({
-          currentDialog: nextDialog,
-          userRoleLineIndex: previousState.userRoleLineNumbers.length - 1,
-          mode: nextMode,
-        });
+      if (nextUserRoleLineIndex >= previousState.userRoleLineNumbers.length) {
+        // Reset to the last possible line index
+        nextUserRoleLineIndex = previousState.userRoleLineNumbers.length - 1
       }
+
+      return ({
+        currentDialog: nextDialog,
+        userRoleLineIndex: nextUserRoleLineIndex,
+      });
     });
   };
 
@@ -144,18 +138,13 @@ export class App extends React.Component<AppProps, AppState> {
               dialog={this.state.currentDialog}
               lastLineToDisplay={currentUserRoleLineNumber}
             />
-            <LineGuess
-              userRole={this.state.userRole}
-              addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
-            />
+            {currentUserRoleLineNumber === this.state.numberOfLinesInDialog - 1 ? null :
+              <LineGuess
+                userRole={this.state.userRole}
+                addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
+              />
+            }
           </>
-        );
-      case InteractionMode.DialogComplete:
-        return (
-          <ListOfLines
-            dialog={this.state.currentDialog}
-            lastLineToDisplay={currentUserRoleLineNumber}
-          />
         );
     }
   }
