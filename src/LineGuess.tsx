@@ -1,6 +1,4 @@
 import React, {ChangeEvent} from 'react';
-import LineData from "./types/LineData";
-import {testDialog} from "./data/test-dialog";
 import "./LineGuess.css";
 
 interface Props {

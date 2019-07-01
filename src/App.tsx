@@ -4,13 +4,9 @@ import './App.css';
 import Dialog from "./types/Dialog";
 import LineData from "./types/LineData";
 import Line from "./Line";
-import Button from "./Button";
 
 import RolePicker from "./RolePicker";
 import LineGuess from './LineGuess';
-import {array} from "prop-types";
-
-import { Map, List, fromJS } from 'immutable';
 
 export interface AppProps {
 
@@ -125,7 +121,7 @@ export class App extends React.Component<AppProps, AppState> {
                 );
             case InteractionMode.PracticingLines:
                 const currentUserRoleLineNumber = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
-                const currentUserRoleLine = this.state.currentDialog.lines[currentUserRoleLineNumber];
+
                 return (
                   <div>
                     <ul data-testid={"lines"} >

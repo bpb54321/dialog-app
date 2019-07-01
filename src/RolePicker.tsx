@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent} from 'react';
+import React, {ChangeEvent} from 'react';
 
 interface Props {
     roles: string[];

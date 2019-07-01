@@ -6,7 +6,6 @@ import { testDialog } from "../data/test-dialog";
 import {
   cleanup,
   fireEvent,
-  prettyDOM,
   render,
   RenderResult,
   waitForElement,
@@ -83,7 +82,7 @@ describe('App', () => {
     fireEvent.click(app.getByText("Confirm Role Selection"));
 
     // Wait for line0 to be displayed
-    await waitForElement(() => app.getByText(testDialog.lines[0].text));
+    await waitForElement(() => app.getByText(`Line text: ${testDialog.lines[2].text}`));
   });
 
   it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", async function () {
@@ -144,7 +143,7 @@ describe('App', () => {
 
     fireEvent.click(submitButton);
 
-    const line0 = await waitForElement(() => [
+    await waitForElement(() => [
       app.getByText(`Line text: ${testDialog.lines[0].text}`),
       app.getByText(`Guess: ${guessForLine0}`),
     ]);
@@ -159,7 +158,7 @@ describe('App', () => {
 
     fireEvent.click(submitButton);
 
-    const line2 = await waitForElement(() => [
+    await waitForElement(() => [
       app.getByText(`Line text: ${testDialog.lines[2].text}`),
       app.getByText(`Guess: ${guessForLine2}`),
     ]);
