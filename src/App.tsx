@@ -24,6 +24,7 @@ enum InteractionMode {
     LoadingData = "LOADING_DATA",
     ChoosingRole = "CHOOSING_ROLE",
     PracticingLines = "PRACTICING_LINES",
+    DialogComplete = "DIALOG_COMPLETE",
 }
 
 
@@ -84,27 +85,47 @@ export class App extends React.Component<AppProps, AppState> {
     }
 
     addGuessToCurrentLineAndIncrementLineNumber = (lineGuess: string) => {
-        this.setState((previousState) => {
-            const currentUserRoleLineNumber = previousState.userRoleLineNumbers[this.state.userRoleLineIndex];
-            const currentUserRoleLine = previousState.currentDialog.lines[currentUserRoleLineNumber];
+        this.setState((previousState: AppState) => {
+            let currentUserRoleLineNumber: number;
+            let currentUserRoleLine: LineData;
+            let nextUserRoleLineIndex: number;
+            let nextMode: InteractionMode;
+            let nextDialog: Dialog;
 
-            const newDialog = {
-              ...previousState.currentDialog
+            currentUserRoleLineNumber = previousState.userRoleLineNumbers[previousState.userRoleLineIndex];
+            currentUserRoleLine = previousState.currentDialog.lines[currentUserRoleLineNumber];
+
+            nextDialog = {
+                ...previousState.currentDialog
             };
 
-            const newLine: LineData = {
+            nextDialog.lines[currentUserRoleLineNumber] = {
                 text: currentUserRoleLine.text,
                 guess: lineGuess,
                 role: currentUserRoleLine.role,
                 key: currentUserRoleLine.key,
             };
 
-            newDialog.lines[currentUserRoleLineNumber] = newLine;
+            nextUserRoleLineIndex = previousState.userRoleLineIndex + 1;
 
-            return {
-                currentDialog: newDialog,
-                userRoleLineIndex: previousState.userRoleLineIndex + 1,
-            };
+            if (nextUserRoleLineIndex < previousState.userRoleLineNumbers.length) {
+
+                nextMode = InteractionMode.PracticingLines;
+
+                return ({
+                    currentDialog: nextDialog,
+                    userRoleLineIndex: nextUserRoleLineIndex,
+                    mode: nextMode,
+                });
+            } else {
+                nextMode = InteractionMode.DialogComplete;
+
+                return ({
+                    currentDialog: nextDialog,
+                    userRoleLineIndex: previousState.userRoleLineIndex,
+                    mode: nextMode,
+                });
+            }
         });
     };
 
@@ -143,6 +164,23 @@ export class App extends React.Component<AppProps, AppState> {
                       userRole={this.state.userRole}
                       addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
                     />
+                  </div>
+                );
+            case InteractionMode.DialogComplete:
+                return (
+                  <div>
+                      <ul data-testid={"lines"} >
+                          {this.state.currentDialog.lines.map((lineData: LineData) => {
+                              return (
+                                <Line
+                                  key={lineData.key}
+                                  text={lineData.text}
+                                  guess={lineData.guess}
+                                  role={lineData.role}
+                                />
+                              );
+                          })}
+                      </ul>
                   </div>
                 );
         }
