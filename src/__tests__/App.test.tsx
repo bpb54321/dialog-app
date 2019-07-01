@@ -57,7 +57,6 @@ describe('App', () => {
     }
   });
 
-
   it("should print out Role 0's first line after Role 1 is picked", async function () {
 
     /**
@@ -83,6 +82,31 @@ describe('App', () => {
 
     // Wait for line0 to be displayed
     await waitForElement(() => app.getByText(`Line text: ${testDialog.lines[0].text}`));
+  });
+
+  it("should not print out any lines after Role 0 is picked", async function () {
+
+    // This is because Role 0 has the first line in our test dialog.
+
+    // Confirm that the first line of the dialog is not displayed before a user role is picked
+    let line0 = app.queryByText(testDialog.lines[0].text);
+    expect(line0).toBeNull();
+
+    // Get the role select by searching for an input, textarea, or select with the default role as display value
+    const roleSelect = app.getByDisplayValue(testDialog.roles[0]);
+
+    // Role 0 (the default role) is already selected
+
+    // Click submit to confirm role selection
+    fireEvent.click(app.getByText("Confirm Role Selection"));
+
+    // Wait for the guess input to be displayed
+    await waitForElement(() => app.getByPlaceholderText(`Text of the next line for ` +
+      `${testDialog.roles[0]}`));
+
+    // Confirm that the first line of the dialog is still not displayed
+    line0 = app.queryByText(`Line text: ${testDialog.lines[0].text}`);
+    expect(line0).toBeNull();
   });
 
   it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", async function () {

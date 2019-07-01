@@ -3,7 +3,6 @@ import './App.css';
 
 import Dialog from "./types/Dialog";
 import LineData from "./types/LineData";
-import Line from "./Line";
 
 import RolePicker from "./RolePicker";
 import LineGuess from './LineGuess';
@@ -106,15 +105,27 @@ export class App extends React.Component<AppProps, AppState> {
 
       nextUserRoleLineIndex = previousState.userRoleLineIndex + 1;
 
-      if (nextUserRoleLineIndex >= previousState.userRoleLineNumbers.length) {
-        // Reset to the last possible line index
-        nextUserRoleLineIndex = previousState.userRoleLineNumbers.length - 1
-      }
+      if (nextUserRoleLineIndex < previousState.userRoleLineNumbers.length) {
 
-      return ({
-        currentDialog: nextDialog,
-        userRoleLineIndex: nextUserRoleLineIndex,
-      });
+        nextMode = InteractionMode.PracticingLines;
+
+        return ({
+          currentDialog: nextDialog,
+          userRoleLineIndex: nextUserRoleLineIndex,
+          mode: nextMode,
+        });
+
+      } else {
+
+        nextMode = InteractionMode.DialogComplete;
+
+        return ({
+          currentDialog: nextDialog,
+          userRoleLineIndex: previousState.userRoleLineNumbers.length - 1,
+          mode: nextMode,
+        });
+
+      }
     });
   };
 
@@ -136,15 +147,20 @@ export class App extends React.Component<AppProps, AppState> {
           <>
             <ListOfLines
               dialog={this.state.currentDialog}
-              lastLineToDisplay={currentUserRoleLineNumber}
+              lastLineToDisplay={currentUserRoleLineNumber - 1}
             />
-            {currentUserRoleLineNumber === this.state.numberOfLinesInDialog - 1 ? null :
-              <LineGuess
-                userRole={this.state.userRole}
-                addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
-              />
-            }
+            <LineGuess
+              userRole={this.state.userRole}
+              addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
+            />
           </>
+        );
+      case InteractionMode.DialogComplete:
+        return (
+          <ListOfLines
+            dialog={this.state.currentDialog}
+            lastLineToDisplay={this.state.numberOfLinesInDialog - 1}
+          />
         );
     }
   }
