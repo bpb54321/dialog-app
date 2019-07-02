@@ -67,4 +67,8 @@ describe('LineGuess', () => {
         expect(guessInput.value).toBe("");
 
     });
+
+    it('should allow the user to record audio input for their guess', function () {
+        lineGuess.getByText("Record audio");
+    });
 });

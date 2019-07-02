@@ -44,6 +44,8 @@ export default class LineGuess extends React.Component<Props, State> {
                   type="text"
                   value={this.state.guess}
                 />
+                <label htmlFor="audio-file">Record audio</label>
+                <input type="file" accept="audio/*" capture={"user"} id={"audio-file"}/>
                 <input type="submit" data-testid={"line-guess__submit"} value={"Submit Guess"}/>
             </form>
         );
