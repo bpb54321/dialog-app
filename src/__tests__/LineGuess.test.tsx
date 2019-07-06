@@ -68,7 +68,7 @@ describe('LineGuess', () => {
 
     });
 
-    it('should allow the user to record audio input for their guess', function () {
-        lineGuess.getByText("Record audio");
+    it('should allow the user to transcribe speech input for their guess', function () {
+        lineGuess.getByText("Start Speech Input");
     });
 });
