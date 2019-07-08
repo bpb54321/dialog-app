@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react";
 import LineGuess from "../LineGuess";
 import {testDialog} from "../data/test-dialog";
-import {createMockSpeechRecognitionEvent, speechRecognition} from "../MockSpeechRecognition";
+import {createMockSpeechRecognitionEvent, mockSpeechRecognition} from "../MockSpeechRecognition";
 
 describe('LineGuess', () => {
   let lineGuess: RenderResult;
@@ -24,7 +24,7 @@ describe('LineGuess', () => {
       <LineGuess
         userRole={userRole}
         addLineGuessToLastLine={mockFunction}
-        speechRecognition={speechRecognition}
+        speechRecognition={mockSpeechRecognition}
       />
     );
   });
@@ -77,7 +77,7 @@ describe('LineGuess', () => {
 
     let mockSpeechRecognitionIterimResultEvent = createMockSpeechRecognitionEvent("first spoken phrase");
 
-    speechRecognition.onresult(mockSpeechRecognitionIterimResultEvent);
+    mockSpeechRecognition.onresult(mockSpeechRecognitionIterimResultEvent);
 
   });
 });
