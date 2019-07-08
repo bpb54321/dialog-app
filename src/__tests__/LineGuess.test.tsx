@@ -10,8 +10,7 @@ import LineGuess from "../LineGuess";
 import {testDialog} from "../data/test-dialog";
 import {Simulate} from "react-dom/test-utils";
 import ChromeWindow from "../types/ChromeWindow";
-import {MockWebkitSpeechRecognition, MockSpeechRecognitionEvent} from "../MockSpeechRecognition";
-
+import {speechRecognition} from "../MockSpeechRecognition";
 
 describe('LineGuess', () => {
     let lineGuess: RenderResult;
@@ -28,7 +27,7 @@ describe('LineGuess', () => {
           <LineGuess
             userRole={userRole}
             addLineGuessToLastLine={mockFunction}
-            speechRecognition={MockWebkitSpeechRecognition}
+            speechRecognition={speechRecognition}
           />
         );
     });
@@ -75,35 +74,12 @@ describe('LineGuess', () => {
     });
 
     it('should allow the user to transcribe speech input for their guess', function () {
-      lineGuess.getByText("Start Speech Input");
+      let startSpeechInputButton = lineGuess.getByText("Start Speech Input");
 
-      // let mockSpeechRecognitionIterimResultEvent: SpeechRecognitionEvent = (
-      //   {
-      //     results: (
-      //       [
-      //         [
-      //           ({
-      //             transcript: "This is my fake transcript",
-      //           } as SpeechRecognitionAlternative),
-      //         ],
-      //       ] as SpeechRecognitionResultList
-      //     ),
-      //   } as SpeechRecognitionEvent
-      // );
+      fireEvent.click(startSpeechInputButton);
 
-      let mockSpeechRecognitionIterimResultEvent = {
-        results: [
-          [
-            {
-              transcript: "Blah blah blah",
-            },
-          ],
-        ],
-      };
-
-      if (MockWebkitSpeechRecognition.onresult) {
-        MockWebkitSpeechRecognition!.onresult((MockSpeechRecognitionEvent as SpeechRecognitionEvent));
-
+      if (speechRecognition.onresult) {
+        speechRecognition.onresult({} as SpeechRecognitionEvent);
       }
 
 

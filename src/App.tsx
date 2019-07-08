@@ -11,11 +11,11 @@ import {InteractionMode} from "./types/InteractionMode";
 import ListOfLines from "./ListOfLines";
 import ChromeWindow from "./types/ChromeWindow";
 
-export interface AppProps {
-
+interface AppProps {
+  speechRecognition: SpeechRecognition;
 }
 
-export interface AppState {
+interface AppState {
   currentDialog: Dialog;
   numberOfLinesInDialog: number;
   userRoleLineIndex: number;
@@ -23,9 +23,6 @@ export interface AppState {
   userRoleLineNumbers: number[];
   mode: InteractionMode;
 }
-
-// SpeechRecognition is still prefixed in Chrome as of 07/06/19
-SpeechRecognition = (window as ChromeWindow).SpeechRecognition || (window as ChromeWindow).webkitSpeechRecognition;
 
 export class App extends React.Component<AppProps, AppState> {
 
@@ -156,6 +153,7 @@ export class App extends React.Component<AppProps, AppState> {
             <LineGuess
               userRole={this.state.userRole}
               addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
+              speechRecognition={this.props.speechRecognition}
             />
           </>
         );
@@ -168,7 +166,4 @@ export class App extends React.Component<AppProps, AppState> {
         );
     }
   }
-
-
-
 }

@@ -6,38 +6,53 @@ import ChromeWindow from "./types/ChromeWindow";
 // export default mockSpeechRecognition;
 
 // Mock SpeechRecognition constructor function
-function SpeechRecognition(this: SpeechRecognition) {
-  this.start = function() {};
-  this.stop = function() {};
-}
+// function SpeechRecognition(this: SpeechRecognition) {
+//   this.start = function() {};
+//   this.stop = function() {};
+// }
 
-export const MockWebkitSpeechRecognition: SpeechRecognition = ({
+// let mockSpeechRecognitionIterimResultEvent = {
+//   results: [
+//     [
+//       {
+//         transcript: "Blah blah blah",
+//       },
+//     ],
+//   ],
+// };
+
+const webkitSpeechRecognition: SpeechRecognition = ({
   start() {},
   stop() {},
 } as SpeechRecognition);
 
-export const MockSpeechRecognitionEvent: SpeechRecognitionEvent = {
-  emma: null,
-  interpretation: null,
-  resultIndex: 0,
-  results: {
-    length: 1,
-    item(index: number) {
-      return this[index];
-    },
-    0: {
-      isFinal: false,
+function createMockSpeechRecognitionEvent(transcript: string): SpeechRecognitionEvent {
+  return {
+    emma: null,
+    interpretation: null,
+    resultIndex: 0,
+    results: {
       length: 1,
       item(index: number) {
         return this[index];
       },
       0: {
-        confidence: 0.99,
-        transcript: "This is me talking",
+        isFinal: false,
+        length: 1,
+        item(index: number) {
+          return this[index];
+        },
+        0: {
+          confidence: 0.99,
+          transcript: transcript,
+        },
       },
     },
-  },
-};
+  };
+}
+
+export const speechRecognition: SpeechRecognition = {} as SpeechRecognition;
+
 
 // (window as ChromeWindow).webkitSpeechRecognition = jest.fn(() => {
 //   return {
