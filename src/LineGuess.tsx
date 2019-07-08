@@ -5,7 +5,7 @@ import ChromeWindow from "./types/ChromeWindow";
 interface Props {
     userRole: string;
     addLineGuessToLastLine: (lineGuess: string) => void;
-    speechRecognition: SpeechRecognition;
+    speechRecognition: any;
 }
 
 interface State {
@@ -19,7 +19,7 @@ export default class LineGuess extends React.Component<Props, State> {
   };
 
   componentDidMount(): void {
-    this.props.speechRecognition.onresult = (event: SpeechRecognitionEvent) => {
+    this.props.speechRecognition.onresult = (event: any) => {
       let results: SpeechRecognitionResultList = event.results;
 
       let result_phrase = "";
