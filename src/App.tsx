@@ -1,3 +1,4 @@
+/* global SpeechRecognition */
 import React from 'react';
 import './App.css';
 
@@ -8,6 +9,7 @@ import RolePicker from "./RolePicker";
 import LineGuess from './LineGuess';
 import {InteractionMode} from "./types/InteractionMode";
 import ListOfLines from "./ListOfLines";
+import ChromeWindow from "./types/ChromeWindow";
 
 export interface AppProps {
 
@@ -22,6 +24,8 @@ export interface AppState {
   mode: InteractionMode;
 }
 
+// SpeechRecognition is still prefixed in Chrome as of 07/06/19
+SpeechRecognition = (window as ChromeWindow).SpeechRecognition || (window as ChromeWindow).webkitSpeechRecognition;
 
 export class App extends React.Component<AppProps, AppState> {
 
