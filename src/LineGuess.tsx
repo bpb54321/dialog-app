@@ -39,6 +39,10 @@ export default class LineGuess extends React.Component<Props, State> {
     });
   };
 
+  handleToggleSpeechInput = () => {
+    this.props.speechRecognition.start();
+  };
+
   render() {
       return (
           <form
@@ -61,7 +65,7 @@ export default class LineGuess extends React.Component<Props, State> {
                 type="text"
                 value={this.state.guess}
               />
-              <button>Start Speech Input</button>
+              <button onClick={this.handleToggleSpeechInput}>Start Speech Input</button>
               <input type="submit" data-testid={"line-guess__submit"} value={"Submit Guess"}/>
           </form>
       );

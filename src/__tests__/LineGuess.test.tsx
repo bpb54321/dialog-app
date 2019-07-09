@@ -111,4 +111,12 @@ describe('LineGuess', () => {
 
     expect(lineGuess.queryByDisplayValue("first spoken phrase second spoken phrase")).not.toBeNull();
   });
+
+  it('should call the start() method of the SpeechRecognition object when a user clicks Start Speech Input', function () {
+    let startSpeechInputButton = lineGuess.getByText("Start Speech Input");
+
+    fireEvent.click(startSpeechInputButton);
+
+    expect(mockSpeechRecognition.start).toHaveBeenCalledTimes(1);
+  });
 });
