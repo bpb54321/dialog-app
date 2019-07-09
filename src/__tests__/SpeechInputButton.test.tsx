@@ -28,4 +28,12 @@ describe('SpeechInputButton', () => {
 
     expect(mockSpeechRecognition.start).toHaveBeenCalledTimes(1);
   });
+
+  it("should toggle its text every time it is clicked", function () {
+    let button = wrapper.getByText("Start Speech Input");
+
+    fireEvent.click(button);
+
+    expect(button.textContent).toBe("Stop Speech Input");
+  });
 });
