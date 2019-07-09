@@ -1,6 +1,7 @@
 import React, {ChangeEvent} from 'react';
 import "./LineGuess.css";
 import ChromeWindow from "./types/ChromeWindow";
+import SpeechInputButton from "./SpeechInputButton";
 
 interface Props {
     userRole: string;
@@ -39,10 +40,6 @@ export default class LineGuess extends React.Component<Props, State> {
     });
   };
 
-  handleToggleSpeechInput = () => {
-    this.props.speechRecognition.start();
-  };
-
   render() {
       return (
           <form
@@ -65,7 +62,7 @@ export default class LineGuess extends React.Component<Props, State> {
                 type="text"
                 value={this.state.guess}
               />
-              <button onClick={this.handleToggleSpeechInput}>Start Speech Input</button>
+              <SpeechInputButton speechRecognition={this.props.speechRecognition}/>
               <input type="submit" data-testid={"line-guess__submit"} value={"Submit Guess"}/>
           </form>
       );
