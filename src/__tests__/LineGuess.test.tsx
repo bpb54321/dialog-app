@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react";
 import LineGuess from "../LineGuess";
 import {testDialog} from "../data/test-dialog";
-import {createMockSpeechRecognitionEvent, mockSpeechRecognition} from "../MockSpeechRecognition";
+import {mockSpeechRecognition} from "../MockSpeechRecognition";
 
 describe('LineGuess', () => {
   let lineGuess: RenderResult;
@@ -110,13 +110,5 @@ describe('LineGuess', () => {
     mockSpeechRecognition.onresult(mockSpeechRecognitionResultEvent2);
 
     expect(lineGuess.queryByDisplayValue("first spoken phrase second spoken phrase")).not.toBeNull();
-  });
-
-  it('should call the start() method of the SpeechRecognition object when a user clicks Start Speech Input', function () {
-    let startSpeechInputButton = lineGuess.getByText("Start Speech Input");
-
-    fireEvent.click(startSpeechInputButton);
-
-    expect(mockSpeechRecognition.start).toHaveBeenCalledTimes(1);
   });
 });
