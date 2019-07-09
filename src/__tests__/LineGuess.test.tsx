@@ -75,9 +75,19 @@ describe('LineGuess', () => {
 
     fireEvent.click(startSpeechInputButton);
 
-    let mockSpeechRecognitionIterimResultEvent = createMockSpeechRecognitionEvent("first spoken phrase");
+    // Pretend like a user spoke into the mike
+    const mockSpeechRecognitionIterimResultEvent1 = createMockSpeechRecognitionEvent("first spoken phrase");
+    mockSpeechRecognition.onresult(mockSpeechRecognitionIterimResultEvent1);
 
-    mockSpeechRecognition.onresult(mockSpeechRecognitionIterimResultEvent);
+    // The value of the LineGuess input should have the spoken phrase
+    expect(lineGuess.queryByDisplayValue("first spoken phrase")).not.toBeNull();
 
+    // Pretend like the user spoke a second phrase
+    // (space at beginning of phrase is intentional, the SpeechRecognition api adds a space when there is silence in
+    // the speech input
+    const mockSpeechRecognitionIterimResultEvent2 = createMockSpeechRecognitionEvent(" second spoken phrase");
+    mockSpeechRecognition.onresult(mockSpeechRecognitionIterimResultEvent2);
+
+    expect(lineGuess.queryByDisplayValue("first spoken phrase second spoken phrase")).not.toBeNull();
   });
 });
