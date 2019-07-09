@@ -12,6 +12,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import {FetchMock} from "jest-fetch-mock";
+import {mockSpeechRecognition} from "../MockSpeechRecognition";
 const fetchMock = fetch as FetchMock;
 
 describe('App', () => {
@@ -22,7 +23,7 @@ describe('App', () => {
   beforeEach(async () => {
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify(testDialog));
-    app = render(<App />);
+    app = render(<App speechRecognition={mockSpeechRecognition}/>);
     await waitForElementToBeRemoved(() => app.getByText("Waiting for the dialog to load..."));
   });
 
@@ -30,7 +31,9 @@ describe('App', () => {
 
   it("should calculate the line numbers for the user's role", function () {
 
-    appInstance = new App({});
+    appInstance = new App({
+      speechRecognition: mockSpeechRecognition,
+    });
 
     // Check that the line numbers for Role 0 are correct
     const roleOLineNumbers = appInstance.calculateUserLineNumbers(testDialog, "Role 0");
