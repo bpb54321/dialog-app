@@ -3,4 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import {App} from './App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+declare let webkitSpeechRecognition: {
+  new(): SpeechRecognition;
+};
+
+ReactDOM.render(<App speechRecognition={new webkitSpeechRecognition()}/>, document.getElementById('root'));

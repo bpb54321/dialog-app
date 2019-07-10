@@ -12,17 +12,20 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import {FetchMock} from "jest-fetch-mock";
+import {createMockSpeechRecognition} from "../MockSpeechRecognition";
 const fetchMock = fetch as FetchMock;
 
 describe('App', () => {
 
   let app: RenderResult;
   let appInstance: App;
+  let mockSpeechRecognition: any;
 
   beforeEach(async () => {
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify(testDialog));
-    app = render(<App />);
+    mockSpeechRecognition = createMockSpeechRecognition();
+    app = render(<App speechRecognition={mockSpeechRecognition}/>);
     await waitForElementToBeRemoved(() => app.getByText("Waiting for the dialog to load..."));
   });
 
@@ -30,7 +33,9 @@ describe('App', () => {
 
   it("should calculate the line numbers for the user's role", function () {
 
-    appInstance = new App({});
+    appInstance = new App({
+      speechRecognition: mockSpeechRecognition,
+    });
 
     // Check that the line numbers for Role 0 are correct
     const roleOLineNumbers = appInstance.calculateUserLineNumbers(testDialog, "Role 0");
@@ -188,6 +193,17 @@ describe('App', () => {
     ]);
   });
 
+  test("Then the app's SpeechRecognition object's language should be set to French.", function() {
+    expect(mockSpeechRecognition.lang).toBe("fr-FR");
+  });
 
+  test("Then the app's SpeechRecognition should listen continuously from when the user presses Start Speech Input " +
+    "to when he presses Stop Speech Input", function() {
+    expect(mockSpeechRecognition.continuous).toBe(true);
+  });
+
+  test("Then the app's SpeechRecognition return interim results", function() {
+    expect(mockSpeechRecognition.interimResults).toBe(true);
+  });
 });
 

@@ -1,3 +1,4 @@
+/* global SpeechRecognition */
 import React from 'react';
 import './App.css';
 
@@ -8,12 +9,13 @@ import RolePicker from "./RolePicker";
 import LineGuess from './LineGuess';
 import {InteractionMode} from "./types/InteractionMode";
 import ListOfLines from "./ListOfLines";
+import ChromeWindow from "./types/ChromeWindow";
 
-export interface AppProps {
-
+interface AppProps {
+  speechRecognition: SpeechRecognition;
 }
 
-export interface AppState {
+interface AppState {
   currentDialog: Dialog;
   numberOfLinesInDialog: number;
   userRoleLineIndex: number;
@@ -21,7 +23,6 @@ export interface AppState {
   userRoleLineNumbers: number[];
   mode: InteractionMode;
 }
-
 
 export class App extends React.Component<AppProps, AppState> {
 
@@ -39,8 +40,14 @@ export class App extends React.Component<AppProps, AppState> {
   };
 
   async componentDidMount() {
+    // Get list of dialogs
     let responseBody = await fetch("http://localhost/dialogs/0/");
     let responseJson: Dialog = await responseBody.json();
+
+    // Set SpeechRecognition object's settings
+    this.props.speechRecognition.lang = "fr-FR";
+    this.props.speechRecognition.continuous = true;
+    this.props.speechRecognition.interimResults = true;
 
     this.setState((previousState: AppState) : object => {
       return {
@@ -152,6 +159,7 @@ export class App extends React.Component<AppProps, AppState> {
             <LineGuess
               userRole={this.state.userRole}
               addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
+              speechRecognition={this.props.speechRecognition}
             />
           </>
         );
@@ -164,7 +172,4 @@ export class App extends React.Component<AppProps, AppState> {
         );
     }
   }
-
-
-
 }
