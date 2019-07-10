@@ -5,13 +5,15 @@ import {
   fireEvent,
   cleanup,
 } from "@testing-library/react";
-import {mockSpeechRecognition} from "../MockSpeechRecognition";
+import {createMockSpeechRecognition} from "../MockSpeechRecognition";
 import SpeechInputButton from "../SpeechInputButton";
 
 describe('SpeechInputButton', () => {
   let wrapper: RenderResult;
+  let mockSpeechRecognition: any;
 
   beforeEach(() => {
+    mockSpeechRecognition = createMockSpeechRecognition();
     wrapper = render(
       <SpeechInputButton
         speechRecognition={mockSpeechRecognition}
@@ -27,6 +29,18 @@ describe('SpeechInputButton', () => {
     fireEvent.click(startSpeechInputButton);
 
     expect(mockSpeechRecognition.start).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call the stop() method of the SpeechRecognition object when a user clicks Stop Speech Input', function () {
+    let startSpeechInputButton = wrapper.getByText("Start Speech Input");
+
+    fireEvent.click(startSpeechInputButton);
+
+    expect(mockSpeechRecognition.start).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(startSpeechInputButton);
+
+    expect(mockSpeechRecognition.stop).toHaveBeenCalledTimes(1);
   });
 
   it("should toggle its text every time it is clicked", function () {

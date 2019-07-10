@@ -20,10 +20,11 @@ export default class SpeechInputButton extends React.Component<Props, State> {
   };
 
   handleToggleSpeechInput = () => {
-    this.props.speechRecognition.start();
     if (this.state.text === ButtonText.StartSpeechInput) {
+      this.props.speechRecognition.start();
       this.setState({text: ButtonText.StopSpeechInput});
     } else {
+      this.props.speechRecognition.stop();
       this.setState({text: ButtonText.StartSpeechInput});
     }
   };
