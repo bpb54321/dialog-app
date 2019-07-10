@@ -12,27 +12,7 @@ describe('SpeechInputButton', () => {
 
   });
 
-  afterEach(cleanup)
-
-  // it('should call the start() method of the SpeechRecognition object when a user clicks Start Speech Input', function () {
-  //   let startSpeechInputButton = wrapper.getByText("Start Speech Input");
-  //
-  //   fireEvent.click(startSpeechInputButton);
-  //
-  //   expect(mockSpeechRecognition.start).toHaveBeenCalledTimes(1);
-  // });
-  //
-  // it('should call the stop() method of the SpeechRecognition object when a user clicks Stop Speech Input', function () {
-  //   let startSpeechInputButton = wrapper.getByText("Start Speech Input");
-  //
-  //   fireEvent.click(startSpeechInputButton);
-  //
-  //   expect(mockSpeechRecognition.start).toHaveBeenCalledTimes(1);
-  //
-  //   fireEvent.click(startSpeechInputButton);
-  //
-  //   expect(mockSpeechRecognition.stop).toHaveBeenCalledTimes(1);
-  // });
+  afterEach(cleanup);
 
   test("When the user clicks the component, it should call the function updateSpeechRecognitionState", function () {
     wrapper = render(
@@ -48,18 +28,6 @@ describe('SpeechInputButton', () => {
 
     expect(mockUpdateSpeechRecognitionState).toHaveBeenCalledTimes(1);
   });
-
-  // it("should toggle its text every time it is clicked", function () {
-  //   let button = wrapper.getByText("Start Speech Input");
-  //
-  //   fireEvent.click(button);
-  //
-  //   expect(button.textContent).toBe("Stop Speech Input");
-  //
-  //   fireEvent.click(button);
-  //
-  //   expect(button.textContent).toBe("Start Speech Input");
-  // });
 
   test("When SpeechRecognitionState.Stopped is passed to it, then it should display Start Speech Input", function () {
     wrapper = render(
