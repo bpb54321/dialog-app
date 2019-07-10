@@ -7,18 +7,20 @@ import {
 } from "@testing-library/react";
 import LineGuess from "../LineGuess";
 import {testDialog} from "../data/test-dialog";
-import {mockSpeechRecognition} from "../MockSpeechRecognition";
+import {createMockSpeechRecognition} from "../MockSpeechRecognition";
 
 describe('LineGuess', () => {
   let lineGuess: RenderResult;
   let mockFunction: jest.Mock;
   let guessText: string;
   let userRole: string;
+  let mockSpeechRecognition: any;
 
   beforeEach(() => {
     mockFunction = jest.fn();
     guessText = "This is my guess for the line";
     userRole = "Role 0";
+    mockSpeechRecognition = createMockSpeechRecognition();
 
     lineGuess = render(
       <LineGuess

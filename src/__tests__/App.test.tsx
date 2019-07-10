@@ -12,17 +12,19 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import {FetchMock} from "jest-fetch-mock";
-import {mockSpeechRecognition} from "../MockSpeechRecognition";
+import {createMockSpeechRecognition} from "../MockSpeechRecognition";
 const fetchMock = fetch as FetchMock;
 
 describe('App', () => {
 
   let app: RenderResult;
   let appInstance: App;
+  let mockSpeechRecognition: any;
 
   beforeEach(async () => {
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify(testDialog));
+    mockSpeechRecognition = createMockSpeechRecognition();
     app = render(<App speechRecognition={mockSpeechRecognition}/>);
     await waitForElementToBeRemoved(() => app.getByText("Waiting for the dialog to load..."));
   });
