@@ -193,6 +193,10 @@ describe('App', () => {
     ]);
   });
 
+  test("Then the app's SpeechRecognition object's language should be set to French.", function() {
+    expect(mockSpeechRecognition.lang).toBe("fr-FR");
+  });
+
 
 });
 

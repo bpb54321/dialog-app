@@ -40,8 +40,12 @@ export class App extends React.Component<AppProps, AppState> {
   };
 
   async componentDidMount() {
+    // Get list of dialogs
     let responseBody = await fetch("http://localhost/dialogs/0/");
     let responseJson: Dialog = await responseBody.json();
+
+    // Set SpeechRecognition object's settings
+    this.props.speechRecognition.lang = "fr-FR";
 
     this.setState((previousState: AppState) : object => {
       return {

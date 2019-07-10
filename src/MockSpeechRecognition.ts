@@ -7,6 +7,7 @@ export function createMockSpeechRecognition(): any {
     start: jest.fn(),
     stop: jest.fn(),
     onresult: undefined,
+    lang: undefined,
   };
 }
 
