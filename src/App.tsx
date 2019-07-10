@@ -46,6 +46,8 @@ export class App extends React.Component<AppProps, AppState> {
 
     // Set SpeechRecognition object's settings
     this.props.speechRecognition.lang = "fr-FR";
+    this.props.speechRecognition.continuous = true;
+    this.props.speechRecognition.interimResults = true;
 
     this.setState((previousState: AppState) : object => {
       return {

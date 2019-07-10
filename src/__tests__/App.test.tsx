@@ -197,6 +197,13 @@ describe('App', () => {
     expect(mockSpeechRecognition.lang).toBe("fr-FR");
   });
 
+  test("Then the app's SpeechRecognition should listen continuously from when the user presses Start Speech Input " +
+    "to when he presses Stop Speech Input", function() {
+    expect(mockSpeechRecognition.continuous).toBe(true);
+  });
 
+  test("Then the app's SpeechRecognition return interim results", function() {
+    expect(mockSpeechRecognition.interimResults).toBe(true);
+  });
 });
 
