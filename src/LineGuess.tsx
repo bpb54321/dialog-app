@@ -1,7 +1,7 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, FormEvent} from 'react';
 import "./LineGuess.css";
-import ChromeWindow from "./types/ChromeWindow";
 import SpeechInputButton from "./SpeechInputButton";
+import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
 
 interface Props {
     userRole: string;
@@ -11,12 +11,14 @@ interface Props {
 
 interface State {
   guess: string;
+  speechRecognitionState: SpeechRecognitionState;
 }
 
 export default class LineGuess extends React.Component<Props, State> {
 
   state: State = {
     guess: "",
+    speechRecognitionState: SpeechRecognitionState.Stopped,
   };
 
   componentDidMount(): void {
@@ -40,17 +42,34 @@ export default class LineGuess extends React.Component<Props, State> {
     });
   };
 
+  handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
+
+    this.props.speechRecognition.stop();
+
+    this.props.addLineGuessToLastLine(this.state.guess);
+
+    this.setState({
+      guess: "",
+      speechRecognitionState: SpeechRecognitionState.Stopped,
+    });
+  };
+
+  updateSpeechRecognitionState = () => {
+    if (this.state.speechRecognitionState === SpeechRecognitionState.Stopped) {
+      this.props.speechRecognition.start();
+      this.setState({speechRecognitionState: SpeechRecognitionState.Started});
+    } else {
+      this.props.speechRecognition.stop();
+      this.setState({speechRecognitionState: SpeechRecognitionState.Stopped});
+    }
+  };
+
   render() {
       return (
           <form
             data-testid={"line-guess"}
-            onSubmit={(event) => {
-              event.preventDefault();
-              this.props.addLineGuessToLastLine(this.state.guess);
-              this.setState({
-                guess: "",
-              });
-            }}
+            onSubmit={this.handleSubmit}
           >
               <label htmlFor="line-guess__text-input" data-testid={"line-guess__label"}>Line Guess</label>
               <input
@@ -62,7 +81,10 @@ export default class LineGuess extends React.Component<Props, State> {
                 type="text"
                 value={this.state.guess}
               />
-              <SpeechInputButton speechRecognition={this.props.speechRecognition}/>
+              <SpeechInputButton
+                updateSpeechRecognitionState={this.updateSpeechRecognitionState}
+                speechRecognitionState={this.state.speechRecognitionState}
+              />
               <input type="submit" data-testid={"line-guess__submit"} value={"Submit Guess"}/>
           </form>
       );

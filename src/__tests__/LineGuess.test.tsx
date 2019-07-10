@@ -81,6 +81,21 @@ describe('LineGuess', () => {
 
   });
 
+  it("When the user submits the guess, Then speech recognition button should be reset to 'Start Speech Input' " +
+    "And the stop() method on the SpeechRecognition object should be automatically called.", function () {
+    let startSpeechInputButton = lineGuess.getByText("Start Speech Input");
+
+    fireEvent.click(startSpeechInputButton);
+
+    let submitButton = lineGuess.getByText("Submit Guess");
+
+    fireEvent.click(submitButton);
+
+    expect(lineGuess.queryByText("Start Speech Input")).not.toBeNull();
+
+    expect(mockSpeechRecognition.stop).toHaveBeenCalledTimes(1);
+  });
+
   it('should allow the user to transcribe speech input for their guess', function () {
     let startSpeechInputButton = lineGuess.getByText("Start Speech Input");
 
