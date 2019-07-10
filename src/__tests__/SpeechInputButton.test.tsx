@@ -35,5 +35,9 @@ describe('SpeechInputButton', () => {
     fireEvent.click(button);
 
     expect(button.textContent).toBe("Stop Speech Input");
+
+    fireEvent.click(button);
+
+    expect(button.textContent).toBe("Start Speech Input");
   });
 });
