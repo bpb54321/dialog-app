@@ -11,13 +11,13 @@ import {createMockSpeechRecognition} from "../MockSpeechRecognition";
 
 describe('LineGuess', () => {
   let lineGuess: RenderResult;
-  let mockFunction: jest.Mock;
+  let mockAddLineGuessToLastLine: jest.Mock;
   let guessText: string;
   let userRole: string;
   let mockSpeechRecognition: any;
 
   beforeEach(() => {
-    mockFunction = jest.fn();
+    mockAddLineGuessToLastLine = jest.fn();
     guessText = "This is my guess for the line";
     userRole = "Role 0";
     mockSpeechRecognition = createMockSpeechRecognition();
@@ -25,7 +25,7 @@ describe('LineGuess', () => {
     lineGuess = render(
       <LineGuess
         userRole={userRole}
-        addLineGuessToLastLine={mockFunction}
+        addLineGuessToLastLine={mockAddLineGuessToLastLine}
         speechRecognition={mockSpeechRecognition}
       />
     );
@@ -37,8 +37,8 @@ describe('LineGuess', () => {
     lineGuess.getByPlaceholderText(`Text of the next line for ${testDialog.roles[0]}`);
   });
 
-  it("should call a function passed to it with the guess text as function parameters" +
-    " when the submit button is pressed", function () {
+  it("When the submit button is pressed, the function which adds the guess to the line should be called with "
+    + "the current value of the guess.", function () {
 
     const guessInput = lineGuess.getByPlaceholderText(`Text of the next line for ${testDialog.roles[0]}`);
     const guessSubmit = lineGuess.getByText("Submit Guess");
@@ -51,7 +51,16 @@ describe('LineGuess', () => {
 
     fireEvent.click(guessSubmit);
 
-    expect(mockFunction).toHaveBeenCalledWith(guessText);
+    expect(mockAddLineGuessToLastLine).toHaveBeenCalledWith(guessText);
+  });
+
+  it("when the speech recognition input button is pressed, then the component should not call the function " +
+    "which adds the guess to the line", function() {
+    let startSpeechInputButton = lineGuess.getByText("Start Speech Input");
+
+    fireEvent.click(startSpeechInputButton);
+
+    expect(mockAddLineGuessToLastLine).toHaveBeenCalledTimes(0);
   });
 
   it('should reset the guess to an empty string after a guess is submitted', function () {

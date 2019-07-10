@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {SyntheticEvent} from 'react';
 
 enum ButtonText {
   StartSpeechInput = "Start Speech Input",
@@ -19,7 +19,8 @@ export default class SpeechInputButton extends React.Component<Props, State> {
     text: ButtonText.StartSpeechInput,
   };
 
-  handleToggleSpeechInput = () => {
+  handleToggleSpeechInput = (event: SyntheticEvent) => {
+    event.preventDefault();
     if (this.state.text === ButtonText.StartSpeechInput) {
       this.props.speechRecognition.start();
       this.setState({text: ButtonText.StopSpeechInput});
