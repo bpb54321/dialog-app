@@ -17,7 +17,7 @@ const fetchMock = fetch as FetchMock;
 
 describe('App', () => {
 
-  let app: RenderResult;
+  let wrapper: RenderResult;
   let appInstance: App;
   let mockSpeechRecognition: any;
 
@@ -25,11 +25,18 @@ describe('App', () => {
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify(testDialog));
     mockSpeechRecognition = createMockSpeechRecognition();
-    app = render(<App speechRecognition={mockSpeechRecognition}/>);
-    await waitForElementToBeRemoved(() => app.getByText("Waiting for the dialog to load..."));
+    wrapper = render(<App speechRecognition={mockSpeechRecognition}/>);
+    await waitForElementToBeRemoved(() => wrapper.getByText("Waiting for the dialog to load..."));
   });
 
   afterEach(cleanup);
+
+  test("When the app is loaded, " +
+    "Then a list of available dialogs should be displayed.", function () {
+
+
+
+  });
 
   it("should calculate the line numbers for the user's role", function () {
 
@@ -50,7 +57,7 @@ describe('App', () => {
   });
 
   it("should display a role picker when rendered", async function () {
-    app.getByText("Role Picker");
+    wrapper.getByText("Role Picker");
   });
 
   it("should not show any lines before a role is picked", async function () {
@@ -58,7 +65,7 @@ describe('App', () => {
     const lines = testDialog.lines;
 
     for (const line of lines) {
-      expect(app.queryByText(line.text)).toBeNull();
+      expect(wrapper.queryByText(line.text)).toBeNull();
     }
   });
 
@@ -69,11 +76,11 @@ describe('App', () => {
      */
 
     // Confirm that the first line of the dialog is not displayed before a user role is picked
-    let line0 = app.queryByText(testDialog.lines[0].text);
+    let line0 = wrapper.queryByText(testDialog.lines[0].text);
     expect(line0).toBeNull();
 
     // Get the role select by searching for an input, textarea, or select with the default role as display value
-    const roleSelect = app.getByDisplayValue(testDialog.roles[0]);
+    const roleSelect = wrapper.getByDisplayValue(testDialog.roles[0]);
 
     // Select Role 1 (the second role in testDialog)
     fireEvent.change(roleSelect, {
@@ -83,10 +90,10 @@ describe('App', () => {
     });
 
     // Click submit to confirm role selection
-    fireEvent.click(app.getByText("Confirm Role Selection"));
+    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
 
     // Wait for line0 to be displayed
-    await waitForElement(() => app.getByText(`Line text: ${testDialog.lines[0].text}`));
+    await waitForElement(() => wrapper.getByText(`Line text: ${testDialog.lines[0].text}`));
   });
 
   it("should not print out any lines after Role 0 is picked", async function () {
@@ -94,36 +101,36 @@ describe('App', () => {
     // This is because Role 0 has the first line in our test dialog.
 
     // Confirm that the first line of the dialog is not displayed before a user role is picked
-    let line0 = app.queryByText(testDialog.lines[0].text);
+    let line0 = wrapper.queryByText(testDialog.lines[0].text);
     expect(line0).toBeNull();
 
     // Get the role select by searching for an input, textarea, or select with the default role as display value
-    const roleSelect = app.getByDisplayValue(testDialog.roles[0]);
+    const roleSelect = wrapper.getByDisplayValue(testDialog.roles[0]);
 
     // Role 0 (the default role) is already selected
 
     // Click submit to confirm role selection
-    fireEvent.click(app.getByText("Confirm Role Selection"));
+    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
 
     // Wait for the guess input to be displayed
-    await waitForElement(() => app.getByPlaceholderText(`Text of the next line for ` +
+    await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for ` +
       `${testDialog.roles[0]}`));
 
     // Confirm that the first line of the dialog is still not displayed
-    line0 = app.queryByText(`Line text: ${testDialog.lines[0].text}`);
+    line0 = wrapper.queryByText(`Line text: ${testDialog.lines[0].text}`);
     expect(line0).toBeNull();
   });
 
   it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", async function () {
 
     // Confirm that the first line of the dialog is not displayed before a user role is picked
-    let line0 = app.queryByText(testDialog.lines[0].text);
+    let line0 = wrapper.queryByText(testDialog.lines[0].text);
     expect(line0).toBeNull();
 
     // Click submit to confirm role selection of default role (Role 0)
-    fireEvent.click(app.getByText("Confirm Role Selection"));
+    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
 
-    const line0Guess = await waitForElement(() => app.getByPlaceholderText(`Text of the next line for ` +
+    const line0Guess = await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for ` +
       `${testDialog.roles[0]}`));
 
   });
@@ -132,9 +139,9 @@ describe('App', () => {
     "the line are displayed.", async function () {
 
     // Click submit to confirm role selection of default role (Role 0)
-    fireEvent.click(app.getByText("Confirm Role Selection"));
+    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
 
-    const line0Guess = await waitForElement(() => app.getByPlaceholderText(`Text of the next line for ` +
+    const line0Guess = await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for ` +
       `${testDialog.roles[0]}`));
 
     const guess = "This is my guess for Line 0";
@@ -145,11 +152,11 @@ describe('App', () => {
       }
     });
 
-    fireEvent.click(app.getByDisplayValue("Submit Guess"))
+    fireEvent.click(wrapper.getByDisplayValue("Submit Guess"))
 
     const line0 = await waitForElement(() => [
-      app.getByText(`Line text: ${testDialog.lines[0].text}`),
-      app.getByText(`Guess: ${guess}`),
+      wrapper.getByText(`Line text: ${testDialog.lines[0].text}`),
+      wrapper.getByText(`Guess: ${guess}`),
     ]);
   });
 
@@ -157,10 +164,10 @@ describe('App', () => {
     "the first line and the second line are displayed.", async function () {
 
     // Click submit to confirm role selection of default role (Role 0)
-    fireEvent.click(app.getByText("Confirm Role Selection"));
+    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
 
-    const guessInput = await waitForElement(() => app.getByPlaceholderText(`Text of the next line for Role 0`));
-    const submitButton = app.getByDisplayValue("Submit Guess");
+    const guessInput = await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for Role 0`));
+    const submitButton = wrapper.getByDisplayValue("Submit Guess");
 
     const guessForLine0 = "This is my guess for Line 0";
 
@@ -173,8 +180,8 @@ describe('App', () => {
     fireEvent.click(submitButton);
 
     await waitForElement(() => [
-      app.getByText(`Line text: ${testDialog.lines[0].text}`),
-      app.getByText(`Guess: ${guessForLine0}`),
+      wrapper.getByText(`Line text: ${testDialog.lines[0].text}`),
+      wrapper.getByText(`Guess: ${guessForLine0}`),
     ]);
 
     const guessForLine2 = "This is my guess for Line 2.";
@@ -188,8 +195,8 @@ describe('App', () => {
     fireEvent.click(submitButton);
 
     await waitForElement(() => [
-      app.getByText(`Line text: ${testDialog.lines[2].text}`),
-      app.getByText(`Guess: ${guessForLine2}`),
+      wrapper.getByText(`Line text: ${testDialog.lines[2].text}`),
+      wrapper.getByText(`Guess: ${guessForLine2}`),
     ]);
   });
 
