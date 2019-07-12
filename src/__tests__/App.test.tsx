@@ -2,7 +2,7 @@ import React from 'react';
 import {App} from "../App";
 
 // Sample dialog data
-import { testDialog } from "../data/test-dialog";
+import { testDialogsResponse, testRolesResponse } from "../data/test-dialog";
 import {
   cleanup,
   fireEvent,
@@ -23,10 +23,10 @@ describe('App', () => {
 
   beforeEach(async () => {
     fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(testDialog));
+    fetchMock.mockResponseOnce(JSON.stringify(testDialogsResponse));
     mockSpeechRecognition = createMockSpeechRecognition();
     wrapper = render(<App speechRecognition={mockSpeechRecognition}/>);
-    await waitForElementToBeRemoved(() => wrapper.getByText("Waiting for the dialog to load..."));
+    await waitForElementToBeRemoved(() => wrapper.getByText("Waiting for data to load..."));
   });
 
   afterEach(cleanup);
@@ -34,7 +34,8 @@ describe('App', () => {
   test("When the app is loaded, " +
     "Then a list of available dialogs should be displayed.", function () {
 
-
+    wrapper.getByText("Test Dialog 0");
+    wrapper.getByText("Test Dialog 1");
 
   });
 
@@ -45,7 +46,7 @@ describe('App', () => {
     });
 
     // Check that the line numbers for Role 0 are correct
-    const roleOLineNumbers = appInstance.calculateUserLineNumbers(testDialog, "Role 0");
+    const roleOLineNumbers = appInstance.calculateUserLineNumbers(testDialogsResponse[0], "Role 0");
 
     expect(roleOLineNumbers).toEqual([0, 2]);
 

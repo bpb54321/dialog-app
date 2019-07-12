@@ -9,13 +9,13 @@ import RolePicker from "./RolePicker";
 import LineGuess from './LineGuess';
 import {InteractionMode} from "./types/InteractionMode";
 import ListOfLines from "./ListOfLines";
-import ChromeWindow from "./types/ChromeWindow";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
 }
 
 interface AppState {
+  dialogs: Dialog[];
   currentDialog: Dialog;
   numberOfLinesInDialog: number;
   userRoleLineIndex: number;
@@ -27,6 +27,7 @@ interface AppState {
 export class App extends React.Component<AppProps, AppState> {
 
   state: AppState = {
+    dialogs: [],
     currentDialog: {
       roles: ["No Role"],
       name: "",
@@ -41,8 +42,10 @@ export class App extends React.Component<AppProps, AppState> {
 
   async componentDidMount() {
     // Get list of dialogs
-    let responseBody = await fetch("http://localhost/dialogs/0/");
-    let responseJson: Dialog = await responseBody.json();
+    let responseBody = await fetch("http://localhost/dialogs/");
+    let responseJson: any = await responseBody.json();
+
+    let dialogs = responseJson._embedded.dialogs;
 
     // Set SpeechRecognition object's settings
     this.props.speechRecognition.lang = "fr-FR";
@@ -51,9 +54,8 @@ export class App extends React.Component<AppProps, AppState> {
 
     this.setState((previousState: AppState) : object => {
       return {
-        currentDialog: responseJson,
-        numberOfLinesInDialog: responseJson.lines.length,
-        mode: InteractionMode.ChoosingRole,
+        dialogs: dialogs,
+        mode: InteractionMode.ChoosingDialog,
       };
     });
   }
@@ -71,15 +73,22 @@ export class App extends React.Component<AppProps, AppState> {
   };
 
   /**
-   * Given a dialog and a role, returns an array of the line numbers that the role has in the dialog.
+   * Given a link to a dialog and a role, returns an array of the line numbers that the role has in the dialog.
    *
-   * @param dialog {Dialog} A dialog.
+   * @param dialogUrl {string} A dialog.
    * @param role {string} The name of a role that is present in the dialog.
    *
    * @return {number[]} An array of line numbers of the lines that are assigned to the given role in the dialog.
    */
-  calculateUserLineNumbers(dialog: Dialog, role: string): number[] {
-    let userRoleLines: LineData[] = dialog.lines.filter((line: LineData) => {
+  async calculateUserLineNumbers(dialogUrl: string, role: string): Promise<number[]> {
+
+    // Get the lines for the dialog
+    let responseBody = await fetch(`${dialogUrl}/lines`);
+    let responseJson: any = await responseBody.json();
+
+    let lines = responseJson._embedded.lines;
+
+    let userRoleLines: LineData[] = lines.filter((line: LineData) => {
       return (line.role === role);
     });
 
@@ -141,7 +150,18 @@ export class App extends React.Component<AppProps, AppState> {
 
     switch (this.state.mode) {
       case InteractionMode.LoadingData:
-        return <p data-testid={"loading-message"}>Waiting for the dialog to load...</p>;
+        return <p data-testid={"loading-message"}>Waiting for data to load...</p>;
+      case InteractionMode.ChoosingDialog:
+        return (
+          <ul>
+            {
+              this.state.dialogs.map((dialog: Dialog) => {
+                return <li key={dialog._links.self.href}>{dialog.name}</li>;
+              })
+            }
+          </ul>
+        );
+
       case InteractionMode.ChoosingRole:
         return (
           <RolePicker
