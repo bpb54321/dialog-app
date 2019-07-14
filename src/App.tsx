@@ -1,6 +1,6 @@
 /* global SpeechRecognition */
 import React from 'react';
-import {BrowserRouter, Route} from 'react-router-dom';
+import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
 import './App.css';
 
 import Dialog from "./types/Dialog";
@@ -154,10 +154,13 @@ export class App extends React.Component<AppProps, AppState> {
 
     return (
       <BrowserRouter>
-        <Route path={"/"} component={DialogListPage}/>
-        <Route path={"/auth"} component={DialogList}/>
-        <Route path={"/choose-role"} component={RolePicker}/>
-        <Route path={"/practice"} component={RolePicker}/>
+        <Switch>
+          <Redirect from={"/"} to={"/dialogs"} exact/>
+          <Route path={"/dialogs"} component={DialogListPage}/>
+          <Route path={"/auth"} component={DialogList}/>
+          <Route path={"/choose-role"} component={RolePicker}/>
+          <Route path={"/practice"} component={RolePicker}/>
+        </Switch>
       </BrowserRouter>
     );
 
