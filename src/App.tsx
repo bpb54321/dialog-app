@@ -12,6 +12,9 @@ import {InteractionMode} from "./types/InteractionMode";
 import ListOfLines from "./ListOfLines";
 import DialogList from "./DialogList";
 import DialogListPage from "./pages/DialogListPage";
+import AuthPage from "./pages/AuthPage";
+import ChooseRolePage from "./pages/ChooseRolePage";
+import PracticePage from "./pages/PracticePage";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -157,9 +160,9 @@ export class App extends React.Component<AppProps, AppState> {
         <Switch>
           <Redirect from={"/"} to={"/dialogs"} exact/>
           <Route path={"/dialogs"} component={DialogListPage}/>
-          <Route path={"/auth"} component={DialogList}/>
-          <Route path={"/choose-role"} component={RolePicker}/>
-          <Route path={"/practice"} component={RolePicker}/>
+          <Route path={"/auth"} component={AuthPage}/>
+          <Route path={"/choose-role"} component={ChooseRolePage}/>
+          <Route path={"/practice"} component={PracticePage}/>
         </Switch>
       </BrowserRouter>
     );
