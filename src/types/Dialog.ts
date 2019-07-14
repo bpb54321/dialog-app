@@ -1,7 +1,7 @@
 import LineData from "./LineData";
 
 export default interface Dialog {
+    id: string;
     name: string;
-    roles: string[];
     lines: LineData[];
 }

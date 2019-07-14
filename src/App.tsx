@@ -1,6 +1,6 @@
 /* global SpeechRecognition */
 import React from 'react';
-import {BrowserRouter} from 'react-router-dom';
+import {BrowserRouter, Route} from 'react-router-dom';
 import './App.css';
 
 import Dialog from "./types/Dialog";
@@ -10,6 +10,8 @@ import RolePicker from "./RolePicker";
 import LineGuess from './LineGuess';
 import {InteractionMode} from "./types/InteractionMode";
 import ListOfLines from "./ListOfLines";
+import DialogList from "./DialogList";
+import DialogListPage from "./pages/DialogListPage";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -30,7 +32,7 @@ export class App extends React.Component<AppProps, AppState> {
   state: AppState = {
     dialogs: [],
     currentDialog: {
-      roles: ["No Role"],
+      id: "random",
       name: "",
       lines: [],
     },
@@ -61,13 +63,13 @@ export class App extends React.Component<AppProps, AppState> {
     });
   }
 
-  setUserRoleAndChangeMode = (role: string) => {
-    const userRoleLineNumbers = this.calculateUserLineNumbers(
-      this.state.currentDialog, role
+  setUserRoleAndChangeMode = async (role: string) => {
+    const userRoleLineNumbers = await this.calculateUserLineNumbers(
+      "dummy string", role
     );
 
     this.setState({
-      userRole: role,
+      // userRole: role,
       userRoleLineNumbers: userRoleLineNumbers,
       mode: InteractionMode.PracticingLines,
     });
@@ -94,7 +96,7 @@ export class App extends React.Component<AppProps, AppState> {
     });
 
     return userRoleLines.map((line: LineData) => {
-      return line.key;
+      return line.number;
     });
   }
 
@@ -114,10 +116,11 @@ export class App extends React.Component<AppProps, AppState> {
       };
 
       nextDialog.lines[currentUserRoleLineNumber] = {
+        id: currentUserRoleLine.id,
         text: currentUserRoleLine.text,
         guess: lineGuess,
         role: currentUserRoleLine.role,
-        key: currentUserRoleLine.key,
+        number: currentUserRoleLine.number,
       };
 
       nextUserRoleLineIndex = previousState.userRoleLineIndex + 1;
@@ -149,48 +152,45 @@ export class App extends React.Component<AppProps, AppState> {
   render() {
     let currentUserRoleLineNumber = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
 
-    switch (this.state.mode) {
-      case InteractionMode.LoadingData:
-        return <p data-testid={"loading-message"}>Waiting for data to load...</p>;
-      case InteractionMode.ChoosingDialog:
-        return (
-          <ul>
-            {
-              this.state.dialogs.map((dialog: Dialog) => {
-                return <li key={dialog._links.self.href}>{dialog.name}</li>;
-              })
-            }
-          </ul>
-        );
+    return (
+      <BrowserRouter>
+        <Route path={"/"} component={DialogListPage}/>
+        <Route path={"/auth"} component={DialogList}/>
+        <Route path={"/choose-role"} component={RolePicker}/>
+        <Route path={"/practice"} component={RolePicker}/>
+      </BrowserRouter>
+    );
 
-      case InteractionMode.ChoosingRole:
-        return (
-          <RolePicker
-            roles={this.state.currentDialog.roles}
-            setUserRoleAndChangeMode={this.setUserRoleAndChangeMode}
-          />
-        );
-      case InteractionMode.PracticingLines:
-        return (
-          <>
-            <ListOfLines
-              dialog={this.state.currentDialog}
-              lastLineToDisplay={currentUserRoleLineNumber - 1}
-            />
-            <LineGuess
-              userRole={this.state.userRole}
-              addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
-              speechRecognition={this.props.speechRecognition}
-            />
-          </>
-        );
-      case InteractionMode.DialogComplete:
-        return (
-          <ListOfLines
-            dialog={this.state.currentDialog}
-            lastLineToDisplay={this.state.numberOfLinesInDialog - 1}
-          />
-        );
-    }
+    // switch (this.state.mode) {
+    //
+    //   case InteractionMode.ChoosingRole:
+    //     return (
+    //       <RolePicker
+    //         roles={this.state.currentDialog.roles}
+    //         setUserRoleAndChangeMode={this.setUserRoleAndChangeMode}
+    //       />
+    //     );
+    //   case InteractionMode.PracticingLines:
+    //     return (
+    //       <>
+    //         <ListOfLines
+    //           dialog={this.state.currentDialog}
+    //           lastLineToDisplay={currentUserRoleLineNumber - 1}
+    //         />
+    //         <LineGuess
+    //           userRole={this.state.userRole}
+    //           addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
+    //           speechRecognition={this.props.speechRecognition}
+    //         />
+    //       </>
+    //     );
+    //   case InteractionMode.DialogComplete:
+    //     return (
+    //       <ListOfLines
+    //         dialog={this.state.currentDialog}
+    //         lastLineToDisplay={this.state.numberOfLinesInDialog - 1}
+    //       />
+    //     );
+    // }
   }
 }
