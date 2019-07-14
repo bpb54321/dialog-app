@@ -1,5 +1,6 @@
 /* global SpeechRecognition */
 import React from 'react';
+import {BrowserRouter} from 'react-router-dom';
 import './App.css';
 
 import Dialog from "./types/Dialog";
