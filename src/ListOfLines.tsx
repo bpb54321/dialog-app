@@ -19,11 +19,11 @@ export default class ListOfLines extends React.Component<Props, State> {
     return (
       <ul data-testid={"lines"} >
         {this.props.dialog.lines.filter((lineData: LineData) => {
-          return lineData.key <= this.props.lastLineToDisplay;
+          return lineData.number <= this.props.lastLineToDisplay;
         }).map((lineData: LineData) => {
           return (
             <Line
-              key={lineData.key}
+              key={lineData.number}
               text={lineData.text}
               guess={lineData.guess}
               role={lineData.role}
