@@ -158,7 +158,7 @@ export class App extends React.Component<AppProps, AppState> {
     return (
       <BrowserRouter>
         <Switch>
-          <Redirect from={"/"} to={"/dialogs"} exact/>
+          <Redirect from={"/"} to={"/auth"} exact/>
           <Route path={"/dialogs"} component={DialogListPage}/>
           <Route path={"/auth"} component={AuthPage}/>
           <Route path={"/choose-role"} component={ChooseRolePage}/>
