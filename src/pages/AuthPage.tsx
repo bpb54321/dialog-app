@@ -1,4 +1,5 @@
 import React, {ChangeEvent, FormEvent, SyntheticEvent} from 'react';
+import GraphqlError from "../types/GraphqlError";
 
 interface Props {
 }
@@ -6,6 +7,8 @@ interface Props {
 interface State {
   email?: string;
   password?: string;
+  errorMessage?: string;
+
 }
 
 export default class AuthPage extends React.Component<Props, State> {
@@ -13,6 +16,7 @@ export default class AuthPage extends React.Component<Props, State> {
   state = {
     email: "",
     password: "",
+    errorMessage: "",
   };
 
   handleSubmit = (event: FormEvent) => {
@@ -22,7 +26,7 @@ export default class AuthPage extends React.Component<Props, State> {
 
     const loginMutation = `
       mutation {
-          login(email: "${email}", password: "${password})" {
+          login(email: "${email}", password: "${password})") {
             token
           } 
       }
@@ -45,13 +49,20 @@ export default class AuthPage extends React.Component<Props, State> {
       },
       mode: "cors",
     }).then((response) => {
-      console.log(response);
+      return response.json();
+    }).then((body) => {
+      if (body.errors.length > 0) {
+        let errorMessage = body.errors.reduce((accumulator: string, error: GraphqlError) => {
+          return accumulator + " " + error.message;
+        }, "");
+        this.setState({
+          errorMessage: errorMessage
+        });
+      }
+      console.log(body);
+    }).catch((error) => {
+        console.log(error);
     });
-    // }).then(() => {
-    //
-    // });
-
-    console.log(loginMutation);
   };
 
   handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -88,6 +99,10 @@ export default class AuthPage extends React.Component<Props, State> {
             <button type={"button"}>Switch to Signup</button>
             <button type={"submit"}>Submit</button>
           </div>
+          {this.state.errorMessage
+            ? <p>{this.state.errorMessage}</p>
+            : null
+          }
         </form>
       </div>
     );
