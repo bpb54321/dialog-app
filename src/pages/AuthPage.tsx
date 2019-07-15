@@ -17,11 +17,41 @@ export default class AuthPage extends React.Component<Props, State> {
 
   handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const eventData = {
-      email: this.state.email,
-      password: this.state.password,
-    };
-    console.log(eventData);
+
+    const {email, password} = this.state;
+
+    const loginMutation = `
+      mutation {
+          login(email: "${email}", password: "${password})" {
+            token
+          } 
+      }
+    `;
+
+    let graphqlEndpoint: string;
+    if (process.env.NODE_ENV === "development") {
+      graphqlEndpoint = "http://localhost:4000";
+    } else { // production
+        graphqlEndpoint = "https://enthousiaste-livre-99440.herokuapp.com/";
+    }
+
+    fetch(graphqlEndpoint, {
+      method: "POST",
+      body: JSON.stringify({
+        query: loginMutation,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+    }).then((response) => {
+      console.log(response);
+    });
+    // }).then(() => {
+    //
+    // });
+
+    console.log(loginMutation);
   };
 
   handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
