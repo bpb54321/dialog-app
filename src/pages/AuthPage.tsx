@@ -52,7 +52,7 @@ export default class AuthPage extends React.Component<Props, State> {
     }).then((response) => {
       return response.json();
     }).then((body) => {
-      if (body.errors.length > 0) {
+      if (body.errors) {
         let errorMessage = body.errors.reduce((accumulator: string, error: GraphqlError) => {
           return accumulator + " " + error.message;
         }, "");
