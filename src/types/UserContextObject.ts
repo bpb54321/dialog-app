@@ -1,6 +1,8 @@
 export interface UserContextObject {
-  userData: UserData;
-  setUserData: ((token: string) => void);
+  token: string;
+  actions: {
+    setUserData: ((token: string) => void);
+  };
 }
 
 export interface UserData {

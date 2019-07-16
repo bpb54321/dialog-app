@@ -23,6 +23,8 @@ export default class AuthPage extends React.Component<Props, State> {
   handleSubmit = (event: FormEvent, userContext: UserContextObject) => {
     event.preventDefault();
 
+    const {actions} = userContext;
+
     const {email, password} = this.state;
 
     const loginMutation = `
@@ -61,7 +63,7 @@ export default class AuthPage extends React.Component<Props, State> {
         });
       } else {
         const token = body.data.login.token;
-        userContext.setUserData(token);
+        actions.setUserData(token);
       }
       console.log(body);
     }).catch((error) => {
@@ -81,7 +83,7 @@ export default class AuthPage extends React.Component<Props, State> {
         {(userContext: UserContextObject) => {
           return (
             <div>
-              <h1>The Auth Page</h1>
+              <h1>The Login / Signup Page</h1>
               <form
                 className={"auth-form"}
                 onSubmit={(event) => this.handleSubmit(event, userContext)}

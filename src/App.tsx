@@ -12,7 +12,6 @@ import AuthPage from "./pages/AuthPage";
 import ChooseRolePage from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
 import {UserProvider} from "./contexts/UserContext";
-import {UserData} from "./types/UserContextObject";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -26,7 +25,6 @@ interface AppState {
   userRole: string;
   userRoleLineNumbers: number[];
   mode: InteractionMode;
-  userData: UserData;
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -43,9 +41,6 @@ export class App extends React.Component<AppProps, AppState> {
     userRole: "",
     userRoleLineNumbers: [],
     mode: InteractionMode.LoadingData,
-    userData: {
-      token: "",
-    }
   };
 
   // async componentDidMount() {
@@ -154,22 +149,11 @@ export class App extends React.Component<AppProps, AppState> {
     });
   };
 
-  setUserData = (token: string) => {
-    this.setState({
-      userData: {
-        token,
-      }
-    });
-  }
-
   render() {
     // let currentUserRoleLineNumber = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
 
     return (
-      <UserProvider value={{
-        userData: this.state.userData,
-        setUserData: this.setUserData,
-      }}>
+      <UserProvider>
         <BrowserRouter>
           <Switch>
             <Redirect from={"/"} to={"/auth"} exact/>
