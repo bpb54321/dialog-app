@@ -6,15 +6,13 @@ import './App.css';
 import Dialog from "./types/Dialog";
 import LineData from "./types/LineData";
 
-import RolePicker from "./RolePicker";
-import LineGuess from './LineGuess';
 import {InteractionMode} from "./types/InteractionMode";
-import ListOfLines from "./ListOfLines";
-import DialogList from "./DialogList";
 import DialogListPage from "./pages/DialogListPage";
 import AuthPage from "./pages/AuthPage";
 import ChooseRolePage from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
+import {UserProvider} from "./contexts/UserContext";
+import {UserData} from "./types/UserContextObject";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -28,6 +26,7 @@ interface AppState {
   userRole: string;
   userRoleLineNumbers: number[];
   mode: InteractionMode;
+  userData: UserData;
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -44,6 +43,9 @@ export class App extends React.Component<AppProps, AppState> {
     userRole: "",
     userRoleLineNumbers: [],
     mode: InteractionMode.LoadingData,
+    userData: {
+      token: "",
+    }
   };
 
   // async componentDidMount() {
@@ -152,19 +154,32 @@ export class App extends React.Component<AppProps, AppState> {
     });
   };
 
+  setUserData = (token: string) => {
+    this.setState({
+      userData: {
+        token,
+      }
+    });
+  }
+
   render() {
-    let currentUserRoleLineNumber = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
+    // let currentUserRoleLineNumber = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
 
     return (
-      <BrowserRouter>
-        <Switch>
-          <Redirect from={"/"} to={"/auth"} exact/>
-          <Route path={"/dialogs"} component={DialogListPage}/>
-          <Route path={"/auth"} component={AuthPage}/>
-          <Route path={"/choose-role"} component={ChooseRolePage}/>
-          <Route path={"/practice"} component={PracticePage}/>
-        </Switch>
-      </BrowserRouter>
+      <UserProvider value={{
+        userData: this.state.userData,
+        setUserData: this.setUserData,
+      }}>
+        <BrowserRouter>
+          <Switch>
+            <Redirect from={"/"} to={"/auth"} exact/>
+            <Route path={"/dialogs"} component={DialogListPage}/>
+            <Route path={"/auth"} component={AuthPage}/>
+            <Route path={"/choose-role"} component={ChooseRolePage}/>
+            <Route path={"/practice"} component={PracticePage}/>
+          </Switch>
+        </BrowserRouter>
+      </UserProvider>
     );
 
     // switch (this.state.mode) {
