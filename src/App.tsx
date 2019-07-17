@@ -161,7 +161,7 @@ export class App extends React.Component<AppProps, AppState> {
                 if (!context.token) {
                   return (
                     <Switch>
-                      <Redirect exact={true} from={"/"} to={"/auth"} />
+                      <Redirect exact from={"/"} to={"/auth"} />
                       <Route path={"/auth"} component={AuthPage}/>
                     </Switch>
                   );
