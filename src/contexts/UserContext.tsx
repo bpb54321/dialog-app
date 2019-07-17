@@ -23,7 +23,7 @@ export class UserProvider extends React.Component {
     this.setState({
       token
     });
-  }
+  };
 
   render() {
     return (

@@ -11,7 +11,8 @@ import DialogListPage from "./pages/DialogListPage";
 import AuthPage from "./pages/AuthPage";
 import ChooseRolePage from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
-import {UserProvider} from "./contexts/UserContext";
+import {UserConsumer, UserProvider} from "./contexts/UserContext";
+import {UserContextObject} from "./types/UserContextObject";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -155,13 +156,28 @@ export class App extends React.Component<AppProps, AppState> {
     return (
       <UserProvider>
         <BrowserRouter>
-          <Switch>
-            <Redirect from={"/"} to={"/auth"} exact/>
-            <Route path={"/dialogs"} component={DialogListPage}/>
-            <Route path={"/auth"} component={AuthPage}/>
-            <Route path={"/choose-role"} component={ChooseRolePage}/>
-            <Route path={"/practice"} component={PracticePage}/>
-          </Switch>
+            <UserConsumer>
+              {(context: UserContextObject) => {
+                if (!context.token) {
+                  return (
+                    <Switch>
+                      <Redirect exact={true} from={"/"} to={"/auth"} />
+                      <Route path={"/auth"} component={AuthPage}/>
+                    </Switch>
+                  );
+                } else {
+                  return (
+                    <Switch>
+                      <Redirect from={"/auth"} to={"/dialogs"}/>
+                      <Route path={"/dialogs"} component={DialogListPage}/>
+                      <Route path={"/choose-role"} component={ChooseRolePage}/>
+                      <Route path={"/practice"} component={PracticePage}/>
+                    </Switch>
+                  );
+                }
+              }}
+            </UserConsumer>
+
         </BrowserRouter>
       </UserProvider>
     );
