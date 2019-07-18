@@ -1,10 +1,9 @@
 export interface UserContextObject {
-  token: string;
+  data: {
+    token: string;
+    apiEndpoint: string;
+  };
   actions: {
     setUserData: ((token: string) => void);
   };
-}
-
-export interface UserData {
-  token: string;
 }

@@ -151,14 +151,12 @@ export class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
-    // let currentUserRoleLineNumber = this.state.userRoleLineNumbers[this.state.userRoleLineIndex];
-
     return (
       <UserProvider>
         <BrowserRouter>
             <UserConsumer>
               {(context: UserContextObject) => {
-                if (!context.token) {
+                if (!context.data.token) {
                   return (
                     <Switch>
                       <Redirect exact from={"/"} to={"/auth"} />
@@ -169,7 +167,12 @@ export class App extends React.Component<AppProps, AppState> {
                   return (
                     <Switch>
                       <Redirect from={"/auth"} to={"/dialogs"}/>
-                      <Route path={"/dialogs"} component={DialogListPage}/>
+                      <Route
+                        path={"/dialogs"}
+                        render={(routeProps) => {
+                          return (<DialogListPage context={context}/>);
+                        }}
+                      />
                       <Route path={"/choose-role"} component={ChooseRolePage}/>
                       <Route path={"/practice"} component={PracticePage}/>
                     </Switch>
