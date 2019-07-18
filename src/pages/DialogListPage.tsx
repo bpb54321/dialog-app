@@ -2,9 +2,13 @@ import React from 'react';
 import GraphqlError from "../types/GraphqlError";
 import {UserContextObject} from "../types/UserContextObject";
 import Dialog from "../types/Dialog";
+import {Link} from "react-router-dom";
 
 interface Props {
   context: UserContextObject;
+  match: any;
+  location: any;
+  history: any;
 }
 
 interface State {
@@ -26,6 +30,7 @@ export default class DialogListPage extends React.Component<Props, State> {
       query {
           dialogs {
             name
+            id
           }
       }
     `;
@@ -55,7 +60,6 @@ export default class DialogListPage extends React.Component<Props, State> {
           dialogs: body.data.dialogs
         });
       }
-      console.log(body);
     }).catch((error) => {
       console.log(error);
     });
@@ -66,7 +70,14 @@ export default class DialogListPage extends React.Component<Props, State> {
       <div>
         <h1>The Dialog List Page</h1>
         <ul>
-          {this.state.dialogs.map((dialog: Dialog) => <li>{dialog.name}</li>)}
+          {this.state.dialogs.map(
+            (dialog: Dialog) => {
+              return (
+                <li key={dialog.id}>
+                  <Link to={`${this.props.match.url}/${dialog.id}/choose-role`}>{dialog.name}</Link>
+                </li>
+              );
+            })}
         </ul>
       </div>
     );

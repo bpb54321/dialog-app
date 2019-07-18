@@ -158,22 +158,24 @@ export class App extends React.Component<AppProps, AppState> {
               {(context: UserContextObject) => {
                 if (!context.data.token) {
                   return (
-                    <Switch>
-                      <Redirect exact from={"/"} to={"/auth"} />
+                    <>
+                      <Redirect from={"/"} to={"/auth"} />
                       <Route path={"/auth"} component={AuthPage}/>
-                    </Switch>
+                    </>
                   );
                 } else {
                   return (
                     <Switch>
+                      <Redirect exact from={"/"} to={"/dialogs"}/>
                       <Redirect from={"/auth"} to={"/dialogs"}/>
                       <Route
+                        exact
                         path={"/dialogs"}
                         render={(routeProps) => {
-                          return (<DialogListPage context={context}/>);
+                          return (<DialogListPage {...routeProps} context={context}/>);
                         }}
                       />
-                      <Route path={"/choose-role"} component={ChooseRolePage}/>
+                      <Route path={"/dialogs/:dialogId/choose-role"} component={ChooseRolePage}/>
                       <Route path={"/practice"} component={PracticePage}/>
                     </Switch>
                   );
