@@ -3,6 +3,7 @@ import GraphqlError from "../types/GraphqlError";
 import {UserContextObject} from "../types/UserContextObject";
 import Dialog from "../types/Dialog";
 import {Link} from "react-router-dom";
+import fetchData from "../utils/fetch-data";
 
 interface Props {
   context: UserContextObject;
@@ -26,7 +27,7 @@ export default class DialogListPage extends React.Component<Props, State> {
   componentDidMount() {
     const {data} = this.props.context;
 
-    const dialogs = `
+    const dialogQuery = `
       query {
           dialogs {
             name
@@ -35,33 +36,14 @@ export default class DialogListPage extends React.Component<Props, State> {
       }
     `;
 
-    fetch(data.apiEndpoint, {
-      method: "POST",
-      body: JSON.stringify({
-        query: dialogs,
-      }),
-      headers: {
-        "Authorization": `Bearer ${data.token}`,
-        "Content-Type": "application/json",
-      },
-      mode: "cors",
-    }).then((response) => {
-      return response.json();
-    }).then((body) => {
-      if (body.errors) {
-        let errorMessage = body.errors.reduce((accumulator: string, error: GraphqlError) => {
-          return accumulator + " " + error.message;
-        }, "");
-        this.setState({
-          errorMessage: errorMessage
-        });
-      } else {
-        this.setState({
-          dialogs: body.data.dialogs
-        });
-      }
-    }).catch((error) => {
-      console.log(error);
+    fetchData(dialogQuery, data.token, data.apiEndpoint, (body) => {
+      this.setState({
+        dialogs: body.data.dialogs
+      });
+    }, (errorMessage) => {
+      this.setState({
+        errorMessage: errorMessage
+      });
     });
   }
 

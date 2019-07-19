@@ -1,5 +1,6 @@
 import React from 'react';
 import {UserContextObject} from "../types/UserContextObject";
+import RolePicker from "../RolePicker";
 
 interface Props {
   context: UserContextObject;
@@ -27,6 +28,7 @@ export default class ChooseRolePage extends React.Component<Props, State> {
       <div>
         <h1>The Choose Role Page</h1>
         <p>{dialogId}</p>
+        <RolePicker roles={["Role 0", "Role 1"]} setUserRoleAndChangeMode={() => {}}/>
       </div>
     );
   }

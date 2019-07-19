@@ -2,7 +2,7 @@ import React, {ChangeEvent} from 'react';
 
 interface Props {
     roles: string[];
-    setUserRoleAndChangeMode: (role: string) => void
+    setUserRoleAndChangeMode: (role: string) => void;
 }
 
 interface State {
