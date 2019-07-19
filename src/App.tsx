@@ -65,15 +65,15 @@ export class App extends React.Component<AppProps, AppState> {
   // }
 
   setUserRoleAndChangeMode = async (role: string) => {
-    const userRoleLineNumbers = await this.calculateUserLineNumbers(
-      "dummy string", role
-    );
-
-    this.setState({
-      // userRole: role,
-      userRoleLineNumbers: userRoleLineNumbers,
-      mode: InteractionMode.PracticingLines,
-    });
+    // const userRoleLineNumbers = await this.calculateUserLineNumbers(
+    //   "dummy string", role
+    // );
+    //
+    // this.setState({
+    //   // userRole: role,
+    //   userRoleLineNumbers: userRoleLineNumbers,
+    //   mode: InteractionMode.PracticingLines,
+    // });
   };
 
   /**
@@ -84,21 +84,21 @@ export class App extends React.Component<AppProps, AppState> {
    *
    * @return {number[]} An array of line numbers of the lines that are assigned to the given role in the dialog.
    */
-  async calculateUserLineNumbers(dialogUrl: string, role: string): Promise<number[]> {
-
-    // Get the lines for the dialog
-    let responseBody = await fetch(`${dialogUrl}/lines`);
-    let responseJson: any = await responseBody.json();
-
-    let lines = responseJson._embedded.lines;
-
-    let userRoleLines: LineData[] = lines.filter((line: LineData) => {
-      return (line.role === role);
-    });
-
-    return userRoleLines.map((line: LineData) => {
-      return line.number;
-    });
+  calculateUserLineNumbers(dialogUrl: string, role: string): void {
+  //
+  //   // Get the lines for the dialog
+  //   let responseBody = await fetch(`${dialogUrl}/lines`);
+  //   let responseJson: any = await responseBody.json();
+  //
+  //   let lines = responseJson._embedded.lines;
+  //
+  //   let userRoleLines: LineData[] = lines.filter((line: LineData) => {
+  //     return (line.role === role);
+  //   });
+  //
+  //   return userRoleLines.map((line: LineData) => {
+  //     return line.number;
+  //   });
   }
 
   addGuessToCurrentLineAndIncrementLineNumber = (lineGuess: string) => {

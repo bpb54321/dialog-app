@@ -1,5 +1,4 @@
 import React from 'react';
-import GraphqlError from "../types/GraphqlError";
 import {UserContextObject} from "../types/UserContextObject";
 import Dialog from "../types/Dialog";
 import {Link} from "react-router-dom";

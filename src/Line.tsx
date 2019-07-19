@@ -1,10 +1,11 @@
 import React from 'react';
+import Role from "./types/Role";
 
 interface Props {
     text: string;
     key: number;
     guess?: string;
-    role: string;
+    role: Role;
 }
 
 interface State {

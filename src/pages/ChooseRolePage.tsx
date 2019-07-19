@@ -2,7 +2,8 @@ import React from 'react';
 import {UserContextObject} from "../types/UserContextObject";
 import RolePicker from "../RolePicker";
 import fetchData from "../utils/fetch-data";
-import Line from "../Line";
+import LineData from "../types/LineData";
+import Role from "../types/Role";
 
 interface Props {
   context: UserContextObject;
@@ -12,7 +13,7 @@ interface Props {
 }
 
 interface State {
-  roles: string[];
+  roles: Role[];
   errorMessage: string;
 }
 
@@ -37,6 +38,7 @@ export default class ChooseRolePage extends React.Component<Props, State> {
           name
           lines {
             role {
+              id
               name
             }
           }
@@ -45,31 +47,37 @@ export default class ChooseRolePage extends React.Component<Props, State> {
     `;
 
     fetchData(singleDialogQuery, data.token, data.apiEndpoint, (body) => {
-      body.data.dialog.lines.reduce((accumulator: string[], item: any) => {
 
-      });
+      // Collect the ids of the roles that
+      const rolesInDialog: Role[] = body.data.dialog.lines.reduce((accumulator: Role[], line: LineData) => {
+        let roleAlreadyInArray = accumulator.find((role: Role) => {
+            return line.role.id === role.id;
+        });
+
+        if (!roleAlreadyInArray) {
+          accumulator.push(line.role)
+        }
+
+        return accumulator;
+      }, []);
+
       this.setState({
-        roles: []
+        roles: rolesInDialog
       });
+
     }, (errorMessage) => {
       this.setState({
         errorMessage: errorMessage
       });
     });
+
   }
 
   render() {
-
-    const {
-      params: {
-        dialogId
-      }
-    } = this.props.match;
-
     return (
       <div>
         <h1>The Choose Role Page</h1>
-        <RolePicker roles={["Role 0", "Role 1"]} setUserRoleAndChangeMode={() => {}}/>
+        <RolePicker roles={this.state.roles} setUserRoleAndChangeMode={() => {}}/>
         {this.state.errorMessage ? <p>{this.state.errorMessage}</p> : null}
       </div>
     );
