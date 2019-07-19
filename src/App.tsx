@@ -175,7 +175,12 @@ export class App extends React.Component<AppProps, AppState> {
                           return (<DialogListPage {...routeProps} context={context}/>);
                         }}
                       />
-                      <Route path={"/dialogs/:dialogId/choose-role"} component={ChooseRolePage}/>
+                      <Route
+                        path={"/dialogs/:dialogId/choose-role"}
+                        render={(routeProps) => {
+                          return (<ChooseRolePage {...routeProps} context={context}/>);
+                        }}
+                      />
                       <Route path={"/practice"} component={PracticePage}/>
                     </Switch>
                   );
