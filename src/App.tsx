@@ -153,7 +153,7 @@ export class App extends React.Component<AppProps, AppState> {
                       <Route
                         path={"/dialogs/:dialogId/choose-role"}
                         render={(routeProps) => {
-                          return (<ChooseRolePage {...routeProps} context={context}/>);
+                          return (<ChooseRolePage {...routeProps}/>);
                         }}
                       />
                       <Route
