@@ -15,7 +15,7 @@ describe('RolePicker', () => {
 
     beforeEach(() => {
         mockFunction = jest.fn();
-        rolePicker = render(<RolePicker roles={roles} setUserRoleAndChangeMode={mockFunction}/>);
+        rolePicker = render(<RolePicker roles={roles} setChosenRole={mockFunction}/>);
     });
 
     afterEach(cleanup);

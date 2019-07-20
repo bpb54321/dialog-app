@@ -1,14 +1,22 @@
 import React from "react";
 import {GlobalContextObject} from "../types/GlobalContextObject";
+import Role from "../types/Role";
 
 const defaultContext: GlobalContextObject = {
   data: {
     token: "",
     apiEndpoint: "",
+    chosenRole: {
+      id: "",
+      name: "",
+    },
   },
   actions: {
     setUserData: (token: string) => {
-      return
+      return;
+    },
+    setChosenRole: (role: Role) => {
+      return;
     },
   },
 };
@@ -23,6 +31,7 @@ interface Props {
 interface State {
   token: string;
   apiEndpoint: string;
+  chosenRole: Role;
 }
 
 export class GlobalProvider extends React.Component<Props, State> {
@@ -47,12 +56,19 @@ export class GlobalProvider extends React.Component<Props, State> {
     });
   };
 
+  setChosenRole = (role : Role) => {
+    this.setState({
+      chosenRole: role,
+    });
+  };
+
   render() {
     return (
       <GlobalContext.Provider value={{
         data: this.state,
         actions: {
           setUserData: this.setUserData,
+          setChosenRole: this.setChosenRole,
         },
       }}>
         {this.props.children}

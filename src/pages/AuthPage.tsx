@@ -1,6 +1,6 @@
 import React, {ChangeEvent, FormEvent} from 'react';
 import GraphqlError from "../types/GraphqlError";
-import { GlobalConsumer } from '../contexts/UserContext';
+import { GlobalConsumer } from '../contexts/GlobalContext';
 import { GlobalContextObject } from '../types/GlobalContextObject';
 
 interface Props {

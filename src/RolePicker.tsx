@@ -1,9 +1,11 @@
-import React, {ChangeEvent} from 'react';
+import React, {ChangeEvent, FormEvent} from 'react';
 import Role from "./types/Role";
 
 interface Props {
     roles: Role[];
-    setUserRoleAndChangeMode: (role: Role) => void;
+    setChosenRole: (role: Role) => void;
+    history: any;
+    match: any;
 }
 
 interface State {
@@ -39,13 +41,20 @@ export default class RolePicker extends React.Component<Props, State> {
         });
     };
 
+    handleSubmit = (event: FormEvent) => {
+      debugger;
+      event.preventDefault();
+      this.props.setChosenRole(this.state.role);
+
+      const currentUrl = this.props.match.url;
+      const newUrl = currentUrl.replace("choose-role", "practice");
+      this.props.history.push(newUrl);
+    };
+
     render() {
         return (
             <form data-testid={"role-picker"}
-                  onSubmit={(event) => {
-                      event.preventDefault();
-                      this.props.setUserRoleAndChangeMode(this.state.role);
-                  }}>
+                  onSubmit={this.handleSubmit}>
                 <h2>Role Picker</h2>
                 <label htmlFor="role-picker__select">Available Roles</label>
                 <select

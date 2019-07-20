@@ -77,7 +77,12 @@ export default class ChooseRolePage extends React.Component<Props, State> {
     return (
       <div>
         <h1>The Choose Role Page</h1>
-        <RolePicker roles={this.state.roles} setUserRoleAndChangeMode={() => {}}/>
+        <RolePicker
+          roles={this.state.roles}
+          setChosenRole={this.props.context.actions.setChosenRole}
+          history={this.props.history}
+          match={this.props.match}
+        />
         {this.state.errorMessage ? <p>{this.state.errorMessage}</p> : null}
       </div>
     );

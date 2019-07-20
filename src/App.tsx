@@ -11,7 +11,7 @@ import DialogListPage from "./pages/DialogListPage";
 import AuthPage from "./pages/AuthPage";
 import ChooseRolePage from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
-import {GlobalConsumer, GlobalProvider} from "./contexts/UserContext";
+import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalContext";
 import {GlobalContextObject} from "./types/GlobalContextObject";
 
 interface AppProps {
@@ -198,7 +198,7 @@ export class App extends React.Component<AppProps, AppState> {
     //     return (
     //       <RolePicker
     //         roles={this.state.currentDialog.roles}
-    //         setUserRoleAndChangeMode={this.setUserRoleAndChangeMode}
+    //         setChosenRole={this.setChosenRole}
     //       />
     //     );
     //   case InteractionMode.PracticingLines:
