@@ -4,6 +4,7 @@ import fetchData from "../utils/fetch-data";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
 import Dialog from "../types/Dialog";
+import {GlobalConsumer} from "../contexts/GlobalContext";
 
 interface Props {
   context: GlobalContextObject;
@@ -35,7 +36,6 @@ export default class PracticePage extends React.Component<Props, State> {
   };
 
   componentDidMount(): void {
-    debugger;
     const {data} = this.props.context;
     const {
       params: {
@@ -61,7 +61,6 @@ export default class PracticePage extends React.Component<Props, State> {
     `;
 
     fetchData(singleDialogQuery, data.token, data.apiEndpoint, (body) => {
-      debugger;
       const {dialog} = body.data;
 
       // Calculate the user line numbers
@@ -87,7 +86,6 @@ export default class PracticePage extends React.Component<Props, State> {
    * @return {number[]} An array of line numbers of the lines that are assigned to the given role in the dialog.
    */
   calculateUserLineNumbers(dialog: Dialog, role: Role): number[] {
-    debugger;
     const {lines} = dialog;
 
     let userLines: LineData[] = lines.filter((line: LineData) => {
@@ -101,10 +99,19 @@ export default class PracticePage extends React.Component<Props, State> {
 
   render() {
     return (
-      <div>
-        <h1>The Practice Page</h1>
+      <GlobalConsumer>
+        {(context: GlobalContextObject) => {
+            return (
+              <>
+                <h1>The Practice Page</h1>
+                {this.state.userLineNumbers.map((lineNumber: number) => {
+                  return (<li>{lineNumber}</li>);
+                })}
+              </>
+            );
+        }}
 
-      </div>
+      </GlobalConsumer>
     );
   }
 }

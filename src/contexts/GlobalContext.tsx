@@ -57,7 +57,6 @@ export class GlobalProvider extends React.Component<Props, State> {
   };
 
   setChosenRole = (role: Role) => {
-    debugger;
     this.setState({
       chosenRole: role,
     });

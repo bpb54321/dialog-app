@@ -159,7 +159,7 @@ export class App extends React.Component<AppProps, AppState> {
                       <Route
                         path={"/dialogs/:dialogId/practice"}
                         render={(routeProps) => {
-                          return (<PracticePage {...routeProps} context={context} />);
+                          return (<PracticePage {...routeProps} context={context}/>);
                         }}
                       />
                     </Switch>
