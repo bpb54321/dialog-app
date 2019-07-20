@@ -181,7 +181,9 @@ export class App extends React.Component<AppProps, AppState> {
                           return (<ChooseRolePage {...routeProps} context={context}/>);
                         }}
                       />
-                      <Route path={"/practice"} component={PracticePage}/>
+                      <Route
+                        path={"/dialogs/:dialogId/practice"} component={PracticePage}
+                      />
                     </Switch>
                   );
                 }

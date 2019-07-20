@@ -42,7 +42,6 @@ export default class RolePicker extends React.Component<Props, State> {
     };
 
     handleSubmit = (event: FormEvent) => {
-      debugger;
       event.preventDefault();
       this.props.setChosenRole(this.state.role);
 
