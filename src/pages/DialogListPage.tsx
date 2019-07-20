@@ -1,11 +1,11 @@
 import React from 'react';
-import {UserContextObject} from "../types/UserContextObject";
+import {GlobalContextObject} from "../types/GlobalContextObject";
 import Dialog from "../types/Dialog";
 import {Link} from "react-router-dom";
 import fetchData from "../utils/fetch-data";
 
 interface Props {
-  context: UserContextObject;
+  context: GlobalContextObject;
   match: any;
   location: any;
   history: any;

@@ -1,7 +1,7 @@
 import React from "react";
-import {UserContextObject} from "../types/UserContextObject";
+import {GlobalContextObject} from "../types/GlobalContextObject";
 
-const defaultContext: UserContextObject = {
+const defaultContext: GlobalContextObject = {
   data: {
     token: "",
     apiEndpoint: "",
@@ -12,9 +12,9 @@ const defaultContext: UserContextObject = {
     },
   },
 };
-const UserContext = React.createContext<UserContextObject>(defaultContext);
+const GlobalContext = React.createContext<GlobalContextObject>(defaultContext);
 
-export const UserConsumer = UserContext.Consumer;
+export const GlobalConsumer = GlobalContext.Consumer;
 
 interface Props {
 
@@ -25,7 +25,7 @@ interface State {
   apiEndpoint: string;
 }
 
-export class UserProvider extends React.Component<Props, State> {
+export class GlobalProvider extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
@@ -49,14 +49,14 @@ export class UserProvider extends React.Component<Props, State> {
 
   render() {
     return (
-      <UserContext.Provider value={{
+      <GlobalContext.Provider value={{
         data: this.state,
         actions: {
           setUserData: this.setUserData,
         },
       }}>
         {this.props.children}
-      </UserContext.Provider>
+      </GlobalContext.Provider>
     );
   }
 }

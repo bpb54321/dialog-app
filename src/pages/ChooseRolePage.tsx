@@ -1,12 +1,12 @@
 import React from 'react';
-import {UserContextObject} from "../types/UserContextObject";
+import {GlobalContextObject} from "../types/GlobalContextObject";
 import RolePicker from "../RolePicker";
 import fetchData from "../utils/fetch-data";
 import LineData from "../types/LineData";
 import Role from "../types/Role";
 
 interface Props {
-  context: UserContextObject;
+  context: GlobalContextObject;
   match: any;
   location: any;
   history: any;

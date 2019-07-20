@@ -11,8 +11,8 @@ import DialogListPage from "./pages/DialogListPage";
 import AuthPage from "./pages/AuthPage";
 import ChooseRolePage from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
-import {UserConsumer, UserProvider} from "./contexts/UserContext";
-import {UserContextObject} from "./types/UserContextObject";
+import {GlobalConsumer, GlobalProvider} from "./contexts/UserContext";
+import {GlobalContextObject} from "./types/GlobalContextObject";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -152,10 +152,10 @@ export class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      <UserProvider>
+      <GlobalProvider>
         <BrowserRouter>
-            <UserConsumer>
-              {(context: UserContextObject) => {
+            <GlobalConsumer>
+              {(context: GlobalContextObject) => {
                 if (!context.data.token) {
                   return (
                     <>
@@ -186,10 +186,10 @@ export class App extends React.Component<AppProps, AppState> {
                   );
                 }
               }}
-            </UserConsumer>
+            </GlobalConsumer>
 
         </BrowserRouter>
-      </UserProvider>
+      </GlobalProvider>
     );
 
     // switch (this.state.mode) {

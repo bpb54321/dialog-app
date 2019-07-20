@@ -1,7 +1,7 @@
 import React, {ChangeEvent, FormEvent} from 'react';
 import GraphqlError from "../types/GraphqlError";
-import { UserConsumer } from '../contexts/UserContext';
-import { UserContextObject } from '../types/UserContextObject';
+import { GlobalConsumer } from '../contexts/UserContext';
+import { GlobalContextObject } from '../types/GlobalContextObject';
 
 interface Props {
 }
@@ -20,7 +20,7 @@ export default class AuthPage extends React.Component<Props, State> {
     errorMessage: "",
   };
 
-  handleSubmit = (event: FormEvent, userContext: UserContextObject) => {
+  handleSubmit = (event: FormEvent, userContext: GlobalContextObject) => {
     event.preventDefault();
 
     const {actions} = userContext;
@@ -79,8 +79,8 @@ export default class AuthPage extends React.Component<Props, State> {
 
   render() {
     return (
-      <UserConsumer>
-        {(userContext: UserContextObject) => {
+      <GlobalConsumer>
+        {(userContext: GlobalContextObject) => {
           return (
             <div>
               <h1>The Login / Signup Page</h1>
@@ -116,7 +116,7 @@ export default class AuthPage extends React.Component<Props, State> {
             </div>
           );
         }}
-      </UserConsumer>
+      </GlobalConsumer>
     );
   }
 }

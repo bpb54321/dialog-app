@@ -1,4 +1,4 @@
-export interface UserContextObject {
+export interface GlobalContextObject {
   data: {
     token: string;
     apiEndpoint: string;
