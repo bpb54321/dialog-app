@@ -76,31 +76,6 @@ export class App extends React.Component<AppProps, AppState> {
     // });
   };
 
-  /**
-   * Given a link to a dialog and a role, returns an array of the line numbers that the role has in the dialog.
-   *
-   * @param dialogUrl {string} A dialog.
-   * @param role {string} The name of a role that is present in the dialog.
-   *
-   * @return {number[]} An array of line numbers of the lines that are assigned to the given role in the dialog.
-   */
-  calculateUserLineNumbers(dialogUrl: string, role: string): void {
-  //
-  //   // Get the lines for the dialog
-  //   let responseBody = await fetch(`${dialogUrl}/lines`);
-  //   let responseJson: any = await responseBody.json();
-  //
-  //   let lines = responseJson._embedded.lines;
-  //
-  //   let userRoleLines: LineData[] = lines.filter((line: LineData) => {
-  //     return (line.role === role);
-  //   });
-  //
-  //   return userRoleLines.map((line: LineData) => {
-  //     return line.number;
-  //   });
-  }
-
   addGuessToCurrentLineAndIncrementLineNumber = (lineGuess: string) => {
     this.setState((previousState: AppState) => {
       let currentUserRoleLineNumber: number;
@@ -182,7 +157,10 @@ export class App extends React.Component<AppProps, AppState> {
                         }}
                       />
                       <Route
-                        path={"/dialogs/:dialogId/practice"} component={PracticePage}
+                        path={"/dialogs/:dialogId/practice"}
+                        render={(routeProps) => {
+                          return (<PracticePage {...routeProps} context={context} />);
+                        }}
                       />
                     </Switch>
                   );
