@@ -10,6 +10,7 @@ const defaultContext: GlobalContextObject = {
       id: "",
       name: "",
     },
+    speechRecognition: null,
   },
   actions: {
     setUserData: (token: string) => {
@@ -25,13 +26,14 @@ const GlobalContext = React.createContext<GlobalContextObject>(defaultContext);
 export const GlobalConsumer = GlobalContext.Consumer;
 
 interface Props {
-
+  speechRecognition: any;
 }
 
 interface State {
   token: string;
   apiEndpoint: string;
   chosenRole: Role;
+  speechRecognition: any;
 }
 
 export class GlobalProvider extends React.Component<Props, State> {
@@ -46,6 +48,8 @@ export class GlobalProvider extends React.Component<Props, State> {
     } else { // production
       initialState.apiEndpoint = (process.env.REACT_APP_PRODUCTION_API_ENDPOINT as string);
     }
+
+    initialState.speechRecognition = props.speechRecognition;
 
     this.state = initialState;
   }

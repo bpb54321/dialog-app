@@ -4,7 +4,6 @@ import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
 import './App.css';
 
 import Dialog from "./types/Dialog";
-import LineData from "./types/LineData";
 
 import {InteractionMode} from "./types/InteractionMode";
 import DialogListPage from "./pages/DialogListPage";
@@ -76,58 +75,9 @@ export class App extends React.Component<AppProps, AppState> {
     // });
   };
 
-  addGuessToCurrentLineAndIncrementLineNumber = (lineGuess: string) => {
-    this.setState((previousState: AppState) => {
-      let currentUserRoleLineNumber: number;
-      let currentUserRoleLine: LineData;
-      let nextUserRoleLineIndex: number;
-      let nextMode: InteractionMode;
-      let nextDialog: Dialog;
-
-      currentUserRoleLineNumber = previousState.userRoleLineNumbers[previousState.userRoleLineIndex];
-      currentUserRoleLine = previousState.currentDialog.lines[currentUserRoleLineNumber];
-
-      nextDialog = {
-        ...previousState.currentDialog
-      };
-
-      nextDialog.lines[currentUserRoleLineNumber] = {
-        id: currentUserRoleLine.id,
-        text: currentUserRoleLine.text,
-        guess: lineGuess,
-        role: currentUserRoleLine.role,
-        number: currentUserRoleLine.number,
-      };
-
-      nextUserRoleLineIndex = previousState.userRoleLineIndex + 1;
-
-      if (nextUserRoleLineIndex < previousState.userRoleLineNumbers.length) {
-
-        nextMode = InteractionMode.PracticingLines;
-
-        return ({
-          currentDialog: nextDialog,
-          userRoleLineIndex: nextUserRoleLineIndex,
-          mode: nextMode,
-        });
-
-      } else {
-
-        nextMode = InteractionMode.DialogComplete;
-
-        return ({
-          currentDialog: nextDialog,
-          userRoleLineIndex: previousState.userRoleLineNumbers.length - 1,
-          mode: nextMode,
-        });
-
-      }
-    });
-  };
-
   render() {
     return (
-      <GlobalProvider>
+      <GlobalProvider speechRecognition={this.props.speechRecognition}>
         <BrowserRouter>
             <GlobalConsumer>
               {(context: GlobalContextObject) => {
@@ -159,7 +109,10 @@ export class App extends React.Component<AppProps, AppState> {
                       <Route
                         path={"/dialogs/:dialogId/practice"}
                         render={(routeProps) => {
-                          return (<PracticePage {...routeProps} context={context}/>);
+                          return (<PracticePage
+                            {...routeProps}
+                            context={context}
+                          />);
                         }}
                       />
                     </Switch>
@@ -171,37 +124,5 @@ export class App extends React.Component<AppProps, AppState> {
         </BrowserRouter>
       </GlobalProvider>
     );
-
-    // switch (this.state.mode) {
-    //
-    //   case InteractionMode.ChoosingRole:
-    //     return (
-    //       <RolePicker
-    //         roles={this.state.currentDialog.roles}
-    //         setChosenRole={this.setChosenRole}
-    //       />
-    //     );
-    //   case InteractionMode.PracticingLines:
-    //     return (
-    //       <>
-    //         <ListOfLines
-    //           dialog={this.state.currentDialog}
-    //           lastLineToDisplay={currentUserRoleLineNumber - 1}
-    //         />
-    //         <LineGuess
-    //           userRole={this.state.userRole}
-    //           addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
-    //           speechRecognition={this.props.speechRecognition}
-    //         />
-    //       </>
-    //     );
-    //   case InteractionMode.DialogComplete:
-    //     return (
-    //       <ListOfLines
-    //         dialog={this.state.currentDialog}
-    //         lastLineToDisplay={this.state.numberOfLinesInDialog - 1}
-    //       />
-    //     );
-    // }
   }
 }

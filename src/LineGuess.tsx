@@ -2,9 +2,10 @@ import React, {ChangeEvent, FormEvent} from 'react';
 import "./LineGuess.css";
 import SpeechInputButton from "./SpeechInputButton";
 import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
+import Role from "./types/Role";
 
 interface Props {
-    userRole: string;
+    userRole: Role;
     addLineGuessToLastLine: (lineGuess: string) => void;
     speechRecognition: any;
 }

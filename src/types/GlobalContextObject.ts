@@ -5,6 +5,7 @@ export interface GlobalContextObject {
     token: string;
     apiEndpoint: string;
     chosenRole: Role;
+    speechRecognition: any;
   };
   actions: {
     setUserData: ((token: string) => void);
