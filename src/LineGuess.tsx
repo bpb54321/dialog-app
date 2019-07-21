@@ -44,6 +44,7 @@ export default class LineGuess extends React.Component<Props, State> {
   };
 
   handleSubmit = (event: FormEvent) => {
+    debugger;
     event.preventDefault();
 
     this.props.speechRecognition.stop();
@@ -78,7 +79,7 @@ export default class LineGuess extends React.Component<Props, State> {
                 data-testid={"line-guess__text-input"}
                 id={"line-guess__text-input"}
                 onChange={this.handleInputChange}
-                placeholder={`Text of the next line for ${this.props.userRole}`}
+                placeholder={`Text of the next line for ${this.props.userRole.name}`}
                 type="text"
                 value={this.state.guess}
               />

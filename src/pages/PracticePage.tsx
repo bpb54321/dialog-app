@@ -48,6 +48,8 @@ export default class PracticePage extends React.Component<Props, State> {
       }
     } = this.props.match;
 
+
+    //region query
     const singleDialogQuery = `
       query {
         dialog(id: "${dialogId}") {
@@ -64,8 +66,10 @@ export default class PracticePage extends React.Component<Props, State> {
         }
       }
     `;
+    //endregion
 
     fetchData(singleDialogQuery, data.token, data.apiEndpoint, (body) => {
+      debugger;
       const {dialog} = body.data;
 
       // Calculate the user line numbers
@@ -126,7 +130,7 @@ export default class PracticePage extends React.Component<Props, State> {
         return ({
           ...previousState,
           dialog: nextDialog,
-          userRoleLineIndex: nextLineIndex,
+          userLineNumberIndex: nextLineIndex,
           mode: nextMode,
         });
 
@@ -137,7 +141,7 @@ export default class PracticePage extends React.Component<Props, State> {
         return ({
           ...previousState,
           dialog: nextDialog,
-          userRoleLineIndex: previousState.userLineNumbers.length - 1,
+          userLineNumberIndex: previousState.userLineNumbers.length - 1,
           mode: nextMode,
         });
 
@@ -150,8 +154,13 @@ export default class PracticePage extends React.Component<Props, State> {
       <GlobalConsumer>
         {(context: GlobalContextObject) => {
           const {userLineNumbers, userLineNumberIndex} = this.state;
-          const currentLineNumber = userLineNumbers[userLineNumberIndex];
 
+          let currentLineNumber = 0;
+          if (userLineNumbers.length > 0) {
+            currentLineNumber = userLineNumbers[userLineNumberIndex];
+          }
+
+          debugger;
           switch (this.state.mode) {
               case InteractionMode.PracticingLines:
                 return (
