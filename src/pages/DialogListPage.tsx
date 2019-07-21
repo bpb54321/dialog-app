@@ -1,10 +1,14 @@
 import React from 'react';
-import GraphqlError from "../types/GraphqlError";
-import {UserContextObject} from "../types/UserContextObject";
+import {GlobalContextObject} from "../types/GlobalContextObject";
 import Dialog from "../types/Dialog";
+import {Link} from "react-router-dom";
+import fetchData from "../utils/fetch-data";
 
 interface Props {
-  context: UserContextObject;
+  context: GlobalContextObject;
+  match: any;
+  location: any;
+  history: any;
 }
 
 interface State {
@@ -22,42 +26,23 @@ export default class DialogListPage extends React.Component<Props, State> {
   componentDidMount() {
     const {data} = this.props.context;
 
-    const dialogs = `
+    const dialogQuery = `
       query {
           dialogs {
             name
+            id
           }
       }
     `;
 
-    fetch(data.apiEndpoint, {
-      method: "POST",
-      body: JSON.stringify({
-        query: dialogs,
-      }),
-      headers: {
-        "Authorization": `Bearer ${data.token}`,
-        "Content-Type": "application/json",
-      },
-      mode: "cors",
-    }).then((response) => {
-      return response.json();
-    }).then((body) => {
-      if (body.errors) {
-        let errorMessage = body.errors.reduce((accumulator: string, error: GraphqlError) => {
-          return accumulator + " " + error.message;
-        }, "");
-        this.setState({
-          errorMessage: errorMessage
-        });
-      } else {
-        this.setState({
-          dialogs: body.data.dialogs
-        });
-      }
-      console.log(body);
-    }).catch((error) => {
-      console.log(error);
+    fetchData(dialogQuery, data.token, data.apiEndpoint, (body) => {
+      this.setState({
+        dialogs: body.data.dialogs
+      });
+    }, (errorMessage) => {
+      this.setState({
+        errorMessage: errorMessage
+      });
     });
   }
 
@@ -66,7 +51,14 @@ export default class DialogListPage extends React.Component<Props, State> {
       <div>
         <h1>The Dialog List Page</h1>
         <ul>
-          {this.state.dialogs.map((dialog: Dialog) => <li>{dialog.name}</li>)}
+          {this.state.dialogs.map(
+            (dialog: Dialog) => {
+              return (
+                <li key={dialog.id}>
+                  <Link to={`${this.props.match.url}/${dialog.id}/choose-role`}>{dialog.name}</Link>
+                </li>
+              );
+            })}
         </ul>
       </div>
     );

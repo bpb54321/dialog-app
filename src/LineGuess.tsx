@@ -2,9 +2,10 @@ import React, {ChangeEvent, FormEvent} from 'react';
 import "./LineGuess.css";
 import SpeechInputButton from "./SpeechInputButton";
 import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
+import Role from "./types/Role";
 
 interface Props {
-    userRole: string;
+    userRole: Role;
     addLineGuessToLastLine: (lineGuess: string) => void;
     speechRecognition: any;
 }
@@ -77,7 +78,7 @@ export default class LineGuess extends React.Component<Props, State> {
                 data-testid={"line-guess__text-input"}
                 id={"line-guess__text-input"}
                 onChange={this.handleInputChange}
-                placeholder={`Text of the next line for ${this.props.userRole}`}
+                placeholder={`Text of the next line for ${this.props.userRole.name}`}
                 type="text"
                 value={this.state.guess}
               />
