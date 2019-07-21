@@ -44,7 +44,6 @@ export default class LineGuess extends React.Component<Props, State> {
   };
 
   handleSubmit = (event: FormEvent) => {
-    debugger;
     event.preventDefault();
 
     this.props.speechRecognition.stop();

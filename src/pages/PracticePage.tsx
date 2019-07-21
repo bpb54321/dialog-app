@@ -17,7 +17,6 @@ interface Props {
 }
 
 interface State {
-  numberOfLinesInDialog: number;
   userLineNumberIndex: number;
   userLineNumbers: number[];
   dialog: Dialog;
@@ -28,7 +27,6 @@ interface State {
 export default class PracticePage extends React.Component<Props, State> {
 
   state = {
-    numberOfLinesInDialog: 0,
     userLineNumberIndex: 0,
     userLineNumbers: [],
     dialog: {
@@ -69,7 +67,6 @@ export default class PracticePage extends React.Component<Props, State> {
     //endregion
 
     fetchData(singleDialogQuery, data.token, data.apiEndpoint, (body) => {
-      debugger;
       const {dialog} = body.data;
 
       // Calculate the user line numbers
@@ -151,43 +148,44 @@ export default class PracticePage extends React.Component<Props, State> {
 
   render() {
     return (
-      <GlobalConsumer>
-        {(context: GlobalContextObject) => {
-          const {userLineNumbers, userLineNumberIndex} = this.state;
+      <>
+        <GlobalConsumer>
+          {(context: GlobalContextObject) => {
+            const {userLineNumbers, userLineNumberIndex} = this.state;
 
-          let currentLineNumber = 0;
-          if (userLineNumbers.length > 0) {
-            currentLineNumber = userLineNumbers[userLineNumberIndex];
-          }
+            let currentLineNumber = 0;
+            if (userLineNumbers.length > 0) {
+              currentLineNumber = userLineNumbers[userLineNumberIndex];
+            }
 
-          debugger;
-          switch (this.state.mode) {
-              case InteractionMode.PracticingLines:
-                return (
-                  <>
-                    <h1>The Practice Page</h1>
+            switch (this.state.mode) {
+                case InteractionMode.PracticingLines:
+                  return (
+                    <>
+                      <h1>The Practice Page</h1>
+                      <ListOfLines
+                        dialog={this.state.dialog}
+                        lastLineToDisplay={currentLineNumber - 1}
+                      />
+                      <LineGuess
+                        userRole={context.data.chosenRole}
+                        addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
+                        speechRecognition={context.data.speechRecognition}
+                      />
+                    </>
+                  );
+                case InteractionMode.DialogComplete:
+                  return (
                     <ListOfLines
                       dialog={this.state.dialog}
-                      lastLineToDisplay={currentLineNumber - 1}
+                      lastLineToDisplay={this.state.dialog.lines.length - 1}
                     />
-                    <LineGuess
-                      userRole={context.data.chosenRole}
-                      addLineGuessToLastLine={this.addGuessToCurrentLineAndIncrementLineNumber}
-                      speechRecognition={context.data.speechRecognition}
-                    />
-                  </>
-                );
-              case InteractionMode.DialogComplete:
-                return (
-                  <ListOfLines
-                    dialog={this.state.dialog}
-                    lastLineToDisplay={this.state.numberOfLinesInDialog - 1}
-                  />
-                );
-            }
-        }}
-
-      </GlobalConsumer>
+                  );
+              }
+          }}
+        </GlobalConsumer>
+        {this.state.errorMessage ? <p>{this.state.errorMessage}</p> : null}
+      </>
     );
   }
 }
