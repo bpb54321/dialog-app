@@ -15,7 +15,7 @@ import {FetchMock} from "jest-fetch-mock";
 import {createMockSpeechRecognition} from "../MockSpeechRecognition";
 const fetchMock = fetch as FetchMock;
 
-describe('App', () => {
+describe('DialogPractice', () => {
 
   let wrapper: RenderResult;
   let appInstance: App;
