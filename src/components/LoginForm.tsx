@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FormEvent} from 'react';
-import {GlobalContextObject} from "../types/GlobalContextObject";
+import {GlobalContextObject} from "../contexts/GlobalContext";
 import GraphqlError from "../types/GraphqlError";
 import {GlobalConsumer} from "../contexts/GlobalContext";
 
@@ -55,7 +55,10 @@ export default class LoginForm extends React.Component<Props, State> {
       } else {
         const result = body.data[this.props.fieldName];
         const token = result.token;
-        actions.setUserData(token);
+        actions.setGlobalState({
+          token,
+          loggedIn: true,
+        });
       }
     }).catch((error) => {
       this.setState({

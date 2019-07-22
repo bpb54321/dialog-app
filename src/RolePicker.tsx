@@ -2,7 +2,7 @@ import React, {ChangeEvent, FormEvent} from 'react';
 import Role from "./types/Role";
 import fetchData from "./utils/fetch-data";
 import LineData from "./types/LineData";
-import {GlobalContextObject} from "./types/GlobalContextObject";
+import {GlobalContextObject} from "./contexts/GlobalContext";
 
 interface Props {
   history: any;
@@ -89,7 +89,9 @@ export default class RolePicker extends React.Component<Props, State> {
 
   handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    this.props.context.actions.setChosenRole(this.state.chosenRole);
+    this.props.context.actions.setGlobalState({
+      chosenRole: this.state.chosenRole
+    });
 
     // Navigate to practice page for this dialog
     const currentUrl = this.props.match.url;

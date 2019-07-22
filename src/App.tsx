@@ -12,7 +12,7 @@ import ChooseRolePage from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
 
 import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalContext";
-import {GlobalContextObject} from "./types/GlobalContextObject";
+import {GlobalContextObject} from "./contexts/GlobalContext";
 import SignupPage from "./pages/SignupPage";
 
 interface AppProps {
@@ -51,7 +51,7 @@ export class App extends React.Component<AppProps, AppState> {
         <BrowserRouter>
             <GlobalConsumer>
               {(context: GlobalContextObject) => {
-                if (!context.data.token) {
+                if (!context.data.loggedIn) {
                   return (
                     <Switch>
                       <Route path={"/auth"} component={AuthPage}/>
