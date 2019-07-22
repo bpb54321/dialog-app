@@ -13,6 +13,8 @@ import {
 } from "@testing-library/react";
 import {FetchMock} from "jest-fetch-mock";
 import {createMockSpeechRecognition} from "../MockSpeechRecognition";
+import {GlobalProvider} from "../contexts/GlobalContext";
+import PracticePage from "../pages/PracticePage";
 const fetchMock = fetch as FetchMock;
 
 describe('PracticePage', () => {
@@ -25,7 +27,11 @@ describe('PracticePage', () => {
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify(testDialogsResponse));
     mockSpeechRecognition = createMockSpeechRecognition();
-    wrapper = render(<App speechRecognition={mockSpeechRecognition}/>);
+    wrapper = render(
+      <GlobalProvider speechRecognition={mockSpeechRecognition}/>
+        <PracticePage />
+      </GlobalProvider>
+    );
     await waitForElementToBeRemoved(() => wrapper.getByText("Waiting for data to load..."));
   });
 
