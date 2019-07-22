@@ -43,38 +43,6 @@ export class App extends React.Component<AppProps, AppState> {
     mode: InteractionMode.LoadingData,
   };
 
-  // async componentDidMount() {
-  //   // Get list of dialogs
-  //   let responseBody = await fetch("http://localhost/dialogs/");
-  //   let responseJson: any = await responseBody.json();
-  //
-  //   let dialogs = responseJson._embedded.dialogs;
-  //
-  //   // Set SpeechRecognition object's settings
-  //   this.props.speechRecognition.lang = "fr-FR";
-  //   this.props.speechRecognition.continuous = true;
-  //   this.props.speechRecognition.interimResults = true;
-  //
-  //   this.setState((previousState: AppState) : object => {
-  //     return {
-  //       dialogs: dialogs,
-  //       mode: InteractionMode.ChoosingDialog,
-  //     };
-  //   });
-  // }
-
-  setUserRoleAndChangeMode = async (role: string) => {
-    // const userRoleLineNumbers = await this.calculateUserLineNumbers(
-    //   "dummy string", role
-    // );
-    //
-    // this.setState({
-    //   // userRole: role,
-    //   userRoleLineNumbers: userRoleLineNumbers,
-    //   mode: InteractionMode.PracticingLines,
-    // });
-  };
-
   render() {
     return (
       <GlobalProvider speechRecognition={this.props.speechRecognition}>
