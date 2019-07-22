@@ -3,6 +3,7 @@ import {GlobalContextObject} from "../contexts/GlobalContext";
 import Dialog from "../types/Dialog";
 import {Link} from "react-router-dom";
 import fetchData from "../utils/fetch-data";
+import NewDialogForm from "../components/NewDialogForm";
 
 interface Props {
   context: GlobalContextObject;
@@ -49,7 +50,7 @@ export default class DialogListPage extends React.Component<Props, State> {
   render() {
     return (
       <div>
-        <h1>The Dialog List Page</h1>
+        <h1>Dialogs</h1>
         <ul>
           {this.state.dialogs.map(
             (dialog: Dialog) => {
@@ -60,6 +61,7 @@ export default class DialogListPage extends React.Component<Props, State> {
               );
             })}
         </ul>
+        <NewDialogForm/>
       </div>
     );
   }
