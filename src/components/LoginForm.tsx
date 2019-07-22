@@ -4,6 +4,7 @@ import GraphqlError from "../types/GraphqlError";
 import {GlobalConsumer} from "../contexts/GlobalContext";
 
 interface Props {
+  fieldName: string;
   queryTemplateFunction: (email: string, password: string, name?: string) => string;
 }
 
@@ -40,8 +41,10 @@ export default class LoginForm extends React.Component<Props, State> {
       },
       mode: "cors",
     }).then((response) => {
+      debugger;
       return response.json();
     }).then((body) => {
+      debugger;
       if (body.errors) {
         let errorMessage = body.errors.reduce((accumulator: string, error: GraphqlError) => {
           return accumulator + " " + error.message;
@@ -50,11 +53,14 @@ export default class LoginForm extends React.Component<Props, State> {
           errorMessage: errorMessage
         });
       } else {
-        const token = body.data.login.token;
+        const result = body.data[this.props.fieldName];
+        const token = result.token;
         actions.setUserData(token);
       }
-      console.log(body);
     }).catch((error) => {
+      this.setState({
+        errorMessage: error.message
+      });
       console.log(error);
     });
   };
@@ -71,7 +77,6 @@ export default class LoginForm extends React.Component<Props, State> {
         {(context: GlobalContextObject) => {
           return (
             <div>
-              <h1>The Login / Signup Page</h1>
               <form
                 className={"auth-form"}
                 onSubmit={(event) => this.handleSubmit(event, context)}

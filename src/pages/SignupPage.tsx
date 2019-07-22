@@ -1,5 +1,6 @@
 import React from 'react';
 import LoginForm from "../components/LoginForm";
+import {Link} from "react-router-dom";
 
 interface Props {
 }
@@ -26,7 +27,11 @@ export default class SignupPage extends React.Component<Props, State> {
 
   render() {
     return (
-      <LoginForm queryTemplateFunction={this.signupTemplate}/>
+      <>
+        <h1>Sign Up</h1>
+        <LoginForm queryTemplateFunction={this.signupTemplate} fieldName={"signup"}/>
+        <Link to={"/auth"}>Login</Link>
+      </>
     );
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import LoginForm from "../components/LoginForm";
+import {Link} from "react-router-dom";
 
 interface Props {
 }
@@ -23,7 +24,11 @@ export default class AuthPage extends React.Component<Props, State> {
 
   render() {
     return (
-      <LoginForm queryTemplateFunction={this.loginTemplate}/>
+      <>
+        <h1>Login</h1>
+        <LoginForm queryTemplateFunction={this.loginTemplate} fieldName={"login"}/>
+        <Link to={"/sign-up"}>Sign Up</Link>
+      </>
     );
   }
 }
