@@ -51,6 +51,7 @@ export class App extends React.Component<AppProps, AppState> {
         <BrowserRouter>
             <GlobalConsumer>
               {(context: GlobalContextObject) => {
+                debugger;
                 if (!context.data.loggedIn) {
                   return (
                     <Switch>
@@ -64,6 +65,8 @@ export class App extends React.Component<AppProps, AppState> {
                     <Switch>
                       <Redirect exact from={"/"} to={"/dialogs"}/>
                       <Redirect from={"/auth"} to={"/dialogs"}/>
+                      {/* Sign-up page after account creation, gives user feedback that account was created */}
+                      <Route path={"/sign-up"} component={SignupPage}/>
                       <Route
                         exact
                         path={"/dialogs"}

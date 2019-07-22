@@ -35,8 +35,6 @@ export default class SignupPage extends React.Component<Props, State> {
           return (
             <>
               <h1>Sign Up</h1>
-              <LoginForm queryTemplateFunction={this.signupTemplate} fieldName={"signup"}/>
-              <Link to={"/auth"}>Login</Link>
               {
                 context.data.loggedIn
                 ?
@@ -45,7 +43,10 @@ export default class SignupPage extends React.Component<Props, State> {
                     some dialogs.
                   </p>
                 :
-                  null
+                  <>
+                    <LoginForm queryTemplateFunction={this.signupTemplate} fieldName={"signup"}/>
+                    <Link to={"/auth"}>Login</Link>
+                  </>
               }
             </>
           );
