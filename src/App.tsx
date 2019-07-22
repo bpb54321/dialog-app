@@ -10,8 +10,10 @@ import DialogListPage from "./pages/DialogListPage";
 import AuthPage from "./pages/AuthPage";
 import ChooseRolePage from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
+
 import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalContext";
 import {GlobalContextObject} from "./types/GlobalContextObject";
+import SignupPage from "./pages/SignupPage";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -51,10 +53,11 @@ export class App extends React.Component<AppProps, AppState> {
               {(context: GlobalContextObject) => {
                 if (!context.data.token) {
                   return (
-                    <>
-                      <Redirect from={"/"} to={"/auth"} />
+                    <Switch>
                       <Route path={"/auth"} component={AuthPage}/>
-                    </>
+                      <Route path={"/sign-up"} component={SignupPage}/>
+                      <Redirect from={"/"} to={"/auth"} />
+                    </Switch>
                   );
                 } else {
                   return (
