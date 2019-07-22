@@ -1,5 +1,5 @@
 import React from 'react';
-import {GlobalContextObject} from "../types/GlobalContextObject";
+import {GlobalContextObject} from "../contexts/GlobalContext";
 import Dialog from "../types/Dialog";
 import {Link} from "react-router-dom";
 import fetchData from "../utils/fetch-data";

@@ -1,5 +1,5 @@
 import React from 'react';
-import {GlobalContextObject} from "../types/GlobalContextObject";
+import {GlobalContextObject} from "../contexts/GlobalContext";
 import RolePicker from "../RolePicker";
 import {GlobalConsumer} from "../contexts/GlobalContext";
 

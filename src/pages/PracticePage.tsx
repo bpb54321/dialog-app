@@ -1,5 +1,5 @@
 import React from 'react';
-import {GlobalContextObject} from "../types/GlobalContextObject";
+import {GlobalContextObject} from "../contexts/GlobalContext";
 import fetchData from "../utils/fetch-data";
 import Role from "../types/Role";
 import LineData from "../types/LineData";

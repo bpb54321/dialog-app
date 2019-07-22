@@ -10,8 +10,10 @@ import DialogListPage from "./pages/DialogListPage";
 import AuthPage from "./pages/AuthPage";
 import ChooseRolePage from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
+
 import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalContext";
-import {GlobalContextObject} from "./types/GlobalContextObject";
+import {GlobalContextObject} from "./contexts/GlobalContext";
+import SignupPage from "./pages/SignupPage";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -43,56 +45,28 @@ export class App extends React.Component<AppProps, AppState> {
     mode: InteractionMode.LoadingData,
   };
 
-  // async componentDidMount() {
-  //   // Get list of dialogs
-  //   let responseBody = await fetch("http://localhost/dialogs/");
-  //   let responseJson: any = await responseBody.json();
-  //
-  //   let dialogs = responseJson._embedded.dialogs;
-  //
-  //   // Set SpeechRecognition object's settings
-  //   this.props.speechRecognition.lang = "fr-FR";
-  //   this.props.speechRecognition.continuous = true;
-  //   this.props.speechRecognition.interimResults = true;
-  //
-  //   this.setState((previousState: AppState) : object => {
-  //     return {
-  //       dialogs: dialogs,
-  //       mode: InteractionMode.ChoosingDialog,
-  //     };
-  //   });
-  // }
-
-  setUserRoleAndChangeMode = async (role: string) => {
-    // const userRoleLineNumbers = await this.calculateUserLineNumbers(
-    //   "dummy string", role
-    // );
-    //
-    // this.setState({
-    //   // userRole: role,
-    //   userRoleLineNumbers: userRoleLineNumbers,
-    //   mode: InteractionMode.PracticingLines,
-    // });
-  };
-
   render() {
     return (
       <GlobalProvider speechRecognition={this.props.speechRecognition}>
         <BrowserRouter>
             <GlobalConsumer>
               {(context: GlobalContextObject) => {
-                if (!context.data.token) {
+                debugger;
+                if (!context.data.loggedIn) {
                   return (
-                    <>
-                      <Redirect from={"/"} to={"/auth"} />
+                    <Switch>
                       <Route path={"/auth"} component={AuthPage}/>
-                    </>
+                      <Route path={"/sign-up"} component={SignupPage}/>
+                      <Redirect from={"/"} to={"/auth"} />
+                    </Switch>
                   );
                 } else {
                   return (
                     <Switch>
                       <Redirect exact from={"/"} to={"/dialogs"}/>
                       <Redirect from={"/auth"} to={"/dialogs"}/>
+                      {/* Sign-up page after account creation, gives user feedback that account was created */}
+                      <Route path={"/sign-up"} component={SignupPage}/>
                       <Route
                         exact
                         path={"/dialogs"}
