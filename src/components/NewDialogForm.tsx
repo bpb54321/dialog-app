@@ -9,21 +9,28 @@ interface Props {
 interface State {
   dialogName?: string;
   errorMessage?: string;
+  mode?: Mode;
 }
 
-export default class MyComponent extends React.Component<Props, State> {
+enum Mode {
+  Creating_Dialog =  "CREATING_DIALOG",
+  Standby = "STANDBY",
+}
+
+export default class NewDialogForm extends React.Component<Props, State> {
 
   state = {
-    dialogName: "",
+    name: "",
+    mode: Mode.Standby,
     errorMessage: "",
   };
 
-  createNewDialogAndRedirect = (context: GlobalContextObject) => {
+  createNewDialog = (context: GlobalContextObject) => {
     const {data} = context;
 
     const query = `
       mutation {
-          createDialog(name: "Fake Name") {
+          createDialog(name: "${this.state.name}") {
             name
             id
           }
@@ -31,11 +38,17 @@ export default class MyComponent extends React.Component<Props, State> {
     `;
 
     fetchData(query, data.token, data.apiEndpoint, (body) => {
-      console.log(body);
+      this.setState({
+        mode: Mode.Standby,
+      });
     }, (errorMessage) => {
       this.setState({
         errorMessage: errorMessage
       });
+    });
+
+    this.setState({
+      mode: Mode.Creating_Dialog,
     });
   };
 
@@ -49,24 +62,30 @@ export default class MyComponent extends React.Component<Props, State> {
     return (
       <GlobalConsumer>
         {(context: GlobalContextObject) => {
-          return (
-            <form
-              onSubmit={(event) => {
-                event.preventDefault();
-                this.createNewDialogAndRedirect(context);
-              }}
-            >
-              <label htmlFor="dialogName">Name</label>
-              <input
-                id={"dialogName"}
-                onChange={this.handleInputChange}
-                placeholder={"New Dialog"}
-                type="text"
-                value={this.state.dialogName}
-              />
-              <input type="submit" value={"Add New Dialog"}/>
-            </form>
-          );
+          if (this.state.mode === Mode.Standby) {
+            return (
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  this.createNewDialog(context);
+                }}
+              >
+                <label htmlFor="dialogName">Name</label>
+                <input
+                  id={"name"}
+                  onChange={this.handleInputChange}
+                  placeholder={"New Dialog"}
+                  type="text"
+                  value={this.state.name}
+                />
+                <input type="submit" value={"Add New Dialog"}/>
+              </form>
+            );
+          } else {
+            return (
+              <p>Creating dialog...</p>
+            );
+          }
         }}
       </GlobalConsumer>
     );
