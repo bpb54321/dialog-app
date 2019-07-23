@@ -7,7 +7,7 @@ interface Props {
 }
 
 interface State {
-  dialogName?: string;
+  name?: string;
   errorMessage?: string;
   mode?: Mode;
 }
@@ -40,6 +40,7 @@ export default class NewDialogForm extends React.Component<Props, State> {
     fetchData(query, data.token, data.apiEndpoint, (body) => {
       this.setState({
         mode: Mode.Standby,
+        name: "",
       });
     }, (errorMessage) => {
       this.setState({
