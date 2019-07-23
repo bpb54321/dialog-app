@@ -14,6 +14,7 @@ import PracticePage from "./pages/PracticePage";
 import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalContext";
 import {GlobalContextObject} from "./contexts/GlobalContext";
 import SignupPage from "./pages/SignupPage";
+import DialogEditPage from "./pages/DialogEditPage";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -87,6 +88,17 @@ export class App extends React.Component<AppProps, AppState> {
                             {...routeProps}
                             context={context}
                           />);
+                        }}
+                      />
+                      <Route
+                        path={"/dialogs/:dialogId/edit"}
+                        render={(routeProps) => {
+                          return (
+                            <DialogEditPage
+                              {...routeProps}
+                              context={context}
+                            />
+                          );
                         }}
                       />
                     </Switch>
