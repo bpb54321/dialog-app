@@ -25,6 +25,10 @@ export default class DialogListPage extends React.Component<Props, State> {
   };
 
   componentDidMount() {
+    this.getAllDialogs();
+  }
+
+  getAllDialogs = () => {
     const {data} = this.props.context;
 
     const dialogQuery = `
@@ -45,7 +49,7 @@ export default class DialogListPage extends React.Component<Props, State> {
         errorMessage: errorMessage
       });
     });
-  }
+  };
 
   render() {
     return (
@@ -61,7 +65,7 @@ export default class DialogListPage extends React.Component<Props, State> {
               );
             })}
         </ul>
-        <NewDialogForm/>
+        <NewDialogForm getAllDialogs={this.getAllDialogs}/>
       </div>
     );
   }

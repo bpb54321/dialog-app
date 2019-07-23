@@ -4,6 +4,7 @@ import fetchData from "../utils/fetch-data";
 import {GlobalConsumer, GlobalContextObject, GlobalProvider} from "../contexts/GlobalContext";
 
 interface Props {
+  getAllDialogs: () => void;
 }
 
 interface State {
@@ -42,6 +43,9 @@ export default class NewDialogForm extends React.Component<Props, State> {
         mode: Mode.Standby,
         name: "",
       });
+
+      // Refreshes the dialog list in the parent component
+      this.props.getAllDialogs();
     }, (errorMessage) => {
       this.setState({
         errorMessage: errorMessage
