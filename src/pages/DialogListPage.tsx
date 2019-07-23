@@ -60,7 +60,11 @@ export default class DialogListPage extends React.Component<Props, State> {
             (dialog: Dialog) => {
               return (
                 <li key={dialog.id}>
-                  <Link to={`${this.props.match.url}/${dialog.id}/choose-role`}>{dialog.name}</Link>
+                  <div>{dialog.name}</div>
+                  <div>
+                    <Link to={`${this.props.match.url}/${dialog.id}/choose-role`}>Practice</Link>&nbsp;|&nbsp;
+                    <Link to={`${this.props.match.url}/${dialog.id}/edit`}>Edit</Link>
+                  </div>
                 </li>
               );
             })}
