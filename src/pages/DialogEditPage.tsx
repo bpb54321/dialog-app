@@ -1,10 +1,9 @@
 import React from 'react';
 import {GlobalContextObject} from "../contexts/GlobalContext";
-import queryEntireDialog from "../utils/queryEntireDialog";
 import Dialog from "../types/Dialog";
 import Role from "../types/Role";
-import Line from "../Line";
 import LineData from "../types/LineData";
+import fetchData from "../utils/fetch-data";
 
 interface Props {
   context: GlobalContextObject;
@@ -32,11 +31,36 @@ export default class DialogEditPage extends React.Component<Props, State> {
     errorMessage: "",
   };
 
-  async componentDidMount(): Promise<void> {
+  async componentDidMount() {
+
     const {context} = this.props;
     const {dialogId} = this.props.match.params;
+
+    const query =
+      `
+        query {
+          dialog(id: "${dialogId}") {
+            id
+            name
+            roles {
+              id
+              name
+            }
+            lines {
+              id
+              text
+              number
+              role {
+                id
+                name
+              }
+            }
+          }
+        }
+      `;
+
     try {
-      const dialog = await queryEntireDialog(context, dialogId);
+      const dialog = await fetchData(query, "dialog", context);
       this.setState({
         dialog,
         loading: false,
