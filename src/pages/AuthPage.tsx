@@ -8,27 +8,13 @@ interface Props {
 interface State {
 }
 
-export default class AuthPage extends React.Component<Props, State> {
+export default function AuthPage(props: Props) {
+  return (
+    <>
+      <h1>Login</h1>
+      <LoginForm />
+      <Link to={"/sign-up"}>Sign Up</Link>
+    </>
+  );
 
-  loginTemplate = (email: string, password: string) => {
-    return (
-      `
-        mutation {
-            login(email: "${email}", password: "${password}") {
-              token
-            }
-        }
-      `
-    );
-  };
-
-  render() {
-    return (
-      <>
-        <h1>Login</h1>
-        <LoginForm queryTemplateFunction={this.loginTemplate} fieldName={"login"}/>
-        <Link to={"/sign-up"}>Sign Up</Link>
-      </>
-    );
-  }
 }

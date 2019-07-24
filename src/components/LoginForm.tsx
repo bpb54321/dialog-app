@@ -4,8 +4,6 @@ import {GlobalConsumer} from "../contexts/GlobalContext";
 import fetchData from "../utils/fetch-data";
 
 interface Props {
-  fieldName: string;
-  queryTemplateFunction: (email: string, password: string, name?: string) => string;
 }
 
 interface State {
