@@ -1,9 +1,11 @@
 import React, {ChangeEvent} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalConsumer, GlobalContextObject} from "../contexts/GlobalContext";
+import Dialog from "../types/Dialog";
 
 interface Props {
   getAllDialogs: () => Promise<void>;
+  addDialogToParentState: (dialog: Dialog) => void;
 }
 
 interface State {
@@ -40,12 +42,17 @@ export default class NewDialogForm extends React.Component<Props, State> {
     `;
 
     try {
-      await fetchData(query, "createDialog", context);
+      const createdDialog = await fetchData(query, "createDialog", context);
       this.setState({
         mode: Mode.Standby,
         name: "",
       });
-      await this.props.getAllDialogs();
+      this.props.addDialogToParentState({
+        id: createdDialog.id,
+        name: createdDialog.name,
+        roles: [],
+        lines: [],
+      });
     } catch(error) {
       this.setState({
         errorMessage: error.message,

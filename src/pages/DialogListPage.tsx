@@ -49,6 +49,15 @@ export default class DialogListPage extends React.Component<Props, State> {
         errorMessage: error.message,
       });
     }
+
+  };
+
+  addDialogToState = (dialog: Dialog) => {
+    this.setState((previousState: State) => {
+      return {
+        dialogs: [...previousState.dialogs, dialog],
+      };
+    });
   };
 
   render() {
@@ -69,7 +78,7 @@ export default class DialogListPage extends React.Component<Props, State> {
               );
             })}
         </ul>
-        <NewDialogForm getAllDialogs={this.getAllDialogs}/>
+        <NewDialogForm getAllDialogs={this.getAllDialogs} addDialogToParentState={this.addDialogToState}/>
       </div>
     );
   }
