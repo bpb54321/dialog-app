@@ -24,14 +24,13 @@ export default class DialogListPage extends React.Component<Props, State> {
     dialogs: [],
   };
 
-  componentDidMount() {
-    this.getAllDialogs();
+  async componentDidMount() {
+    await this.getAllDialogs();
   }
 
-  getAllDialogs = () => {
-    const {data} = this.props.context;
+  getAllDialogs = async () => {
 
-    const dialogQuery = `
+    const query = `
       query {
           dialogs {
             name
@@ -40,15 +39,16 @@ export default class DialogListPage extends React.Component<Props, State> {
       }
     `;
 
-    fetchData(dialogQuery, data.token, data.apiEndpoint, (body) => {
+    try {
+      const dialogs = await fetchData(query, "dialogs", this.props.context);
       this.setState({
-        dialogs: body.data.dialogs
+        dialogs
       });
-    }, (errorMessage) => {
+    } catch(error) {
       this.setState({
-        errorMessage: errorMessage
+        errorMessage: error.message,
       });
-    });
+    }
   };
 
   render() {

@@ -2,7 +2,7 @@ import {GlobalContextObject} from "../contexts/GlobalContext";
 
 // export default function fetchData(
 //   query: string, token: string = "", apiEndpoint: string, resultCallback: (body: any) => void,
-//   errorMessageCallback: (errorMessage: string) => void
+//   errorMessageCallback: (errorMessa ge: string) => void
 // ): void {
 //   fetch(apiEndpoint, {
 //     method: "POST",
