@@ -1,6 +1,5 @@
 import React, {ChangeEvent, FormEvent} from 'react';
 import {GlobalContextObject} from "../contexts/GlobalContext";
-import GraphqlError from "../types/GraphqlError";
 import {GlobalConsumer} from "../contexts/GlobalContext";
 import fetchData from "../utils/fetch-data";
 

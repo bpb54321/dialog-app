@@ -1,7 +1,6 @@
-import React, {ChangeEvent, FormEvent} from 'react';
-import SpeechInputButton from "../SpeechInputButton";
+import React, {ChangeEvent} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalConsumer, GlobalContextObject, GlobalProvider} from "../contexts/GlobalContext";
+import {GlobalConsumer, GlobalContextObject} from "../contexts/GlobalContext";
 
 interface Props {
   getAllDialogs: () => Promise<void>;
