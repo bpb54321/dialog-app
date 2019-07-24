@@ -25,11 +25,6 @@ export default class DialogListPage extends React.Component<Props, State> {
   };
 
   async componentDidMount() {
-    await this.getAllDialogs();
-  }
-
-  getAllDialogs = async () => {
-
     const query = `
       query {
           dialogs {
@@ -49,8 +44,7 @@ export default class DialogListPage extends React.Component<Props, State> {
         errorMessage: error.message,
       });
     }
-
-  };
+  }
 
   addDialogToState = (dialog: Dialog) => {
     this.setState((previousState: State) => {
@@ -78,7 +72,7 @@ export default class DialogListPage extends React.Component<Props, State> {
               );
             })}
         </ul>
-        <NewDialogForm getAllDialogs={this.getAllDialogs} addDialogToParentState={this.addDialogToState}/>
+        <NewDialogForm addDialogToParentState={this.addDialogToState}/>
       </div>
     );
   }

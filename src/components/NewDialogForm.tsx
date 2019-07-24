@@ -4,7 +4,6 @@ import {GlobalConsumer, GlobalContextObject} from "../contexts/GlobalContext";
 import Dialog from "../types/Dialog";
 
 interface Props {
-  getAllDialogs: () => Promise<void>;
   addDialogToParentState: (dialog: Dialog) => void;
 }
 
