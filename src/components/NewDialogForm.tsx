@@ -4,7 +4,7 @@ import fetchData from "../utils/fetch-data";
 import {GlobalConsumer, GlobalContextObject, GlobalProvider} from "../contexts/GlobalContext";
 
 interface Props {
-  getAllDialogs: () => void;
+  getAllDialogs: () => Promise<void>;
 }
 
 interface State {
@@ -26,8 +26,10 @@ export default class NewDialogForm extends React.Component<Props, State> {
     errorMessage: "",
   };
 
-  createNewDialog = (context: GlobalContextObject) => {
-    const {data} = context;
+  createNewDialog = async (context: GlobalContextObject) => {
+    this.setState({
+      mode: Mode.Creating_Dialog,
+    });
 
     const query = `
       mutation {
@@ -38,23 +40,18 @@ export default class NewDialogForm extends React.Component<Props, State> {
       }
     `;
 
-    fetchData(query, data.token, data.apiEndpoint, (body) => {
+    try {
+      await fetchData(query, "createDialog", context);
       this.setState({
         mode: Mode.Standby,
         name: "",
       });
-
-      // Refreshes the dialog list in the parent component
-      this.props.getAllDialogs();
-    }, (errorMessage) => {
+      await this.props.getAllDialogs();
+    } catch(error) {
       this.setState({
-        errorMessage: errorMessage
+        errorMessage: error.message,
       });
-    });
-
-    this.setState({
-      mode: Mode.Creating_Dialog,
-    });
+    }
   };
 
   handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -70,9 +67,9 @@ export default class NewDialogForm extends React.Component<Props, State> {
           if (this.state.mode === Mode.Standby) {
             return (
               <form
-                onSubmit={(event) => {
+                onSubmit={ async (event) => {
                   event.preventDefault();
-                  this.createNewDialog(context);
+                  await this.createNewDialog(context);
                 }}
               >
                 <label htmlFor="dialogName">Name</label>
