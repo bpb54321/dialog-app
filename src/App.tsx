@@ -22,7 +22,6 @@ interface AppProps {
 
 interface AppState {
   dialogs: Dialog[];
-  currentDialog: Dialog;
   numberOfLinesInDialog: number;
   userRoleLineIndex: number;
   userRole: string;
@@ -34,11 +33,6 @@ export class App extends React.Component<AppProps, AppState> {
 
   state: AppState = {
     dialogs: [],
-    currentDialog: {
-      id: "random",
-      name: "",
-      lines: [],
-    },
     numberOfLinesInDialog: 0,
     userRoleLineIndex: 0,
     userRole: "",
@@ -52,7 +46,6 @@ export class App extends React.Component<AppProps, AppState> {
         <BrowserRouter>
             <GlobalConsumer>
               {(context: GlobalContextObject) => {
-                debugger;
                 if (!context.data.loggedIn) {
                   return (
                     <Switch>

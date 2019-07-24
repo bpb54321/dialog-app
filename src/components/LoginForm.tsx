@@ -41,10 +41,8 @@ export default class LoginForm extends React.Component<Props, State> {
       },
       mode: "cors",
     }).then((response) => {
-      debugger;
       return response.json();
     }).then((body) => {
-      debugger;
       if (body.errors) {
         let errorMessage = body.errors.reduce((accumulator: string, error: GraphqlError) => {
           return accumulator + " " + error.message;
