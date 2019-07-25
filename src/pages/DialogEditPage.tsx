@@ -126,8 +126,8 @@ export default class DialogEditPage extends React.Component<Props, State> {
               <ul>
                 {this.state.dialog.roles.map((role: Role) => {
                     return (
-                      <li>
-                        <RoleWithUpdateAndDelete role={role}/>
+                      <li key={role.id}>
+                        <RoleWithUpdateAndDelete role={role} />
                       </li>
                     );
                 })}
