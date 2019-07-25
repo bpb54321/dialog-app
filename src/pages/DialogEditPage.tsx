@@ -5,6 +5,7 @@ import Role from "../types/Role";
 import LineData from "../types/LineData";
 import fetchData from "../utils/fetch-data";
 import TextInputQueryForm from "../components/TextInputQueryForm";
+import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
 
 interface Props {
   context: GlobalContextObject;
@@ -115,7 +116,9 @@ export default class DialogEditPage extends React.Component<Props, State> {
               <ul>
                 {this.state.dialog.roles.map((role: Role) => {
                     return (
-                      <li>{role.name}</li>
+                      <li>
+                        <RoleWithUpdateAndDelete role={role}/>
+                      </li>
                     );
                 })}
               </ul>
