@@ -92,7 +92,9 @@ export default class DialogListPage extends React.Component<Props, State> {
         </ul>
         <TextInputQueryForm
           query={createDialogQuery}
-          queryVariableDefaults={{}}
+          queryVariableDefaults={{
+            name: "",
+          }}
           queryVariableModifiedByTextInput={"name"}
           addValueToParentState={this.addDialogToState}
           placeholderText={"Dialog Name"}

@@ -135,6 +135,7 @@ export default class DialogEditPage extends React.Component<Props, State> {
               <TextInputQueryForm
                 query={createRoleQuery}
                 queryVariableDefaults={{
+                  name: "",
                   dialogId: dialogId,
                 }}
                 queryVariableModifiedByTextInput={"name"}

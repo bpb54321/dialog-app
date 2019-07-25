@@ -65,44 +65,54 @@ export default class TextInputQueryForm extends React.Component<Props, State> {
   };
 
   render() {
-    return (
-      <GlobalConsumer>
-        {(context: GlobalContextObject) => {
-          return (
-            <>
-              {
-                (this.state.mode === CreationMode.Standby)
-                ?
-                <form
-                  onSubmit={async (event) => {
-                    event.preventDefault();
-                    await this.createNewEntity(context);
-                  }}
-                >
-                  <label htmlFor="dialogName">Name</label>
-                  <input
-                    id={this.props.queryVariableModifiedByTextInput}
-                    onChange={this.handleInputChange}
-                    placeholder={this.props.placeholderText}
-                    type="text"
-                    value={this.state.queryVariables[this.props.queryVariableModifiedByTextInput]}
-                  />
-                  <input type="submit" value={"Add New Role"}/>
-                </form>
-                :
-                <p>Loading...</p>
-              }
-              {
-                this.state.errorMessage
-                ?
-                <p>{this.state.errorMessage}</p>
-                :
-                null
-              }
-            </>
-          );
-        }}
-      </GlobalConsumer>
-    );
+    if (this.props.queryVariableModifiedByTextInput in this.state.queryVariables) {
+      return (
+        <GlobalConsumer>
+          {(context: GlobalContextObject) => {
+            return (
+              <>
+                {
+                  (this.state.mode === CreationMode.Standby)
+                    ?
+                    <form
+                      onSubmit={async (event) => {
+                        event.preventDefault();
+                        await this.createNewEntity(context);
+                      }}
+                    >
+                      <label htmlFor="dialogName">Name</label>
+                      <input
+                        id={this.props.queryVariableModifiedByTextInput}
+                        onChange={this.handleInputChange}
+                        placeholder={this.props.placeholderText}
+                        type="text"
+                        value={this.state.queryVariables[this.props.queryVariableModifiedByTextInput]}
+                      />
+                      <input type="submit" value={"Add New Role"}/>
+                    </form>
+                    :
+                    <p>Loading...</p>
+                }
+                {
+                  this.state.errorMessage
+                    ?
+                    <p>{this.state.errorMessage}</p>
+                    :
+                    null
+                }
+              </>
+            );
+          }}
+        </GlobalConsumer>
+      );
+    } else {
+      return (
+        <p>
+          Coding error: The query variable {this.props.queryVariableModifiedByTextInput} was not provided with a
+          default value.
+        </p>
+      );
+    }
+
   }
 }
