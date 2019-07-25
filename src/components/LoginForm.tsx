@@ -12,6 +12,15 @@ interface State {
   errorMessage?: string;
 }
 
+const loginQuery =
+  `
+    mutation LoginQuery($email: String!, $password: String!) {
+        login(email: $email, password: $password) {
+          token
+        }
+    }
+  `;
+
 export default class LoginForm extends React.Component<Props, State> {
 
   state = {
@@ -25,25 +34,23 @@ export default class LoginForm extends React.Component<Props, State> {
 
     const {email, password} = this.state;
 
-    const query =
-      `
-        mutation {
-            login(email: "${email}", password: "${password}") {
-              token
-            }
-        }
-      `;
-
     try {
-      const {token} = await fetchData(query, "login", context);
+      const {token} = await fetchData(
+        loginQuery, ["email", "password"], [email, password], "login",
+        context
+      );
+
       context.actions.setGlobalState({
         token,
         loggedIn: true,
       });
+
     } catch (error) {
+
       this.setState({
         errorMessage: error.message,
       });
+
     }
   };
 
