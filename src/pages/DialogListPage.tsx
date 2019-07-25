@@ -48,7 +48,7 @@ export default class DialogListPage extends React.Component<Props, State> {
 
     try {
       const dialogs = await fetchData(
-        dialogsQuery, [], [], "dialogs", this.props.context
+        dialogsQuery, {}, "dialogs", this.props.context
       );
 
       this.setState({
@@ -91,9 +91,10 @@ export default class DialogListPage extends React.Component<Props, State> {
             })}
         </ul>
         <TextInputQueryForm
-          addValueToParentState={this.addDialogToState}
           query={createDialogQuery}
-          queryVariableNames={["name"]}
+          queryVariableDefaults={{}}
+          queryVariableModifiedByTextInput={"name"}
+          addValueToParentState={this.addDialogToState}
           placeholderText={"Dialog Name"}
         />
       </div>

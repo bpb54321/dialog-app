@@ -22,10 +22,13 @@ interface State {
 
 const createRoleQuery =
   `
-    mutation CreateRole($name: String!) {
-      createRole(name: $name) {
+    mutation CreateRole($name: String!, $dialogId: String!) {
+      createRole(name: $name, dialogId: $dialogId) {
         id
         name
+        dialog {
+          id
+        }
       }
     }
   `;
@@ -75,7 +78,12 @@ export default class DialogEditPage extends React.Component<Props, State> {
 
     try {
       const dialog = await fetchData(
-        dialogQuery, ["id"], [dialogId], "dialog", context
+        dialogQuery,
+        {
+          id: dialogId,
+        },
+        "dialog",
+        context
       );
 
       this.setState({
@@ -104,6 +112,8 @@ export default class DialogEditPage extends React.Component<Props, State> {
   };
 
   render() {
+    const {dialogId} = this.props.match.params;
+
     return (
       <>
         {
@@ -124,7 +134,10 @@ export default class DialogEditPage extends React.Component<Props, State> {
               </ul>
               <TextInputQueryForm
                 query={createRoleQuery}
-                queryVariableNames={["name"]}
+                queryVariableDefaults={{
+                  dialogId: dialogId,
+                }}
+                queryVariableModifiedByTextInput={"name"}
                 addValueToParentState={this.addRoleToParentState}
                 placeholderText={"Role Name"}
               />
@@ -141,6 +154,13 @@ export default class DialogEditPage extends React.Component<Props, State> {
                 })}
               </ul>
             </div>
+        }
+        {
+          this.state.errorMessage
+          ?
+            <p>{this.state.errorMessage}</p>
+          :
+            null
         }
       </>
     );

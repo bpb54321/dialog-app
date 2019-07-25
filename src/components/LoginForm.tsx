@@ -35,10 +35,12 @@ export default class LoginForm extends React.Component<Props, State> {
     const {email, password} = this.state;
 
     try {
-      const {token} = await fetchData(
-        loginQuery, ["email", "password"], [email, password], "login",
-        context
-      );
+      const queryVariables = {
+        email,
+        password,
+      };
+
+      const {token} = await fetchData(loginQuery, queryVariables, "login", context);
 
       context.actions.setGlobalState({
         token,

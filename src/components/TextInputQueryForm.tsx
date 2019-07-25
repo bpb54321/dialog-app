@@ -5,12 +5,14 @@ import {CreationMode} from "../types/CreationMode";
 
 interface Props {
   query: string;
-  queryVariableNames: string[];
+  queryVariableDefaults: {[index: string]: string|number};
+  queryVariableModifiedByTextInput: string;
   addValueToParentState: (value: any) => void;
   placeholderText: string;
 }
 
 interface State {
+  queryVariables?: {[index: string]: string|number};
   value?: string;
   errorMessage?: string;
   mode?: CreationMode;
@@ -19,7 +21,7 @@ interface State {
 export default class TextInputQueryForm extends React.Component<Props, State> {
 
   state = {
-    value: "",
+    queryVariables: this.props.queryVariableDefaults,
     mode: CreationMode.Standby,
     errorMessage: "",
   };
@@ -32,7 +34,7 @@ export default class TextInputQueryForm extends React.Component<Props, State> {
     try {
 
       const result = await fetchData(
-        this.props.query, this.props.queryVariableNames, [this.state.value],
+        this.props.query, this.state.queryVariables,
         "createRole", context
       );
 
@@ -55,7 +57,10 @@ export default class TextInputQueryForm extends React.Component<Props, State> {
 
   handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     this.setState({
-      [event.target.id]: event.target.value,
+      queryVariables: {
+        ...this.state.queryVariables,
+        [event.target.id]: event.target.value,
+      }
     });
   };
 
@@ -76,11 +81,11 @@ export default class TextInputQueryForm extends React.Component<Props, State> {
                 >
                   <label htmlFor="dialogName">Name</label>
                   <input
-                    id={"value"}
+                    id={this.props.queryVariableModifiedByTextInput}
                     onChange={this.handleInputChange}
                     placeholder={this.props.placeholderText}
                     type="text"
-                    value={this.state.value}
+                    value={this.state.queryVariables[this.props.queryVariableModifiedByTextInput]}
                   />
                   <input type="submit" value={"Add New Role"}/>
                 </form>

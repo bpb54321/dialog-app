@@ -1,14 +1,8 @@
 import {GlobalContextObject} from "../contexts/GlobalContext";
 
-export default async function fetchData(query: string, queryVariableKeys: string[], queryVariableValues: string[],
+export default async function fetchData(query: string, queryVariables: {[index: string]: string|number},
                                         topLevelQueryField: string, globalContext: GlobalContextObject) {
   const {data} = globalContext;
-
-  const queryVariables = queryVariableKeys.reduce((finalObject: {[index: string]: string},
-                                                   queryVariableKey: string, index: number) => {
-    finalObject[queryVariableKey] = queryVariableValues[index];
-    return finalObject;
-  }, {});
 
   const response = await fetch(data.apiEndpoint, {
     method: "POST",
