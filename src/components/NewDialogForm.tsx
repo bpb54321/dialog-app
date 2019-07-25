@@ -1,10 +1,10 @@
-import React, {ChangeEvent, FormEvent} from 'react';
-import SpeechInputButton from "../SpeechInputButton";
+import React, {ChangeEvent} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalConsumer, GlobalContextObject, GlobalProvider} from "../contexts/GlobalContext";
+import {GlobalConsumer, GlobalContextObject} from "../contexts/GlobalContext";
+import Dialog from "../types/Dialog";
 
 interface Props {
-  getAllDialogs: () => void;
+  addDialogToParentState: (dialog: Dialog) => void;
 }
 
 interface State {
@@ -26,8 +26,10 @@ export default class NewDialogForm extends React.Component<Props, State> {
     errorMessage: "",
   };
 
-  createNewDialog = (context: GlobalContextObject) => {
-    const {data} = context;
+  createNewDialog = async (context: GlobalContextObject) => {
+    this.setState({
+      mode: Mode.Creating_Dialog,
+    });
 
     const query = `
       mutation {
@@ -38,23 +40,23 @@ export default class NewDialogForm extends React.Component<Props, State> {
       }
     `;
 
-    fetchData(query, data.token, data.apiEndpoint, (body) => {
+    try {
+      const createdDialog = await fetchData(query, "createDialog", context);
       this.setState({
         mode: Mode.Standby,
         name: "",
       });
-
-      // Refreshes the dialog list in the parent component
-      this.props.getAllDialogs();
-    }, (errorMessage) => {
-      this.setState({
-        errorMessage: errorMessage
+      this.props.addDialogToParentState({
+        id: createdDialog.id,
+        name: createdDialog.name,
+        roles: [],
+        lines: [],
       });
-    });
-
-    this.setState({
-      mode: Mode.Creating_Dialog,
-    });
+    } catch(error) {
+      this.setState({
+        errorMessage: error.message,
+      });
+    }
   };
 
   handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -70,9 +72,9 @@ export default class NewDialogForm extends React.Component<Props, State> {
           if (this.state.mode === Mode.Standby) {
             return (
               <form
-                onSubmit={(event) => {
+                onSubmit={ async (event) => {
                   event.preventDefault();
-                  this.createNewDialog(context);
+                  await this.createNewDialog(context);
                 }}
               >
                 <label htmlFor="dialogName">Name</label>

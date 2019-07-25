@@ -3,7 +3,7 @@ import {GlobalContextObject} from "../contexts/GlobalContext";
 import Dialog from "../types/Dialog";
 import {Link} from "react-router-dom";
 import fetchData from "../utils/fetch-data";
-import NewDialogForm from "../components/NewDialogForm";
+import TextInputQueryForm from "../components/TextInputQueryForm";
 
 interface Props {
   context: GlobalContextObject;
@@ -17,6 +17,26 @@ interface State {
   dialogs: Dialog[];
 }
 
+const dialogsQuery =
+  `
+    query DialogsQuery {
+        dialogs {
+          name
+          id
+        }
+    }
+  `;
+
+const createDialogQuery =
+  `
+    mutation CreateDialogQuery($name: String!) {
+        createDialog(name: $name) {
+          name
+          id
+        }
+    }
+  `;
+
 export default class DialogListPage extends React.Component<Props, State> {
 
   state = {
@@ -24,30 +44,31 @@ export default class DialogListPage extends React.Component<Props, State> {
     dialogs: [],
   };
 
-  componentDidMount() {
-    this.getAllDialogs();
+  async componentDidMount() {
+
+    try {
+      const dialogs = await fetchData(
+        dialogsQuery, [], [], "dialogs", this.props.context
+      );
+
+      this.setState({
+        dialogs
+      });
+
+    } catch(error) {
+
+      this.setState({
+        errorMessage: error.message,
+      });
+
+    }
   }
 
-  getAllDialogs = () => {
-    const {data} = this.props.context;
-
-    const dialogQuery = `
-      query {
-          dialogs {
-            name
-            id
-          }
-      }
-    `;
-
-    fetchData(dialogQuery, data.token, data.apiEndpoint, (body) => {
-      this.setState({
-        dialogs: body.data.dialogs
-      });
-    }, (errorMessage) => {
-      this.setState({
-        errorMessage: errorMessage
-      });
+  addDialogToState = (dialog: Dialog) => {
+    this.setState((previousState: State) => {
+      return {
+        dialogs: [...previousState.dialogs, dialog],
+      };
     });
   };
 
@@ -69,7 +90,12 @@ export default class DialogListPage extends React.Component<Props, State> {
               );
             })}
         </ul>
-        <NewDialogForm getAllDialogs={this.getAllDialogs}/>
+        <TextInputQueryForm
+          addValueToParentState={this.addDialogToState}
+          query={createDialogQuery}
+          queryVariableNames={["name"]}
+          placeholderText={"Dialog Name"}
+        />
       </div>
     );
   }

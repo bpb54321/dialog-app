@@ -1,10 +1,10 @@
 import React from 'react';
 import {GlobalContextObject} from "../contexts/GlobalContext";
-import queryEntireDialog from "../utils/queryEntireDialog";
 import Dialog from "../types/Dialog";
 import Role from "../types/Role";
-import Line from "../Line";
 import LineData from "../types/LineData";
+import fetchData from "../utils/fetch-data";
+import TextInputQueryForm from "../components/TextInputQueryForm";
 
 interface Props {
   context: GlobalContextObject;
@@ -19,6 +19,41 @@ interface State {
   errorMessage: string;
 }
 
+const createRoleQuery =
+  `
+    mutation CreateRole($name: String!) {
+      createRole(name: $name) {
+        id
+        name
+      }
+    }
+  `;
+
+//region query
+const dialogQuery =
+  `
+    query DialogQuery($id: String!) {
+      dialog(id: $id) {
+        id
+        name
+        roles {
+          id
+          name
+        }
+        lines {
+          id
+          text
+          number
+          role {
+            id
+            name
+          }
+        }
+      }
+    }
+  `;
+//endregion
+
 export default class DialogEditPage extends React.Component<Props, State> {
 
   state = {
@@ -32,21 +67,40 @@ export default class DialogEditPage extends React.Component<Props, State> {
     errorMessage: "",
   };
 
-  async componentDidMount(): Promise<void> {
+  async componentDidMount() {
+
     const {context} = this.props;
     const {dialogId} = this.props.match.params;
+
     try {
-      const dialog = await queryEntireDialog(context, dialogId);
+      const dialog = await fetchData(
+        dialogQuery, ["id"], [dialogId], "dialog", context
+      );
+
       this.setState({
         dialog,
         loading: false,
       });
+
     } catch(error) {
+
       this.setState({
         errorMessage: error.message,
       });
+
     }
   }
+
+  addRoleToParentState = (role: Role) => {
+    this.setState((previousState: State) => {
+      return {
+        dialog: {
+          ...previousState.dialog,
+          roles: [...previousState.dialog.roles, role],
+        }
+      };
+    });
+  };
 
   render() {
     return (
@@ -65,6 +119,13 @@ export default class DialogEditPage extends React.Component<Props, State> {
                     );
                 })}
               </ul>
+              <TextInputQueryForm
+                query={createRoleQuery}
+                queryVariableNames={["name"]}
+                addValueToParentState={this.addRoleToParentState}
+                placeholderText={"Role Name"}
+              />
+
               <ul>
                 {this.state.dialog.lines.map((line: LineData) => {
                   return (
@@ -79,7 +140,6 @@ export default class DialogEditPage extends React.Component<Props, State> {
             </div>
         }
       </>
-
     );
   }
 }
