@@ -1,7 +1,7 @@
 import React from "react";
 import Role from "../types/Role";
 
-const GlobalContext = React.createContext<GlobalContextObject>(({} as GlobalContextObject));
+export const GlobalContext = React.createContext<GlobalContextObject>(({} as GlobalContextObject));
 
 export const GlobalConsumer = GlobalContext.Consumer;
 

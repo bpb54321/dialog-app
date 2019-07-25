@@ -1,6 +1,6 @@
 import {GlobalContextObject} from "../contexts/GlobalContext";
 
-export default async function fetchData(query: string, queryVariables: {[index: string]: string|number},
+export default async function fetchData(query: string, queryVariables: {[index: string]: any},
                                         topLevelQueryField: string, globalContext: GlobalContextObject) {
   const {data} = globalContext;
 
