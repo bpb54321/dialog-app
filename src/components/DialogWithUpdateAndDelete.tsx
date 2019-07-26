@@ -1,0 +1,133 @@
+import React, {ChangeEvent, useContext, useState} from 'react';
+import fetchData from "../utils/fetch-data";
+import {GlobalContext} from "../contexts/GlobalContext";
+import LineData from "../types/LineData";
+import Role from "../types/Role";
+
+interface Props {
+  line: LineData;
+  rolesInDialog: Role[];
+  deleteLineInDialog: (lineId: string) => void;
+}
+
+//region updateLineQuery
+const updateDialogQuery =
+  `
+    mutation UpdateDialog($id: String!, $name: String) {
+      updateDialog(id: $id, name: $name) {
+        id
+        name
+      }
+    }
+  `;
+//endregion
+
+//region deleteLineQuery
+const deleteLineQuery =
+  `
+    mutation DeleteDialog($id: String!) {
+      deleteDialog(id: $id)
+    }
+  `;
+//endregion
+
+// TODO: Finish updating DialogWithUpdateAndDelete
+
+export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
+
+  const context = useContext(GlobalContext);
+
+  const [text, setText] = useState(props.line.text);
+  const [roleId, setRoleId] = useState(props.line.role.id);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const updateLine = async (queryVariables: {
+      id: string;
+      text?: string;
+      roleId?: string;
+      number?: number;
+    }): Promise<void> => {
+
+    try {
+      await fetchData(updateLineQuery, queryVariables, "updateLine", context);
+    } catch(error) {
+      setErrorMessage(error.message);
+    }
+
+  };
+
+  const deleteLine = async (): Promise<void> =>  {
+
+    const queryVariables = {
+      id: props.line.id,
+    };
+
+    try {
+      const deletionWasSuccessful: boolean = await fetchData(
+        deleteLineQuery, queryVariables, "deleteLine", context
+      );
+
+      if(deletionWasSuccessful) {
+        props.deleteLineInDialog(props.line.id);
+      } else {
+        setErrorMessage(`There was a problem when attempting to delete the Line with id ${props.line.id}` +
+          `and text ${text}`);
+      }
+    } catch(error) {
+      setErrorMessage(error.message);
+    }
+
+  };
+
+  return (
+    <li>
+      <form>
+        <div>
+          <label htmlFor={`line-role-${props.line.id}`}>Role</label>
+          <select
+            name="role"
+            id={`line-role-${props.line.id}`}
+            value={roleId}
+            onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
+              setRoleId(event.target.value);
+              await updateLine({
+                id: props.line.id,
+                roleId: event.target.value,
+              });
+            }}
+          >
+            {props.rolesInDialog.map((role) => {
+              return <option value={role.id} key={role.id}>{role.name}</option>;
+            })}
+          </select>
+        </div>
+        <div>
+          <label htmlFor={`line-text-${props.line.id}`}>Line Text</label>
+          <input
+            id={`line-text-${props.line.id}`}
+            type={"text"}
+            value={text}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setText(event.target.value);
+            }}
+            onBlur={async () => {
+              await updateLine({
+                id: props.line.id,
+                text
+              });
+            }}
+          />
+        </div>
+        <button
+          type={"button"}
+          onClick={async () => {
+            await deleteLine();
+          }}
+        >
+          Delete Line
+        </button>
+      </form>
+      {errorMessage ? <p>{errorMessage}</p> : null}
+    </li>
+  );
+};
