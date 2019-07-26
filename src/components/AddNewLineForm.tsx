@@ -99,6 +99,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
                 text,
                 number: 1,
               });
+              setText("");
             }}
           >
             Add Line

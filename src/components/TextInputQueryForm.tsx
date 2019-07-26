@@ -13,7 +13,6 @@ interface Props {
 
 interface State {
   queryVariables?: {[index: string]: string|number};
-  value?: string;
   errorMessage?: string;
   mode?: CreationMode;
 }
@@ -27,6 +26,8 @@ export default class TextInputQueryForm extends React.Component<Props, State> {
   };
 
   createNewEntity = async (context: GlobalContextObject) => {
+    debugger;
+
     this.setState({
       mode: CreationMode.Creating_Dialog,
     });
@@ -40,7 +41,10 @@ export default class TextInputQueryForm extends React.Component<Props, State> {
 
       this.setState({
         mode: CreationMode.Standby,
-        value: "",
+        queryVariables: {
+          ...this.state.queryVariables,
+          [this.props.queryVariableModifiedByTextInput]: "",
+        },
       });
 
       this.props.addValueToParentState(result);
