@@ -1,9 +1,9 @@
 import React from 'react';
 import {GlobalContextObject} from "../contexts/GlobalContext";
-import Dialog from "../types/Dialog";
+import {Dialog, ShallowDialog} from "../types/Dialog";
 import {Link} from "react-router-dom";
 import fetchData from "../utils/fetch-data";
-import TextInputQueryForm from "../components/TextInputQueryForm";
+import {AddNewDialogForm} from "../components/AddNewDialogForm";
 
 interface Props {
   context: GlobalContextObject;
@@ -27,15 +27,7 @@ const dialogsQuery =
     }
   `;
 
-const createDialogQuery =
-  `
-    mutation CreateDialogQuery($name: String!) {
-        createDialog(name: $name) {
-          name
-          id
-        }
-    }
-  `;
+
 
 export default class DialogListPage extends React.Component<Props, State> {
 
@@ -90,15 +82,7 @@ export default class DialogListPage extends React.Component<Props, State> {
               );
             })}
         </ul>
-        <TextInputQueryForm
-          query={createDialogQuery}
-          queryVariableDefaults={{
-            name: "",
-          }}
-          queryVariableModifiedByTextInput={"name"}
-          addValueToParentState={this.addDialogToState}
-          placeholderText={"Dialog Name"}
-        />
+        <AddNewDialogForm addDialogToDialogList={this.addDialogToState}/>
       </div>
     );
   }
