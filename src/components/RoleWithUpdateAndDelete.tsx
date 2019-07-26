@@ -17,12 +17,20 @@ const updateRoleQuery =
     }
   `;
 
+const deleteRoleQuery =
+  `
+    mutation DeleteRole($id: String!) {
+      deleteRole(id: $id)
+    }
+  `;
+
 export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
   const context = useContext(GlobalContext);
 
   const [name, setName] = useState(props.role.name);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const updateRole = async (updatedName: string): Promise<void> => {
 
@@ -40,34 +48,56 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
 
   };
 
-  const deleteRole = () => {
-    console.log("You attempted to delete a Role!");
+  const deleteRole = async (): Promise<void> =>  {
+
+    const queryVariables = {
+      id: props.role.id,
+    };
+
+    try {
+      const deletionWasSuccessful: boolean = await fetchData(
+        deleteRoleQuery, queryVariables, "deleteRole", context
+      );
+
+      if(deletionWasSuccessful) {
+        setIsDeleted(true);
+      } else {
+        setErrorMessage(`There was a problem when attempting to delete the Role with id ${props.role.id}` +
+          `and name ${name}`);
+      }
+    } catch(error) {
+      setErrorMessage(error.message);
+    }
+
   };
 
-  return (
-    <>
-      <form>
-        <input
-          type={"text"}
-          value={name}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            setName(event.target.value);
-          }}
-          onBlur={async (event: FocusEvent<HTMLInputElement>) => {
-            await updateRole(name);
-          }}
-        />
-        <button
-          type={"button"}
-          onClick={(event: SyntheticEvent) => {
-            deleteRole();
-          }}
-        >
-          Delete Role
-        </button>
-      </form>
-      {errorMessage ? <p>{errorMessage}</p> : null}
-    </>
-  );
-
+  if (isDeleted) {
+    return null;
+  } else {
+    return (
+      <li>
+        <form>
+          <input
+            type={"text"}
+            value={name}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setName(event.target.value);
+            }}
+            onBlur={async (event: FocusEvent<HTMLInputElement>) => {
+              await updateRole(name);
+            }}
+          />
+          <button
+            type={"button"}
+            onClick={(event: SyntheticEvent) => {
+              deleteRole();
+            }}
+          >
+            Delete Role
+          </button>
+        </form>
+        {errorMessage ? <p>{errorMessage}</p> : null}
+      </li>
+    );
+  }
 };
