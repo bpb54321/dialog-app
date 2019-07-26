@@ -1,10 +1,12 @@
-import React, {ChangeEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, FormEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import LineData from "../types/LineData";
+import Role from "../types/Role";
 
 interface Props {
   line: LineData;
+  rolesInDialog: Role[];
 }
 
 const updateLineQuery =
@@ -30,7 +32,7 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   const context = useContext(GlobalContext);
 
   const [text, setText] = useState(props.line.text);
-  // const [roleId, setRoleId] = useState(props.line.role.id);
+  const [roleId, setRoleId] = useState(props.line.role.id);
   const [errorMessage, setErrorMessage] = useState("");
   const [isDeleted, setIsDeleted] = useState(false);
 
@@ -78,19 +80,42 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
     return (
       <li>
         <form>
-          <input
-            type={"text"}
-            value={text}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setText(event.target.value);
-            }}
-            onBlur={async () => {
-              await updateLine({
-                id: props.line.id,
-                text
-              });
-            }}
-          />
+          <div>
+            <label htmlFor={`line-role-${props.line.id}`}>Role</label>
+            <select
+              name="role"
+              id={`line-role-${props.line.id}`}
+              value={roleId}
+              onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
+                setRoleId(event.target.value);
+                await updateLine({
+                  id: props.line.id,
+                  roleId: event.target.value,
+                });
+              }}
+            >
+              {props.rolesInDialog.map((role) => {
+                return <option value={role.id}>{role.name}</option>;
+              })}
+            </select>
+          </div>
+          <div>
+            <label htmlFor={`line-text-${props.line.id}`}>Line Text</label>
+            <input
+              id={`line-text-${props.line.id}`}
+              type={"text"}
+              value={text}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                setText(event.target.value);
+              }}
+              onBlur={async () => {
+                await updateLine({
+                  id: props.line.id,
+                  text
+                });
+              }}
+            />
+          </div>
           <button
             type={"button"}
             onClick={async () => {

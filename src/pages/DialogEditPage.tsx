@@ -144,14 +144,20 @@ export default class DialogEditPage extends React.Component<Props, State> {
                   placeholderText={"Role Name"}
                 />
               </div>
-
-              <ul>
-                {this.state.dialog.lines.map((line: LineData) => {
-                  return (
-                    <LineWithUpdateAndDelete line={line} key={line.id}/>
-                  );
-                })}
-              </ul>
+              <div>
+                <h2>Lines</h2>
+                <ul>
+                  {this.state.dialog.lines.map((line: LineData) => {
+                    return (
+                      <LineWithUpdateAndDelete
+                        line={line}
+                        rolesInDialog={this.state.dialog.roles}
+                        key={line.id}
+                      />
+                    );
+                  })}
+                </ul>
+              </div>
             </div>
         }
         {
