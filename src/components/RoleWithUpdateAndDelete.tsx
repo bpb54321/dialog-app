@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, useContext, useState, FocusEvent} from 'react';
+import React, {ChangeEvent, useContext, useState, FocusEvent} from 'react';
 import Role from "../types/Role";
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
@@ -9,8 +9,8 @@ interface Props {
 
 const updateRoleQuery =
   `
-    mutation UpdateRole($id: String!, $updatedRole: RoleInput!) {
-      updateRole(id: $id, updatedRole: $updatedRole) {
+    mutation UpdateRole($id: String!, $name: String) {
+      updateRole(id: $id, name: $name) {
         id
         name
       }
@@ -22,17 +22,22 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   const context = useContext(GlobalContext);
 
   const [name, setName] = useState(props.role.name);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const updateRole = async (updatedName: string): Promise<void> => {
 
     const queryVariables = {
       id: props.role.id,
-      updatedRole: {
-        name: updatedName,
-      },
+      name: updatedName,
     };
 
-    await fetchData(updateRoleQuery, queryVariables, "updateRole", context);
+    try {
+      const updatedRole: {id: string; name: string;} = await fetchData(updateRoleQuery, queryVariables, "updateRole", context);
+      setName(updatedRole.name);
+    } catch(error) {
+      setErrorMessage(error.message);
+    }
+
   };
 
   return (
@@ -47,6 +52,7 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
           await updateRole(name);
         }}
       />
+      {errorMessage ? <p>{errorMessage}</p> : null}
     </>
   );
 
