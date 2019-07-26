@@ -5,8 +5,10 @@ import {GlobalContext} from "../contexts/GlobalContext";
 
 interface Props {
   role: Role;
+  deleteRoleInDialog: (roleId: string) => void;
 }
 
+//region updateRoleQuery
 const updateRoleQuery =
   `
     mutation UpdateRole($id: String!, $name: String) {
@@ -16,13 +18,16 @@ const updateRoleQuery =
       }
     }
   `;
+//endregion
 
+//region deleteRoleQuery
 const deleteRoleQuery =
   `
     mutation DeleteRole($id: String!) {
       deleteRole(id: $id)
     }
   `;
+//endregion
 
 export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
@@ -40,7 +45,12 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
     };
 
     try {
-      const updatedRole: {id: string; name: string;} = await fetchData(updateRoleQuery, queryVariables, "updateRole", context);
+      const updatedRole: {id: string; name: string;} = await fetchData(
+        updateRoleQuery,
+        queryVariables,
+        "updateRole",
+        context
+      );
       setName(updatedRole.name);
     } catch(error) {
       setErrorMessage(error.message);
@@ -49,6 +59,7 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   };
 
   const deleteRole = async (): Promise<void> =>  {
+    
 
     const queryVariables = {
       id: props.role.id,
@@ -60,12 +71,15 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
       );
 
       if(deletionWasSuccessful) {
+        
         setIsDeleted(true);
+        props.deleteRoleInDialog(props.role.id);
       } else {
         setErrorMessage(`There was a problem when attempting to delete the Role with id ${props.role.id}` +
           `and name ${name}`);
       }
     } catch(error) {
+      
       setErrorMessage(error.message);
     }
 
@@ -89,8 +103,9 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
           />
           <button
             type={"button"}
-            onClick={(event: SyntheticEvent) => {
-              deleteRole();
+            onClick={async (event: SyntheticEvent) => {
+              
+              await deleteRole();
             }}
           >
             Delete Role

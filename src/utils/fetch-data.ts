@@ -19,6 +19,10 @@ export default async function fetchData(query: string, queryVariables: {[index: 
 
   const body = await response.json();
 
+  if (body.errors && body.errors.length > 0) {
+    throw Error(body.errors[0].message);
+  }
+
   return body.data[topLevelQueryField];
 }
 

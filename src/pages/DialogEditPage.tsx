@@ -21,6 +21,7 @@ interface State {
   errorMessage: string;
 }
 
+//region createRoleQuery
 const createRoleQuery =
   `
     mutation CreateRole($name: String!, $dialogId: String!) {
@@ -33,6 +34,7 @@ const createRoleQuery =
       }
     }
   `;
+//endregion
 
 //region query
 const dialogQuery =
@@ -112,6 +114,21 @@ export default class DialogEditPage extends React.Component<Props, State> {
     });
   };
 
+  deleteRoleInDialog = (roleId: string): void => {
+    this.setState((previousState) => {
+      let newRoles = previousState.dialog.roles.filter((role: Role) => {
+        return role.id !== roleId;
+      });
+
+      return {
+        dialog: {
+          ...previousState.dialog,
+          roles: newRoles,
+        }
+      };
+    });
+  };
+
   render() {
     const {dialogId} = this.props.match.params;
 
@@ -129,7 +146,11 @@ export default class DialogEditPage extends React.Component<Props, State> {
                 <ul>
                   {this.state.dialog.roles.map((role: Role) => {
                       return (
-                        <RoleWithUpdateAndDelete role={role} key={role.id}/>
+                        <RoleWithUpdateAndDelete
+                          role={role}
+                          key={role.id}
+                          deleteRoleInDialog={this.deleteRoleInDialog}
+                        />
                       );
                   })}
                 </ul>
