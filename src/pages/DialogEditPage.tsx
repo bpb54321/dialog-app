@@ -1,14 +1,14 @@
 import React from 'react';
 import {GlobalContextObject} from "../contexts/GlobalContext";
-import Dialog from "../types/Dialog";
+import {Dialog} from "../types/Dialog";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
 import fetchData from "../utils/fetch-data";
 import TextInputQueryForm from "../components/TextInputQueryForm";
 import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
 import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
-import Line from "../Line";
 import {AddNewLineForm} from "../components/AddNewLineForm";
+import {AddNewRoleForm} from "../components/AddNewRoleForm";
 
 interface Props {
   context: GlobalContextObject;
@@ -22,21 +22,6 @@ interface State {
   loading: boolean;
   errorMessage: string;
 }
-
-//region createRoleQuery
-const createRoleQuery =
-  `
-    mutation CreateRole($name: String!, $dialogId: String!) {
-      createRole(name: $name, dialogId: $dialogId) {
-        id
-        name
-        dialog {
-          id
-        }
-      }
-    }
-  `;
-//endregion
 
 //region dialogQuery
 const dialogQuery =
@@ -182,16 +167,7 @@ export default class DialogEditPage extends React.Component<Props, State> {
                       );
                   })}
                 </ul>
-                <TextInputQueryForm
-                  query={createRoleQuery}
-                  queryVariableDefaults={{
-                    name: "",
-                    dialogId: dialogId,
-                  }}
-                  queryVariableModifiedByTextInput={"name"}
-                  addValueToParentState={this.addRoleToParentState}
-                  placeholderText={"Role Name"}
-                />
+                <AddNewRoleForm dialogId={dialogId} addRoleToDialog={this.addRoleToParentState}/>
               </div>
               <div>
                 <h2>Lines</h2>
