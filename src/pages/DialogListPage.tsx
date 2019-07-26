@@ -14,7 +14,7 @@ interface Props {
 
 interface State {
   errorMessage: string;
-  dialogs: Dialog[];
+  dialogs: ShallowDialog[];
 }
 
 const dialogsQuery =
@@ -56,7 +56,7 @@ export default class DialogListPage extends React.Component<Props, State> {
     }
   }
 
-  addDialogToState = (dialog: Dialog) => {
+  addDialogToState = (dialog: ShallowDialog) => {
     this.setState((previousState: State) => {
       return {
         dialogs: [...previousState.dialogs, dialog],
