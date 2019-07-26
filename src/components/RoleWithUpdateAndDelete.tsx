@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useState, FocusEvent} from 'react';
+import React, {ChangeEvent, useContext, useState, FocusEvent, SyntheticEvent} from 'react';
 import Role from "../types/Role";
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
@@ -40,18 +40,32 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
 
   };
 
+  const deleteRole = () => {
+    console.log("You attempted to delete a Role!");
+  };
+
   return (
     <>
-      <input
-        type={"text"}
-        value={name}
-        onChange={(event: ChangeEvent<HTMLInputElement>) => {
-          setName(event.target.value);
-        }}
-        onBlur={async (event: FocusEvent<HTMLInputElement>) => {
-          await updateRole(name);
-        }}
-      />
+      <form>
+        <input
+          type={"text"}
+          value={name}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            setName(event.target.value);
+          }}
+          onBlur={async (event: FocusEvent<HTMLInputElement>) => {
+            await updateRole(name);
+          }}
+        />
+        <button
+          type={"button"}
+          onClick={(event: SyntheticEvent) => {
+            deleteRole();
+          }}
+        >
+          Delete Role
+        </button>
+      </form>
       {errorMessage ? <p>{errorMessage}</p> : null}
     </>
   );
