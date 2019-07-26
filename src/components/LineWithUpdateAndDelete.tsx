@@ -95,7 +95,7 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
               }}
             >
               {props.rolesInDialog.map((role) => {
-                return <option value={role.id}>{role.name}</option>;
+                return <option value={role.id} key={role.id}>{role.name}</option>;
               })}
             </select>
           </div>
