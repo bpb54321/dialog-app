@@ -4,7 +4,6 @@ import {Dialog} from "../types/Dialog";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
 import fetchData from "../utils/fetch-data";
-import TextInputQueryForm from "../components/TextInputQueryForm";
 import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
 import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
 import {AddNewLineForm} from "../components/AddNewLineForm";

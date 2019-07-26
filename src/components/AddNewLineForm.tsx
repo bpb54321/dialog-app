@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FormEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import LineData from "../types/LineData";
