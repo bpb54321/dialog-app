@@ -6,6 +6,7 @@ import LineData from "../types/LineData";
 import fetchData from "../utils/fetch-data";
 import TextInputQueryForm from "../components/TextInputQueryForm";
 import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
+import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
 
 interface Props {
   context: GlobalContextObject;
@@ -147,11 +148,7 @@ export default class DialogEditPage extends React.Component<Props, State> {
               <ul>
                 {this.state.dialog.lines.map((line: LineData) => {
                   return (
-                    <li>
-                      <div>{line.number}</div>
-                      <div>{line.role}</div>
-                      <div>{line.text}</div>
-                    </li>
+                    <LineWithUpdateAndDelete line={line} key={line.id}/>
                   );
                 })}
               </ul>
