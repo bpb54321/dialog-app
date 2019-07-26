@@ -122,26 +122,29 @@ export default class DialogEditPage extends React.Component<Props, State> {
             <p>Loading dialog...</p>
           :
             <div>
-              <h2>{this.state.dialog.name}</h2>
-              <ul>
-                {this.state.dialog.roles.map((role: Role) => {
-                    return (
-                      <li key={role.id}>
-                        <RoleWithUpdateAndDelete role={role} />
-                      </li>
-                    );
-                })}
-              </ul>
-              <TextInputQueryForm
-                query={createRoleQuery}
-                queryVariableDefaults={{
-                  name: "",
-                  dialogId: dialogId,
-                }}
-                queryVariableModifiedByTextInput={"name"}
-                addValueToParentState={this.addRoleToParentState}
-                placeholderText={"Role Name"}
-              />
+              <h1>{this.state.dialog.name}</h1>
+              <div>
+                <h2>Roles</h2>
+                <ul>
+                  {this.state.dialog.roles.map((role: Role) => {
+                      return (
+                        <li key={role.id}>
+                          <RoleWithUpdateAndDelete role={role} />
+                        </li>
+                      );
+                  })}
+                </ul>
+                <TextInputQueryForm
+                  query={createRoleQuery}
+                  queryVariableDefaults={{
+                    name: "",
+                    dialogId: dialogId,
+                  }}
+                  queryVariableModifiedByTextInput={"name"}
+                  addValueToParentState={this.addRoleToParentState}
+                  placeholderText={"Role Name"}
+                />
+              </div>
 
               <ul>
                 {this.state.dialog.lines.map((line: LineData) => {
