@@ -7,6 +7,8 @@ import fetchData from "../utils/fetch-data";
 import TextInputQueryForm from "../components/TextInputQueryForm";
 import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
 import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
+import Line from "../Line";
+import {AddNewLineForm} from "../components/AddNewLineForm";
 
 interface Props {
   context: GlobalContextObject;
@@ -36,7 +38,7 @@ const createRoleQuery =
   `;
 //endregion
 
-//region query
+//region dialogQuery
 const dialogQuery =
   `
     query DialogQuery($id: String!) {
@@ -109,6 +111,17 @@ export default class DialogEditPage extends React.Component<Props, State> {
         dialog: {
           ...previousState.dialog,
           roles: [...previousState.dialog.roles, role],
+        }
+      };
+    });
+  };
+
+  addLineToParentState = (line: LineData) => {
+    this.setState((previousState: State) => {
+      return {
+        dialog: {
+          ...previousState.dialog,
+          lines: [...previousState.dialog.lines, line],
         }
       };
     });
@@ -194,6 +207,11 @@ export default class DialogEditPage extends React.Component<Props, State> {
                     );
                   })}
                 </ul>
+                <AddNewLineForm
+                  dialogId={dialogId}
+                  rolesInDialog={this.state.dialog.roles}
+                  addLineToDialog={this.addLineToParentState}
+                />
               </div>
             </div>
         }

@@ -80,7 +80,7 @@ export default class TextInputQueryForm extends React.Component<Props, State> {
                         await this.createNewEntity(context);
                       }}
                     >
-                      <label htmlFor="dialogName">Name</label>
+                      <label htmlFor="dialogName">{this.props.queryVariableModifiedByTextInput}</label>
                       <input
                         id={this.props.queryVariableModifiedByTextInput}
                         onChange={this.handleInputChange}
@@ -88,7 +88,7 @@ export default class TextInputQueryForm extends React.Component<Props, State> {
                         type="text"
                         value={this.state.queryVariables[this.props.queryVariableModifiedByTextInput]}
                       />
-                      <input type="submit" value={"Add New Role"}/>
+                      <input type="submit" value={`Add New ${this.props.queryVariableModifiedByTextInput}`}/>
                     </form>
                     :
                     <p>Loading...</p>
