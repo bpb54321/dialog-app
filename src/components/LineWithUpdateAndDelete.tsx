@@ -7,8 +7,10 @@ import Role from "../types/Role";
 interface Props {
   line: LineData;
   rolesInDialog: Role[];
+  deleteLineInDialog: (lineId: string) => void;
 }
 
+//region updateLineQuery
 const updateLineQuery =
   `
     mutation UpdateLine($id: String!, $text: String, $roleId: String, $number: Int) {
@@ -19,13 +21,16 @@ const updateLineQuery =
       }
     }
   `;
+//endregion
 
+//region deleteLineQuery
 const deleteLineQuery =
   `
     mutation DeleteLine($id: String!) {
       deleteLine(id: $id)
     }
   `;
+//endregion
 
 export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
@@ -34,7 +39,6 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   const [text, setText] = useState(props.line.text);
   const [roleId, setRoleId] = useState(props.line.role.id);
   const [errorMessage, setErrorMessage] = useState("");
-  const [isDeleted, setIsDeleted] = useState(false);
 
   const updateLine = async (queryVariables: {
       id: string;
@@ -63,7 +67,7 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
       );
 
       if(deletionWasSuccessful) {
-        setIsDeleted(true);
+        props.deleteLineInDialog(props.line.id);
       } else {
         setErrorMessage(`There was a problem when attempting to delete the Line with id ${props.line.id}` +
           `and text ${text}`);
@@ -74,59 +78,55 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
 
   };
 
-  if (isDeleted) {
-    return null;
-  } else {
-    return (
-      <li>
-        <form>
-          <div>
-            <label htmlFor={`line-role-${props.line.id}`}>Role</label>
-            <select
-              name="role"
-              id={`line-role-${props.line.id}`}
-              value={roleId}
-              onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
-                setRoleId(event.target.value);
-                await updateLine({
-                  id: props.line.id,
-                  roleId: event.target.value,
-                });
-              }}
-            >
-              {props.rolesInDialog.map((role) => {
-                return <option value={role.id} key={role.id}>{role.name}</option>;
-              })}
-            </select>
-          </div>
-          <div>
-            <label htmlFor={`line-text-${props.line.id}`}>Line Text</label>
-            <input
-              id={`line-text-${props.line.id}`}
-              type={"text"}
-              value={text}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                setText(event.target.value);
-              }}
-              onBlur={async () => {
-                await updateLine({
-                  id: props.line.id,
-                  text
-                });
-              }}
-            />
-          </div>
-          <button
-            type={"button"}
-            onClick={async () => {
-              await deleteLine();
+  return (
+    <li>
+      <form>
+        <div>
+          <label htmlFor={`line-role-${props.line.id}`}>Role</label>
+          <select
+            name="role"
+            id={`line-role-${props.line.id}`}
+            value={roleId}
+            onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
+              setRoleId(event.target.value);
+              await updateLine({
+                id: props.line.id,
+                roleId: event.target.value,
+              });
             }}
           >
-            Delete Line
-          </button>
-        </form>
-        {errorMessage ? <p>{errorMessage}</p> : null}
-      </li>
-    );
-  }
+            {props.rolesInDialog.map((role) => {
+              return <option value={role.id} key={role.id}>{role.name}</option>;
+            })}
+          </select>
+        </div>
+        <div>
+          <label htmlFor={`line-text-${props.line.id}`}>Line Text</label>
+          <input
+            id={`line-text-${props.line.id}`}
+            type={"text"}
+            value={text}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setText(event.target.value);
+            }}
+            onBlur={async () => {
+              await updateLine({
+                id: props.line.id,
+                text
+              });
+            }}
+          />
+        </div>
+        <button
+          type={"button"}
+          onClick={async () => {
+            await deleteLine();
+          }}
+        >
+          Delete Line
+        </button>
+      </form>
+      {errorMessage ? <p>{errorMessage}</p> : null}
+    </li>
+  );
 };

@@ -129,6 +129,21 @@ export default class DialogEditPage extends React.Component<Props, State> {
     });
   };
 
+  deleteLineInDialog = (lineId: string): void => {
+    this.setState((previousState) => {
+      let newLines = previousState.dialog.lines.filter((line: LineData) => {
+        return line.id !== lineId;
+      });
+
+      return {
+        dialog: {
+          ...previousState.dialog,
+          lines: newLines,
+        }
+      };
+    });
+  };
+
   render() {
     const {dialogId} = this.props.match.params;
 
@@ -174,6 +189,7 @@ export default class DialogEditPage extends React.Component<Props, State> {
                         line={line}
                         rolesInDialog={this.state.dialog.roles}
                         key={line.id}
+                        deleteLineInDialog={this.deleteLineInDialog}
                       />
                     );
                   })}
