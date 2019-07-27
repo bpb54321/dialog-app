@@ -1,9 +1,9 @@
 import React from 'react';
 import {GlobalContextObject} from "../contexts/GlobalContext";
 import {Dialog, ShallowDialog} from "../types/Dialog";
-import {Link} from "react-router-dom";
 import fetchData from "../utils/fetch-data";
 import {AddNewDialogForm} from "../components/AddNewDialogForm";
+import {DialogWithUpdateAndDelete} from "../components/DialogWithUpdateAndDelete";
 
 interface Props {
   context: GlobalContextObject;
@@ -26,8 +26,6 @@ const dialogsQuery =
         }
     }
   `;
-
-
 
 export default class DialogListPage extends React.Component<Props, State> {
 
@@ -64,6 +62,18 @@ export default class DialogListPage extends React.Component<Props, State> {
     });
   };
 
+  removeDialogFromList = (dialogId: string) => {
+    this.setState((previousState) => {
+      const newDialogs = previousState.dialogs.filter((dialog) => {
+        return dialog.id !== dialogId;
+      });
+
+      return {
+        dialogs: newDialogs
+      };
+    });
+  };
+
   render() {
     return (
       <div>
@@ -72,13 +82,12 @@ export default class DialogListPage extends React.Component<Props, State> {
           {this.state.dialogs.map(
             (dialog: Dialog) => {
               return (
-                <li key={dialog.id}>
-                  <div>{dialog.name}</div>
-                  <div>
-                    <Link to={`${this.props.match.url}/${dialog.id}/choose-role`}>Practice</Link>&nbsp;|&nbsp;
-                    <Link to={`${this.props.match.url}/${dialog.id}/edit`}>Edit</Link>
-                  </div>
-                </li>
+                <DialogWithUpdateAndDelete
+                  key={dialog.id}
+                  dialog={dialog}
+                  deleteDialogInDialogList={this.removeDialogFromList}
+                  match={this.props.match}
+                />
               );
             })}
         </ul>

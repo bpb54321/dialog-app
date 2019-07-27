@@ -1,13 +1,13 @@
-import React, {ChangeEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
-import LineData from "../types/LineData";
-import Role from "../types/Role";
+import {ShallowDialog} from "../types/Dialog";
+import {Link} from "react-router-dom";
 
 interface Props {
-  line: LineData;
-  rolesInDialog: Role[];
-  deleteLineInDialog: (lineId: string) => void;
+  dialog: ShallowDialog;
+  deleteDialogInDialogList: (dialogId: string) => void;
+  match: any;
 }
 
 //region updateLineQuery
@@ -22,8 +22,8 @@ const updateDialogQuery =
   `;
 //endregion
 
-//region deleteLineQuery
-const deleteLineQuery =
+//region deleteDialogQuery
+const deleteDialogQuery =
   `
     mutation DeleteDialog($id: String!) {
       deleteDialog(id: $id)
@@ -37,41 +37,38 @@ export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props)
 
   const context = useContext(GlobalContext);
 
-  const [text, setText] = useState(props.line.text);
-  const [roleId, setRoleId] = useState(props.line.role.id);
+  const [name, setName] = useState(props.dialog.name);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const updateLine = async (queryVariables: {
+  const updateDialog = async (queryVariables: {
       id: string;
-      text?: string;
-      roleId?: string;
-      number?: number;
+      name: string;
     }): Promise<void> => {
 
     try {
-      await fetchData(updateLineQuery, queryVariables, "updateLine", context);
+      await fetchData(updateDialogQuery, queryVariables, "updateDialog", context);
     } catch(error) {
       setErrorMessage(error.message);
     }
 
   };
 
-  const deleteLine = async (): Promise<void> =>  {
+  const deleteDialogAndRemoveFromList = async (): Promise<void> =>  {
 
     const queryVariables = {
-      id: props.line.id,
+      id: props.dialog.id,
     };
 
     try {
       const deletionWasSuccessful: boolean = await fetchData(
-        deleteLineQuery, queryVariables, "deleteLine", context
+        deleteDialogQuery, queryVariables, "deleteLine", context
       );
 
       if(deletionWasSuccessful) {
-        props.deleteLineInDialog(props.line.id);
+        props.deleteDialogInDialogList(props.dialog.id);
       } else {
-        setErrorMessage(`There was a problem when attempting to delete the Line with id ${props.line.id}` +
-          `and text ${text}`);
+        setErrorMessage(`There was a problem when attempting to delete the Dialog with id ${props.dialog.id}` +
+          `and name ${name}`);
       }
     } catch(error) {
       setErrorMessage(error.message);
@@ -81,52 +78,41 @@ export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props)
 
   return (
     <li>
-      <form>
+      <form
+        onSubmit={(event: SyntheticEvent) => {
+          event.preventDefault();
+        }}
+      >
         <div>
-          <label htmlFor={`line-role-${props.line.id}`}>Role</label>
-          <select
-            name="role"
-            id={`line-role-${props.line.id}`}
-            value={roleId}
-            onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
-              setRoleId(event.target.value);
-              await updateLine({
-                id: props.line.id,
-                roleId: event.target.value,
-              });
-            }}
-          >
-            {props.rolesInDialog.map((role) => {
-              return <option value={role.id} key={role.id}>{role.name}</option>;
-            })}
-          </select>
-        </div>
-        <div>
-          <label htmlFor={`line-text-${props.line.id}`}>Line Text</label>
+          <label htmlFor={`dialog-name-${props.dialog.id}`}>Dialog Name</label>
           <input
-            id={`line-text-${props.line.id}`}
+            id={`dialog-name-${props.dialog.id}`}
             type={"text"}
-            value={text}
+            value={name}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setText(event.target.value);
+              setName(event.target.value);
             }}
             onBlur={async () => {
-              await updateLine({
-                id: props.line.id,
-                text
+              await updateDialog({
+                id: props.dialog.id,
+                name
               });
             }}
           />
         </div>
         <button
-          type={"button"}
+          type={"submit"}
           onClick={async () => {
-            await deleteLine();
+            await deleteDialogAndRemoveFromList();
           }}
         >
-          Delete Line
+          Delete Dialog
         </button>
       </form>
+      <div>
+        <Link to={`${props.match.url}/${props.dialog.id}/choose-role`}>Practice</Link>&nbsp;|&nbsp;
+        <Link to={`${props.match.url}/${props.dialog.id}/edit`}>Edit</Link>
+      </div>
       {errorMessage ? <p>{errorMessage}</p> : null}
     </li>
   );
