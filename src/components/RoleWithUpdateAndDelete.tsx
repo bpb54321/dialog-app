@@ -82,7 +82,11 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
 
   return (
     <li>
-      <form>
+      <form
+        onSubmit={(event: SyntheticEvent) => {
+          event.preventDefault();
+        }}
+      >
         <input
           type={"text"}
           value={name}

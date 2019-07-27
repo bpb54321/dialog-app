@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {ShallowDialog} from "../types/Dialog";
@@ -49,7 +49,15 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
   return (
     <>
       <h3>Add A New Dialog</h3>
-      <form>
+      <form
+        onSubmit={async (event: SyntheticEvent) => {
+          event.preventDefault();
+          await createDialog({
+            name
+          });
+          setName("");
+        }}
+      >
         <div>
           <label htmlFor={`new-dialog-name`}>Dialog Name</label>
           <input
@@ -62,13 +70,7 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
           />
         </div>
         <button
-          type={"button"}
-          onClick={async () => {
-            await createDialog({
-              name
-            });
-            setName("");
-          }}
+          type={"submit"}
         >
           Add Dialog
         </button>

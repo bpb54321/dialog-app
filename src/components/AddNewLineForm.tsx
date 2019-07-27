@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import LineData from "../types/LineData";
@@ -63,7 +63,18 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
     return (
       <>
         <h3>Add A New Line</h3>
-        <form>
+        <form
+          onSubmit={async (event: SyntheticEvent) => {
+            event.preventDefault();
+            await createLine({
+              roleId,
+              dialogId: props.dialogId,
+              text,
+              number: 1,
+            });
+            setText("");
+          }}
+        >
           <div>
             <label htmlFor={`new-line-role`}>Role</label>
             <select
@@ -91,16 +102,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
             />
           </div>
           <button
-            type={"button"}
-            onClick={async () => {
-              await createLine({
-                roleId,
-                dialogId: props.dialogId,
-                text,
-                number: 1,
-              });
-              setText("");
-            }}
+            type={"submit"}
           >
             Add Line
           </button>

@@ -1,4 +1,4 @@
-import React, {ChangeEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import LineData from "../types/LineData";
@@ -80,7 +80,11 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
 
   return (
     <li>
-      <form>
+      <form
+        onSubmit={(event: SyntheticEvent) => {
+          event.preventDefault();
+        }}
+      >
         <div>
           <label htmlFor={`line-role-${props.line.id}`}>Role</label>
           <select
