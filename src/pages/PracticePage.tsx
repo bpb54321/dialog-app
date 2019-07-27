@@ -122,7 +122,6 @@ export default class PracticePage extends React.Component<Props, State> {
 
   addGuessToCurrentLineAndIncrementLineNumber = (lineGuess: string) => {
     this.setState((previousState: State) => {
-      debugger;
 
       const {dialog} = previousState;
 
@@ -172,7 +171,6 @@ export default class PracticePage extends React.Component<Props, State> {
 
             switch (this.state.mode) {
                 case InteractionMode.PracticingLines:
-                  debugger;
                   return (
                     <>
                       <ListOfLines
@@ -187,7 +185,6 @@ export default class PracticePage extends React.Component<Props, State> {
                     </>
                   );
                 case InteractionMode.DialogComplete:
-                  debugger;
                   return (
                     <ListOfLines
                       dialog={this.state.dialog}

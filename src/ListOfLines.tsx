@@ -16,7 +16,6 @@ export default class ListOfLines extends React.Component<Props, State> {
   state = {};
 
   render() {
-    debugger;
     return (
       <ul data-testid={"lines"} >
         {this.props.dialog.lines.filter((lineData: LineData) => {

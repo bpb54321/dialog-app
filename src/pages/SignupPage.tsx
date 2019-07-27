@@ -1,8 +1,8 @@
 import React from 'react';
-import LoginForm from "../components/LoginForm";
 import {Link} from "react-router-dom";
 import {GlobalContextObject} from "../contexts/GlobalContext";
 import {GlobalConsumer} from "../contexts/GlobalContext";
+import {SignupForm} from "../components/SignupForm";
 
 interface Props {
 
@@ -12,21 +12,6 @@ interface State {
 }
 
 export default class SignupPage extends React.Component<Props, State> {
-
-  signupTemplate = (email: string, password: string, name?: string) => {
-    return (
-      `
-        mutation {
-            signup(email: "${email}", password: "${password}", name: "${name}") {
-              token,
-              user {
-                name
-              }
-            }
-        }
-      `
-    );
-  };
 
   render() {
     return (
@@ -44,7 +29,7 @@ export default class SignupPage extends React.Component<Props, State> {
                   </p>
                 :
                   <>
-                    <LoginForm queryTemplateFunction={this.signupTemplate} fieldName={"signup"}/>
+                    <SignupForm/>
                     <Link to={"/auth"}>Login</Link>
                   </>
               }
