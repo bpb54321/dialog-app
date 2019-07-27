@@ -3,12 +3,12 @@ import React from 'react';
 import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
 import './App.css';
 
-import Dialog from "./types/Dialog";
+import {Dialog} from "./types/Dialog";
 
 import {InteractionMode} from "./types/InteractionMode";
 import DialogListPage from "./pages/DialogListPage";
 import AuthPage from "./pages/AuthPage";
-import ChooseRolePage from "./pages/ChooseRolePage";
+import {ChooseRolePage} from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
 
 import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalContext";
