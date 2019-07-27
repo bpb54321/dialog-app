@@ -9,6 +9,7 @@ interface Props {
 
 export const ChooseRolePage: FunctionComponent<Props> = (props) => {
 
+  debugger;
   return(
     <>
       <h1>The Choose Role Page</h1>

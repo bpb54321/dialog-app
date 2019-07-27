@@ -3,7 +3,7 @@ import {GlobalContextObject} from "../contexts/GlobalContext";
 import fetchData from "../utils/fetch-data";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
-import Dialog from "../types/Dialog";
+import {Dialog} from "../types/Dialog";
 import {GlobalConsumer} from "../contexts/GlobalContext";
 import {InteractionMode} from "../types/InteractionMode";
 import ListOfLines from "../ListOfLines";
@@ -24,37 +24,13 @@ interface State {
   errorMessage: string;
 }
 
-export default class PracticePage extends React.Component<Props, State> {
-
-  state = {
-    userLineNumberIndex: 0,
-    userLineNumbers: [],
-    dialog: {
-      id: "",
-      name: "",
-      lines: [],
-    },
-    errorMessage: "",
-    mode: InteractionMode.PracticingLines,
-  };
-
-  componentDidMount(): void {
-    const {data} = this.props.context;
-    const {
-      params: {
-        dialogId
-      }
-    } = this.props.match;
-
-
-    //region query
-    const singleDialogQuery = `
-      query {
-        dialog(id: "${dialogId}") {
+//region singleDialogQuery
+const singleDialogQuery = `
+      query DialogQuery($id: String!) {
+        dialog(id: $id) {
           name
           lines {
             text
-            guess
             number
             role {
               id
@@ -64,23 +40,49 @@ export default class PracticePage extends React.Component<Props, State> {
         }
       }
     `;
-    //endregion
+//endregion
 
-    fetchData(singleDialogQuery, data.token, data.apiEndpoint, (body) => {
-      const {dialog} = body.data;
+export default class PracticePage extends React.Component<Props, State> {
 
+  state = {
+    userLineNumberIndex: 0,
+    userLineNumbers: [],
+    dialog: {
+      id: "",
+      name: "",
+      lines: [],
+      roles: [],
+    },
+    errorMessage: "",
+    mode: InteractionMode.PracticingLines,
+  };
+
+  async componentDidMount(): Promise<void> {
+
+    const {
+      params: {
+        dialogId
+      }
+    } = this.props.match;
+
+    const queryVariables = {
+      id: dialogId,
+    };
+
+    fetchData(singleDialogQuery, queryVariables, "dialog", this.props.context).then((dialog) => {
       // Calculate the user line numbers
-      const userLineNumbers = this.calculateUserLineNumbers(dialog, data.chosenRole);
+      const userLineNumbers = this.calculateUserLineNumbers(dialog, this.props.context.data.chosenRole);
 
       this.setState({
         dialog: dialog,
         userLineNumbers: userLineNumbers,
       });
-    }, (errorMessage) => {
+    }).catch((error) => {
       this.setState({
-        errorMessage: errorMessage
+        errorMessage: error.message
       });
-    });
+    })
+
   }
 
   /**

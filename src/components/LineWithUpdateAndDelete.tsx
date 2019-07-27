@@ -37,6 +37,7 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   const context = useContext(GlobalContext);
 
   const [text, setText] = useState(props.line.text);
+  const [number, setNumber] = useState(String(props.line.number));
   const [roleId, setRoleId] = useState(props.line.role.id);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -117,6 +118,27 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
               await updateLine({
                 id: props.line.id,
                 text
+              });
+            }}
+          />
+        </div>
+        <div>
+          <label htmlFor={`line-number-${props.line.id}`}>Line Number</label>
+          <input
+            id={`line-number-${props.line.id}`}
+            type={"number"}
+            step={1}
+            min={1}
+            value={number}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              if (!(event.target.value === "")) {
+                setNumber(event.target.value);
+              }
+            }}
+            onBlur={async () => {
+              await updateLine({
+                id: props.line.id,
+                number: parseInt(number)
               });
             }}
           />
