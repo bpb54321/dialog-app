@@ -35,9 +35,10 @@ export const SignupForm: FunctionComponent = () => {
 
       const {token} = await fetchData(signupQuery, queryVariables, "signup", context);
 
+      window.sessionStorage.setItem('token', token);
+
       context.actions.setGlobalState({
-        token,
-        loggedIn: true,
+        token: token
       });
 
     } catch (error) {

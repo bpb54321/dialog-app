@@ -4,6 +4,7 @@ import {GlobalConsumer} from "../contexts/GlobalContext";
 import fetchData from "../utils/fetch-data";
 
 interface Props {
+  history: any;
 }
 
 interface State {
@@ -42,9 +43,10 @@ export default class LoginForm extends React.Component<Props, State> {
 
       const {token} = await fetchData(loginQuery, queryVariables, "login", context);
 
+      window.sessionStorage.setItem('token', token);
+
       context.actions.setGlobalState({
-        token,
-        loggedIn: true,
+        token: token,
       });
 
     } catch (error) {

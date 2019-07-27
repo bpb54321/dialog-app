@@ -21,7 +21,7 @@ export default class SignupPage extends React.Component<Props, State> {
             <>
               <h1>Sign Up</h1>
               {
-                context.data.loggedIn
+                context.data.token
                 ?
                   <p>
                     User account successfully created! Visit the <Link to={"/dialogs"}>Dialog Page</Link> to create

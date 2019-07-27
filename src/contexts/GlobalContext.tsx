@@ -10,11 +10,10 @@ interface Props {
 }
 
 interface GlobalState {
-  token: string;
-  loggedIn: boolean;
   apiEndpoint: string;
   chosenRole: Role;
   speechRecognition: any;
+  token: any;
 }
 
 export interface GlobalContextObject {
@@ -27,14 +26,13 @@ export interface GlobalContextObject {
 export class GlobalProvider extends React.Component<Props, GlobalState> {
 
   state = {
-    token: "",
-    loggedIn: false,
     apiEndpoint: "",
     chosenRole: {
       id: "",
       name: "",
     },
     speechRecognition: null,
+    token: null,
   };
 
   constructor(props: Props) {
@@ -47,6 +45,8 @@ export class GlobalProvider extends React.Component<Props, GlobalState> {
     }
 
     this.state.speechRecognition = props.speechRecognition;
+
+    this.state.token =  window.sessionStorage.getItem("token");
   }
 
   setGlobalState = (newStateObject: Partial<GlobalState>) => {

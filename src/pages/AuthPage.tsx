@@ -1,18 +1,16 @@
-import React from 'react';
+import React, {FunctionComponent} from 'react';
 import LoginForm from "../components/LoginForm";
 import {Link} from "react-router-dom";
 
 interface Props {
+  history: any;
 }
 
-interface State {
-}
-
-export default function AuthPage(props: Props) {
+export const AuthPage: FunctionComponent<Props> = (props) => {
   return (
     <>
       <h1>Login</h1>
-      <LoginForm />
+      <LoginForm history={props.history}/>
       <Link to={"/sign-up"}>Sign Up</Link>
     </>
   );

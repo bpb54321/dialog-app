@@ -7,7 +7,7 @@ import {Dialog} from "./types/Dialog";
 
 import {InteractionMode} from "./types/InteractionMode";
 import DialogListPage from "./pages/DialogListPage";
-import AuthPage from "./pages/AuthPage";
+import {AuthPage} from "./pages/AuthPage";
 import {ChooseRolePage} from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
 
@@ -46,7 +46,7 @@ export class App extends React.Component<AppProps, AppState> {
         <BrowserRouter>
             <GlobalConsumer>
               {(context: GlobalContextObject) => {
-                if (!context.data.loggedIn) {
+                if (!context.data.token) {
                   return (
                     <Switch>
                       <Route path={"/auth"} component={AuthPage}/>
