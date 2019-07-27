@@ -1,10 +1,9 @@
 import React from 'react';
-import {GlobalContextObject} from "../contexts/GlobalContext";
+import {GlobalConsumer, GlobalContextObject} from "../contexts/GlobalContext";
 import fetchData from "../utils/fetch-data";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
 import {Dialog} from "../types/Dialog";
-import {GlobalConsumer} from "../contexts/GlobalContext";
 import {InteractionMode} from "../types/InteractionMode";
 import ListOfLines from "../ListOfLines";
 import LineGuess from "../LineGuess";
@@ -19,6 +18,7 @@ interface Props {
 interface State {
   userLineNumberIndex: number;
   userLineNumbers: number[];
+  currentLineNumber: number;
   dialog: Dialog;
   mode: InteractionMode;
   errorMessage: string;
@@ -47,6 +47,7 @@ export default class PracticePage extends React.Component<Props, State> {
   state = {
     userLineNumberIndex: 0,
     userLineNumbers: [],
+    currentLineNumber: 0,
     dialog: {
       id: "",
       name: "",
@@ -70,12 +71,26 @@ export default class PracticePage extends React.Component<Props, State> {
     };
 
     fetchData(singleDialogQuery, queryVariables, "dialog", this.props.context).then((dialog) => {
+
       // Calculate the user line numbers
       const userLineNumbers = this.calculateUserLineNumbers(dialog, this.props.context.data.chosenRole);
+
+      let currentLineNumber: number;
+      let mode: InteractionMode;
+
+      if (userLineNumbers.length > 0) {
+        mode = InteractionMode.PracticingLines;
+        currentLineNumber = userLineNumbers[0];
+      } else {
+        mode = InteractionMode.DialogComplete;
+        currentLineNumber = dialog.lines.slice(-1)[0].number;
+      }
 
       this.setState({
         dialog: dialog,
         userLineNumbers: userLineNumbers,
+        mode,
+        currentLineNumber,
       });
     }).catch((error) => {
       this.setState({
@@ -107,44 +122,45 @@ export default class PracticePage extends React.Component<Props, State> {
 
   addGuessToCurrentLineAndIncrementLineNumber = (lineGuess: string) => {
     this.setState((previousState: State) => {
-      let currentLineNumber: number;
-      let nextLineIndex: number;
+      debugger;
+
+      const {dialog} = previousState;
+
+      const linesUpdatedWithGuess = dialog.lines.map((line: LineData) => {
+          if (line.number === this.state.currentLineNumber) {
+            line.guess = lineGuess;
+          }
+
+          return line;
+      });
+
+      let nextLineIndex: number = previousState.userLineNumberIndex + 1;
+
       let nextMode: InteractionMode;
-      let nextDialog: Dialog;
-
-      currentLineNumber = previousState.userLineNumbers[previousState.userLineNumberIndex];
-
-      nextDialog = {
-        ...previousState.dialog
-      };
-
-      nextDialog.lines[currentLineNumber].guess = lineGuess;
-
-      nextLineIndex = previousState.userLineNumberIndex + 1;
+      let nextLineNumber: number;
 
       if (nextLineIndex < previousState.userLineNumbers.length) {
 
         nextMode = InteractionMode.PracticingLines;
-
-        return ({
-          ...previousState,
-          dialog: nextDialog,
-          userLineNumberIndex: nextLineIndex,
-          mode: nextMode,
-        });
+        nextLineNumber = previousState.userLineNumbers[nextLineIndex];
 
       } else {
 
         nextMode = InteractionMode.DialogComplete;
-
-        return ({
-          ...previousState,
-          dialog: nextDialog,
-          userLineNumberIndex: previousState.userLineNumbers.length - 1,
-          mode: nextMode,
-        });
+        nextLineNumber = dialog.lines.slice(-1)[0].number; // Last line in dialog
 
       }
+
+      return ({
+        ...previousState,
+        dialog: {
+          ...dialog,
+          lines: linesUpdatedWithGuess,
+        },
+        userLineNumberIndex: nextLineIndex,
+        currentLineNumber: nextLineNumber,
+        mode: nextMode,
+      });
     });
   };
 
@@ -153,21 +169,15 @@ export default class PracticePage extends React.Component<Props, State> {
       <>
         <GlobalConsumer>
           {(context: GlobalContextObject) => {
-            const {userLineNumbers, userLineNumberIndex} = this.state;
-
-            let currentLineNumber = 0;
-            if (userLineNumbers.length > 0) {
-              currentLineNumber = userLineNumbers[userLineNumberIndex];
-            }
 
             switch (this.state.mode) {
                 case InteractionMode.PracticingLines:
+                  debugger;
                   return (
                     <>
-                      <h1>The Practice Page</h1>
                       <ListOfLines
                         dialog={this.state.dialog}
-                        lastLineToDisplay={currentLineNumber - 1}
+                        lastLineToDisplay={this.state.currentLineNumber - 1}
                       />
                       <LineGuess
                         userRole={context.data.chosenRole}
@@ -177,10 +187,11 @@ export default class PracticePage extends React.Component<Props, State> {
                     </>
                   );
                 case InteractionMode.DialogComplete:
+                  debugger;
                   return (
                     <ListOfLines
                       dialog={this.state.dialog}
-                      lastLineToDisplay={this.state.dialog.lines.length - 1}
+                      lastLineToDisplay={this.state.currentLineNumber}
                     />
                   );
               }
