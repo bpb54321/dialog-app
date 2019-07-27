@@ -32,7 +32,7 @@ export class GlobalProvider extends React.Component<Props, GlobalState> {
       name: "",
     },
     speechRecognition: null,
-    token: null,
+    token: "",
   };
 
   constructor(props: Props) {
@@ -46,7 +46,7 @@ export class GlobalProvider extends React.Component<Props, GlobalState> {
 
     this.state.speechRecognition = props.speechRecognition;
 
-    this.state.token =  window.sessionStorage.getItem("token");
+    this.state.token =  (window.sessionStorage.getItem("token") as any);
   }
 
   setGlobalState = (newStateObject: Partial<GlobalState>) => {
