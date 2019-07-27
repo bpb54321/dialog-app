@@ -1,7 +1,7 @@
 import React from 'react';
 import LineData from "./types/LineData";
 import Line from "./Line";
-import Dialog from "./types/Dialog";
+import {Dialog} from "./types/Dialog";
 
 interface Props {
   dialog: Dialog,
@@ -16,6 +16,7 @@ export default class ListOfLines extends React.Component<Props, State> {
   state = {};
 
   render() {
+    debugger;
     return (
       <ul data-testid={"lines"} >
         {this.props.dialog.lines.filter((lineData: LineData) => {

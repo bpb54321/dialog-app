@@ -1,8 +1,9 @@
 import React from 'react';
 import {GlobalContextObject} from "../contexts/GlobalContext";
-import Dialog from "../types/Dialog";
-import {Link} from "react-router-dom";
+import {Dialog, ShallowDialog} from "../types/Dialog";
 import fetchData from "../utils/fetch-data";
+import {AddNewDialogForm} from "../components/AddNewDialogForm";
+import {DialogWithUpdateAndDelete} from "../components/DialogWithUpdateAndDelete";
 
 interface Props {
   context: GlobalContextObject;
@@ -13,8 +14,18 @@ interface Props {
 
 interface State {
   errorMessage: string;
-  dialogs: Dialog[];
+  dialogs: ShallowDialog[];
 }
+
+const dialogsQuery =
+  `
+    query DialogsQuery {
+        dialogs {
+          name
+          id
+        }
+    }
+  `;
 
 export default class DialogListPage extends React.Component<Props, State> {
 
@@ -23,43 +34,64 @@ export default class DialogListPage extends React.Component<Props, State> {
     dialogs: [],
   };
 
-  componentDidMount() {
-    const {data} = this.props.context;
+  async componentDidMount() {
 
-    const dialogQuery = `
-      query {
-          dialogs {
-            name
-            id
-          }
-      }
-    `;
+    try {
+      const dialogs = await fetchData(
+        dialogsQuery, {}, "dialogs", this.props.context
+      );
 
-    fetchData(dialogQuery, data.token, data.apiEndpoint, (body) => {
       this.setState({
-        dialogs: body.data.dialogs
+        dialogs
       });
-    }, (errorMessage) => {
+
+    } catch(error) {
+
       this.setState({
-        errorMessage: errorMessage
+        errorMessage: error.message,
       });
-    });
+
+    }
   }
+
+  addDialogToState = (dialog: ShallowDialog) => {
+    this.setState((previousState: State) => {
+      return {
+        dialogs: [...previousState.dialogs, dialog],
+      };
+    });
+  };
+
+  removeDialogFromList = (dialogId: string) => {
+    this.setState((previousState) => {
+      const newDialogs = previousState.dialogs.filter((dialog) => {
+        return dialog.id !== dialogId;
+      });
+
+      return {
+        dialogs: newDialogs
+      };
+    });
+  };
 
   render() {
     return (
       <div>
-        <h1>The Dialog List Page</h1>
+        <h1>Dialogs</h1>
         <ul>
           {this.state.dialogs.map(
             (dialog: Dialog) => {
               return (
-                <li key={dialog.id}>
-                  <Link to={`${this.props.match.url}/${dialog.id}/choose-role`}>{dialog.name}</Link>
-                </li>
+                <DialogWithUpdateAndDelete
+                  key={dialog.id}
+                  dialog={dialog}
+                  deleteDialogInDialogList={this.removeDialogFromList}
+                  match={this.props.match}
+                />
               );
             })}
         </ul>
+        <AddNewDialogForm addDialogToDialogList={this.addDialogToState}/>
       </div>
     );
   }

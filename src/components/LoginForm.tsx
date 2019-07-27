@@ -1,11 +1,9 @@
 import React, {ChangeEvent, FormEvent} from 'react';
 import {GlobalContextObject} from "../contexts/GlobalContext";
-import GraphqlError from "../types/GraphqlError";
 import {GlobalConsumer} from "../contexts/GlobalContext";
+import fetchData from "../utils/fetch-data";
 
 interface Props {
-  fieldName: string;
-  queryTemplateFunction: (email: string, password: string, name?: string) => string;
 }
 
 interface State {
@@ -13,6 +11,15 @@ interface State {
   password?: string;
   errorMessage?: string;
 }
+
+const loginQuery =
+  `
+    mutation LoginQuery($email: String!, $password: String!) {
+        login(email: $email, password: $password) {
+          token
+        }
+    }
+  `;
 
 export default class LoginForm extends React.Component<Props, State> {
 
@@ -22,50 +29,31 @@ export default class LoginForm extends React.Component<Props, State> {
     errorMessage: "",
   };
 
-  handleSubmit = (event: FormEvent, context: GlobalContextObject) => {
+  handleSubmit = async (event: FormEvent, context: GlobalContextObject) => {
     event.preventDefault();
-
-    const {actions} = context;
 
     const {email, password} = this.state;
 
-    const query = this.props.queryTemplateFunction(email, password);
+    try {
+      const queryVariables = {
+        email,
+        password,
+      };
 
-    fetch(context.data.apiEndpoint, {
-      method: "POST",
-      body: JSON.stringify({
-        query: query,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      mode: "cors",
-    }).then((response) => {
-      debugger;
-      return response.json();
-    }).then((body) => {
-      debugger;
-      if (body.errors) {
-        let errorMessage = body.errors.reduce((accumulator: string, error: GraphqlError) => {
-          return accumulator + " " + error.message;
-        }, "");
-        this.setState({
-          errorMessage: errorMessage
-        });
-      } else {
-        const result = body.data[this.props.fieldName];
-        const token = result.token;
-        actions.setGlobalState({
-          token,
-          loggedIn: true,
-        });
-      }
-    }).catch((error) => {
-      this.setState({
-        errorMessage: error.message
+      const {token} = await fetchData(loginQuery, queryVariables, "login", context);
+
+      context.actions.setGlobalState({
+        token,
+        loggedIn: true,
       });
-      console.log(error);
-    });
+
+    } catch (error) {
+
+      this.setState({
+        errorMessage: error.message,
+      });
+
+    }
   };
 
   handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -103,9 +91,12 @@ export default class LoginForm extends React.Component<Props, State> {
                 <div className="form-actions">
                   <button type={"submit"}>Submit</button>
                 </div>
-                {this.state.errorMessage
-                  ? <p>{this.state.errorMessage}</p>
-                  : null
+                {
+                  this.state.errorMessage
+                  ?
+                    <p>{this.state.errorMessage}</p>
+                  :
+                    null
                 }
               </form>
             </div>

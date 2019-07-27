@@ -1,31 +1,28 @@
-import GraphqlError from "../types/GraphqlError";
+import {GlobalContextObject} from "../contexts/GlobalContext";
 
-export default function fetchData(
-  query: string, token: string = "", apiEndpoint: string, resultCallback: (body: any) => void,
-  errorMessageCallback: (errorMessage: string) => void
-): void {
-  fetch(apiEndpoint, {
+export default async function fetchData(query: string, queryVariables: {[index: string]: any},
+                                        topLevelQueryField: string, globalContext: GlobalContextObject) {
+  const {data} = globalContext;
+
+  const response = await fetch(data.apiEndpoint, {
     method: "POST",
     body: JSON.stringify({
       query: query,
+      variables: queryVariables,
     }),
     headers: {
-      "Authorization": token ? `Bearer ${token}` : "",
+      "Authorization": data.token ? `Bearer ${data.token}` : "",
       "Content-Type": "application/json",
     },
     mode: "cors",
-  }).then((response) => {
-    return response.json();
-  }).then((body) => {
-    if (body.errors) {
-      let errorMessage = body.errors.reduce((accumulator: string, error: GraphqlError) => {
-        return accumulator + " " + error.message;
-      }, "");
-      errorMessageCallback(errorMessage);
-    } else {
-      resultCallback(body);
-    }
-  }).catch((error) => {
-    console.log(error);
   });
+
+  const body = await response.json();
+
+  if (body.errors && body.errors.length > 0) {
+    throw Error(body.errors[0].message);
+  }
+
+  return body.data[topLevelQueryField];
 }
+
