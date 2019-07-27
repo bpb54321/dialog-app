@@ -33,28 +33,33 @@ export const RolePicker: React.FunctionComponent<Props> = (props) => {
 
   useEffect(() => {
 
-    const {
-      params: {
-        dialogId
-      }
-    } = props.match;
+    // Only fetch data if we don't yet know our possible roles
+    if (possibleRoles.length === 0) {
 
-    const queryVariables = {
-      id: dialogId,
-    };
+      const {
+        params: {
+          dialogId
+        }
+      } = props.match;
 
-    fetchData(dialogQuery, queryVariables, "dialog", context).then((dialog: {
-      name: string;
-      roles: Role[];
-    }) => {
-      setPossibleRoles(dialog.roles);
+      const queryVariables = {
+        id: dialogId,
+      };
 
-      if (dialog.roles.length > 0) {
-        setChosenRole(dialog.roles[0]);
-      }
-    }).catch((error: Error) => {
-      setErrorMessage(error.message);
-    });
+      fetchData(dialogQuery, queryVariables, "dialog", context).then((dialog: {
+        name: string;
+        roles: Role[];
+      }) => {
+        setPossibleRoles(dialog.roles);
+
+        if (dialog.roles.length > 0) {
+          setChosenRole(dialog.roles[0]);
+        }
+      }).catch((error: Error) => {
+        setErrorMessage(error.message);
+      });
+
+    }
   });
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
