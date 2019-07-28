@@ -3,6 +3,7 @@ import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {ShallowDialog} from "../types/Dialog";
 import {Link} from "react-router-dom";
+import {LANGUAGE_CODES} from "../utils/constants";
 
 interface Props {
   dialog: ShallowDialog;
@@ -13,10 +14,11 @@ interface Props {
 //region updateLineQuery
 const updateDialogQuery =
   `
-    mutation UpdateDialog($id: String!, $name: String) {
-      updateDialog(id: $id, name: $name) {
+    mutation UpdateDialog($id: String!, $name: String, $languageCode: String) {
+      updateDialog(id: $id, name: $name, languageCode: $languageCode) {
         id
         name
+        languageCode
       }
     }
   `;
@@ -31,18 +33,18 @@ const deleteDialogQuery =
   `;
 //endregion
 
-// TODO: Finish updating DialogWithUpdateAndDelete
-
 export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
   const context = useContext(GlobalContext);
 
   const [name, setName] = useState(props.dialog.name);
+  const [languageCode, setLanguageCode] = useState(props.dialog.languageCode);
   const [errorMessage, setErrorMessage] = useState("");
 
   const updateDialog = async (queryVariables: {
       id: string;
-      name: string;
+      name?: string;
+      languageCode?: string;
     }): Promise<void> => {
 
     try {
@@ -99,6 +101,25 @@ export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props)
               });
             }}
           />
+        </div>
+        <div>
+          <label htmlFor={`dialog-lang-$${props.dialog.id}`}>Dialog Language</label>
+          <select
+            name="languageCode"
+            id={`dialog-lang-$${props.dialog.id}`}
+            value={languageCode}
+            onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
+              setLanguageCode(event.target.value);
+              await updateDialog({
+                id: props.dialog.id,
+                languageCode: event.target.value,
+              })
+            }}
+          >
+            {LANGUAGE_CODES.map((language) => {
+              return <option value={language.code} key={language.code}>{language.description}</option>;
+            })}
+          </select>
         </div>
         <button
           type={"submit"}
