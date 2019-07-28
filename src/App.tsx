@@ -50,8 +50,9 @@ export class App extends React.Component<AppProps, AppState> {
                   return (
                     <>
                       <header>
-                        <nav className="navbar navbar-light bg-light">
+                        <nav className="navbar navbar-light bg-light justify-content-between">
                           <Link className="navbar-brand app__home-link" to={"/"}>Dialog Practice</Link>
+                          <button className={"nav-link"}>Log Out</button>
                         </nav>
                       </header>
                       <main className={"app__main"}>
