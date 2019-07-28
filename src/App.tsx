@@ -15,6 +15,7 @@ import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalContext";
 import {GlobalContextObject} from "./contexts/GlobalContext";
 import SignupPage from "./pages/SignupPage";
 import DialogEditPage from "./pages/DialogEditPage";
+import {LogoutButton} from "./components/LogoutButton";
 
 interface AppProps {
   speechRecognition: SpeechRecognition;
@@ -52,7 +53,7 @@ export class App extends React.Component<AppProps, AppState> {
                       <header>
                         <nav className="navbar navbar-light bg-light justify-content-between">
                           <Link className="navbar-brand app__home-link" to={"/"}>Dialog Practice</Link>
-                          <button className={"nav-link"}>Log Out</button>
+                          <LogoutButton/>
                         </nav>
                       </header>
                       <main className={"app__main"}>
