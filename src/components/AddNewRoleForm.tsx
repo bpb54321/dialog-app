@@ -69,7 +69,7 @@ export const AddNewRoleForm: React.FunctionComponent<Props> = (props) => {
           />
         </div>
         <button type={"submit"}>
-          Add Line
+          Add Role
         </button>
       </form>
       {errorMessage ? <p>{errorMessage}</p> : null}
