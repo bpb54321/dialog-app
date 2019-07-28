@@ -12,4 +12,5 @@ export interface Dialog {
 export interface ShallowDialog {
     id: string;
     name: string;
+    languageCode: string;
 }
