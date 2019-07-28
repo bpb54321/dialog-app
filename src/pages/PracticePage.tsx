@@ -29,6 +29,7 @@ const singleDialogQuery = `
       query DialogQuery($id: String!) {
         dialog(id: $id) {
           name
+          languageCode
           lines {
             text
             number
@@ -96,7 +97,7 @@ export default class PracticePage extends React.Component<Props, State> {
 
       const speechRecognition = this.props.context.data.speechRecognition;
       speechRecognition.lang = dialog.languageCode;
-      
+
     }).catch((error) => {
       this.setState({
         errorMessage: error.message
