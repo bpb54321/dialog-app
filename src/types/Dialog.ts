@@ -6,6 +6,7 @@ export interface Dialog {
     name: string;
     roles: Role[];
     lines: LineData[];
+    languageCode: string;
 }
 
 export interface ShallowDialog {
