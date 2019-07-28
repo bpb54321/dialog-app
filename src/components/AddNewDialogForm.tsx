@@ -2,7 +2,7 @@ import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {ShallowDialog} from "../types/Dialog";
-
+import {LANGUAGE_CODES} from "../utils/constants";
 
 
 interface Props {
@@ -20,17 +20,6 @@ const createDialogQuery =
     }
   `;
 //endregion
-
-const languageCodes = [
-  {
-    code: "en-US",
-    description: "English, United States"
-  },
-  {
-    code: "fr-FR",
-    description: "French, France"
-  },
-];
 
 export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
 
@@ -93,7 +82,7 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
               setLanguageCode(event.target.value);
             }}
           >
-            {languageCodes.map((language) => {
+            {LANGUAGE_CODES.map((language) => {
               return <option value={language.code} key={language.code}>{language.description}</option>;
             })}
           </select>
