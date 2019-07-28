@@ -8,6 +8,7 @@ import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
 import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
 import {AddNewLineForm} from "../components/AddNewLineForm";
 import {AddNewRoleForm} from "../components/AddNewRoleForm";
+import {DialogWithUpdateAndDelete} from "../components/DialogWithUpdateAndDelete";
 
 interface Props {
   context: GlobalContextObject;
@@ -29,6 +30,7 @@ const dialogQuery =
       dialog(id: $id) {
         id
         name
+        languageCode
         roles {
           id
           name
@@ -55,6 +57,7 @@ export default class DialogEditPage extends React.Component<Props, State> {
       name: "",
       roles: [],
       lines: [],
+      languageCode: "",
     },
     loading: true,
     errorMessage: "",
@@ -152,7 +155,7 @@ export default class DialogEditPage extends React.Component<Props, State> {
             <p>Loading dialog...</p>
           :
             <div>
-              <h1>{this.state.dialog.name}</h1>
+              <h1>Edit Dialog: {this.state.dialog.name}</h1>
               <div>
                 <h2>Roles</h2>
                 <ul>
