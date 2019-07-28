@@ -79,8 +79,8 @@ export default class DialogListPage extends React.Component<Props, State> {
       <div>
         <h1>Dialogs</h1>
         <ul>
-          {this.state.dialogs.map(
-            (dialog: Dialog) => {
+          {
+            this.state.dialogs.map((dialog: Dialog) => {
               return (
                 <DialogWithUpdateAndDelete
                   key={dialog.id}
@@ -89,7 +89,8 @@ export default class DialogListPage extends React.Component<Props, State> {
                   match={this.props.match}
                 />
               );
-            })}
+            })
+          }
         </ul>
         <AddNewDialogForm addDialogToDialogList={this.addDialogToState}/>
       </div>

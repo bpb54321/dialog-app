@@ -12,24 +12,37 @@ interface Props {
 //region createDialogQuery
 const createDialogQuery =
   `
-    mutation CreateDialogQuery($name: String!) {
-        createDialog(name: $name) {
-          name
-          id
-        }
+    mutation CreateDialog($name: String!, $languageCode: String!) {
+      createDialog(name: $name, languageCode: $languageCode) {
+        name
+        languageCode
+      }
     }
   `;
 //endregion
+
+const languageCodes = [
+  {
+    code: "en-US",
+    description: "English, United States"
+  },
+  {
+    code: "fr-FR",
+    description: "French, France"
+  },
+];
 
 export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
 
   const context = useContext(GlobalContext);
 
   const [name, setName] = useState("");
+  const [languageCode, setLanguageCode] = useState("en-US");
   const [errorMessage, setErrorMessage] = useState("");
 
   const createDialog = async (queryVariables: {
     name: string;
+    languageCode: string;
   }): Promise<void> => {
 
     try {
@@ -53,7 +66,8 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
         onSubmit={async (event: SyntheticEvent) => {
           event.preventDefault();
           await createDialog({
-            name
+            name,
+            languageCode,
           });
           setName("");
         }}
@@ -68,6 +82,21 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
               setName(event.target.value);
             }}
           />
+        </div>
+        <div>
+          <label htmlFor={`new-dialog-lang`}>Dialog Language</label>
+          <select
+            name="languageCode"
+            id={`new-dialog-lang`}
+            value={languageCode}
+            onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
+              setLanguageCode(event.target.value);
+            }}
+          >
+            {languageCodes.map((language) => {
+              return <option value={language.code} key={language.code}>{language.description}</option>;
+            })}
+          </select>
         </div>
         <button
           type={"submit"}
