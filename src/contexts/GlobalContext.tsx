@@ -44,7 +44,13 @@ export class GlobalProvider extends React.Component<Props, GlobalState> {
       this.state.apiEndpoint = (process.env.REACT_APP_PRODUCTION_API_ENDPOINT as string);
     }
 
-    this.state.speechRecognition = props.speechRecognition;
+    const speechRecognition = props.speechRecognition;
+
+    speechRecognition.interimResults = true;
+    speechRecognition.maxAlternatives = 1;
+    speechRecognition.continuous = true;
+
+    this.state.speechRecognition = speechRecognition;
 
     this.state.token =  (window.sessionStorage.getItem("token") as any);
   }

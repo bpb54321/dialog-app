@@ -53,6 +53,7 @@ export default class PracticePage extends React.Component<Props, State> {
       name: "",
       lines: [],
       roles: [],
+      languageCode: "",
     },
     errorMessage: "",
     mode: InteractionMode.PracticingLines,
@@ -92,6 +93,10 @@ export default class PracticePage extends React.Component<Props, State> {
         mode,
         currentLineNumber,
       });
+
+      const speechRecognition = this.props.context.data.speechRecognition;
+      speechRecognition.lang = dialog.languageCode;
+      
     }).catch((error) => {
       this.setState({
         errorMessage: error.message
