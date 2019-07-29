@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useContext, useEffect, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import LineData from "../types/LineData";
@@ -32,14 +32,29 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
   const context = useContext(GlobalContext);
 
   const [text, setText] = useState("");
-
-  let defaultRoleId = "";
-  if (props.rolesInDialog.length > 0) {
-    defaultRoleId = props.rolesInDialog[0].id;
-  }
-
-  const [roleId, setRoleId] = useState(defaultRoleId);
+  const [roleId, setRoleId] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    /*
+     * When the Dialog is initially edited, it will have no roles. In that case, the conditional
+     * in this hook will not be true.
+     *
+     * When a user adds a role to the dialog, this component will be re-rendered because
+     * props.rolesInDialog will change, and useEffect will run.
+     *
+     * If, when the component is rerendered, the roleId === "" (which means it was never changed
+     * from its default value), then the conditional will be true, giving the component's roleId
+     * state variable the id of the first role in the list of roles in the dialog.
+     *
+     * Henceforth, the condition should not be true, unless all roles in the dialog are deleted,
+     * at which point it should start over again.
+     */
+    if (roleId === "" && props.rolesInDialog.length > 0) {
+      debugger;
+      setRoleId(props.rolesInDialog[0].id);
+    }
+  }, [props.rolesInDialog]);
 
   const createLine = async (queryVariables: {
     text: string;
