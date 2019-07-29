@@ -11,7 +11,6 @@ export const LogoutButton: React.FunctionComponent<Props> = (props) => {
   const context = useContext(GlobalContext);
 
   const logout = () => {
-    debugger;
     window.sessionStorage.removeItem("token");
     context.actions.setGlobalState({
       token: "",

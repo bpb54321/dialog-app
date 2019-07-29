@@ -51,7 +51,6 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
      * at which point it should start over again.
      */
     if (roleId === "" && props.rolesInDialog.length > 0) {
-      debugger;
       setRoleId(props.rolesInDialog[0].id);
     }
   }, [props.rolesInDialog, roleId]);
