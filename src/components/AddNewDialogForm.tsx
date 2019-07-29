@@ -14,6 +14,7 @@ const createDialogQuery =
   `
     mutation CreateDialog($name: String!, $languageCode: String!) {
       createDialog(name: $name, languageCode: $languageCode) {
+        id
         name
         languageCode
       }
@@ -32,7 +33,7 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
   const createDialog = async (queryVariables: {
     name: string;
     languageCode: string;
-  }): Promise<void> => {
+  }): Promise<undefined|ShallowDialog> => {
 
     try {
       const createdDialog: ShallowDialog = await fetchData(
@@ -41,7 +42,7 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
         "createDialog",
         context
       );
-      props.addDialogToDialogList(createdDialog);
+      return createdDialog;
     } catch(error) {
       setErrorMessage(error.message);
     }
@@ -54,10 +55,13 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
       <form
         onSubmit={async (event: SyntheticEvent) => {
           event.preventDefault();
-          await createDialog({
+          const returnedDialog = await createDialog({
             name,
             languageCode,
           });
+          if (returnedDialog) {
+            props.addDialogToDialogList(returnedDialog);
+          } 
           setName("");
         }}
       >
