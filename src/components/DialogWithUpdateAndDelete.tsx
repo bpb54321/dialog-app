@@ -1,4 +1,4 @@
-import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useContext, useEffect, useState} from 'react';
 import fetchData from "../utils/fetch-data";
 import {GlobalContext} from "../contexts/GlobalContext";
 import {ShallowDialog} from "../types/Dialog";
@@ -63,7 +63,7 @@ export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props)
 
     try {
       const deletionWasSuccessful: boolean = await fetchData(
-        deleteDialogQuery, queryVariables, "deleteLine", context
+        deleteDialogQuery, queryVariables, "deleteDialog", context
       );
 
       if(deletionWasSuccessful) {
