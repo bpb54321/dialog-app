@@ -43,77 +43,75 @@ export class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      <body className={"app"}>
-        <GlobalProvider speechRecognition={this.props.speechRecognition}>
-          <BrowserRouter>
-              <GlobalConsumer>
-                {(context: GlobalContextObject) => {
-                  return (
-                    <>
-                      <header>
-                        <nav className="navbar navbar-light bg-light justify-content-between">
-                          <Link className="navbar-brand app__home-link" to={"/"}>Dialog Practice</Link>
-                          <LogoutButton/>
-                        </nav>
-                      </header>
-                      <main className={"app__main"}>
-                        {
-                          (!context.data.token) ?
-                            <Switch>
-                              <Route path={"/auth"} component={AuthPage}/>
-                              <Route path={"/sign-up"} component={SignupPage}/>
-                              <Redirect from={"/"} to={"/auth"} />
-                            </Switch>
-                          :
-                            <Switch>
-                              <Redirect exact from={"/"} to={"/dialogs"}/>
-                              <Redirect from={"/auth"} to={"/dialogs"}/>
-                              {/* Sign-up page after account creation, gives user feedback that account was created */}
-                              <Route path={"/sign-up"} component={SignupPage}/>
-                              <Route
-                                exact
-                                path={"/dialogs"}
-                                render={(routeProps) => {
-                                  return (<DialogListPage {...routeProps} context={context}/>);
-                                }}
-                              />
-                              <Route
-                                path={"/dialogs/:dialogId/choose-role"}
-                                render={(routeProps) => {
-                                  return (<ChooseRolePage {...routeProps}/>);
-                                }}
-                              />
-                              <Route
-                                path={"/dialogs/:dialogId/practice"}
-                                render={(routeProps) => {
-                                  return (<PracticePage
+      <GlobalProvider speechRecognition={this.props.speechRecognition}>
+        <BrowserRouter>
+            <GlobalConsumer>
+              {(context: GlobalContextObject) => {
+                return (
+                  <>
+                    <header>
+                      <nav className="navbar navbar-light bg-light justify-content-between">
+                        <Link className="navbar-brand app__home-link" to={"/"}>Dialog Practice</Link>
+                        <LogoutButton/>
+                      </nav>
+                    </header>
+                    <main className={"app__main"}>
+                      {
+                        (!context.data.token) ?
+                          <Switch>
+                            <Route path={"/auth"} component={AuthPage}/>
+                            <Route path={"/sign-up"} component={SignupPage}/>
+                            <Redirect from={"/"} to={"/auth"} />
+                          </Switch>
+                        :
+                          <Switch>
+                            <Redirect exact from={"/"} to={"/dialogs"}/>
+                            <Redirect from={"/auth"} to={"/dialogs"}/>
+                            {/* Sign-up page after account creation, gives user feedback that account was created */}
+                            <Route path={"/sign-up"} component={SignupPage}/>
+                            <Route
+                              exact
+                              path={"/dialogs"}
+                              render={(routeProps) => {
+                                return (<DialogListPage {...routeProps} context={context}/>);
+                              }}
+                            />
+                            <Route
+                              path={"/dialogs/:dialogId/choose-role"}
+                              render={(routeProps) => {
+                                return (<ChooseRolePage {...routeProps}/>);
+                              }}
+                            />
+                            <Route
+                              path={"/dialogs/:dialogId/practice"}
+                              render={(routeProps) => {
+                                return (<PracticePage
+                                  {...routeProps}
+                                  context={context}
+                                />);
+                              }}
+                            />
+                            <Route
+                              path={"/dialogs/:dialogId/edit"}
+                              render={(routeProps) => {
+                                return (
+                                  <DialogEditPage
                                     {...routeProps}
                                     context={context}
-                                  />);
-                                }}
-                              />
-                              <Route
-                                path={"/dialogs/:dialogId/edit"}
-                                render={(routeProps) => {
-                                  return (
-                                    <DialogEditPage
-                                      {...routeProps}
-                                      context={context}
-                                    />
-                                  );
-                                }}
-                              />
-                            </Switch>
-                        }
-                      </main>
-                    </>
-                  );
-                }}
-              </GlobalConsumer>
+                                  />
+                                );
+                              }}
+                            />
+                          </Switch>
+                      }
+                    </main>
+                  </>
+                );
+              }}
+            </GlobalConsumer>
 
-          </BrowserRouter>
-        </GlobalProvider>
-      </body>
+        </BrowserRouter>
+      </GlobalProvider>
     );
   }
 }
