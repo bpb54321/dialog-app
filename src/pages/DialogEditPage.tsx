@@ -8,7 +8,6 @@ import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
 import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
 import {AddNewLineForm} from "../components/AddNewLineForm";
 import {AddNewRoleForm} from "../components/AddNewRoleForm";
-import {DialogWithUpdateAndDelete} from "../components/DialogWithUpdateAndDelete";
 
 interface Props {
   context: GlobalContextObject;

@@ -54,7 +54,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
       debugger;
       setRoleId(props.rolesInDialog[0].id);
     }
-  }, [props.rolesInDialog]);
+  }, [props.rolesInDialog, roleId]);
 
   const createLine = async (queryVariables: {
     text: string;

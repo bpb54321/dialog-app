@@ -10,9 +10,9 @@ export const LogoutButton: React.FunctionComponent<Props> = (props) => {
 
   const context = useContext(GlobalContext);
 
-  const logout = async (): Promise<void> => {
-
-    window.localStorage.removeItem("token");
+  const logout = () => {
+    debugger;
+    window.sessionStorage.removeItem("token");
     context.actions.setGlobalState({
       token: "",
     });

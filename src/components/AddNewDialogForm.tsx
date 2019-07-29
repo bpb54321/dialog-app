@@ -61,7 +61,7 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
           });
           if (returnedDialog) {
             props.addDialogToDialogList(returnedDialog);
-          } 
+          }
           setName("");
         }}
       >
