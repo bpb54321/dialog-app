@@ -40,9 +40,9 @@ describe('RolePicker', () => {
     }
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockFunction = jest.fn();
-    act(() => {
+    await act(async () => {
       wrapper = render(<RolePicker history={history} match={match}/>);
     });
   });
