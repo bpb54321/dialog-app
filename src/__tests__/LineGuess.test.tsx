@@ -6,20 +6,24 @@ import {
   cleanup,
 } from "@testing-library/react";
 import LineGuess from "../LineGuess";
-import {testDialog} from "../data/test-dialog";
+// import {testDialog} from "../data/test-dialog";
 import {createMockSpeechRecognition} from "../MockSpeechRecognition";
+import Role from "../types/Role";
 
 describe('LineGuess', () => {
   let wrapper: RenderResult;
   let mockAddLineGuessToLastLine: jest.Mock;
   let guessText: string;
-  let userRole: string;
+  let userRole: Role;
   let mockSpeechRecognition: any;
 
   beforeEach(() => {
     mockAddLineGuessToLastLine = jest.fn();
     guessText = "This is my guess for the line";
-    userRole = "Role 0";
+    userRole = {
+      id: "abcdef",
+      name: "Role 0"
+    };
     mockSpeechRecognition = createMockSpeechRecognition();
 
     wrapper = render(
@@ -34,7 +38,7 @@ describe('LineGuess', () => {
   afterEach(cleanup)
 
   it('should render an input with placeholder text that specifies the role', function () {
-    wrapper.getByPlaceholderText(`Text of the next line for ${testDialog.roles[0]}`);
+    wrapper.getByPlaceholderText(`Text of the next line for ${userRole.name}`);
   });
 
   it("When the submit button is pressed, the function which adds the guess to the line should be called with "
