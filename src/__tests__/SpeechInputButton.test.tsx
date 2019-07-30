@@ -9,12 +9,12 @@ describe('SpeechInputButton', () => {
 
   beforeEach(() => {
     mockUpdateSpeechRecognitionState = jest.fn();
-
   });
 
   afterEach(cleanup);
 
-  test("When the user clicks the component, it should call the function updateSpeechRecognitionState", function () {
+  test(`When the user clicks the component
+    Then it should call the function updateSpeechRecognitionState`, function () {
     wrapper = render(
       <SpeechInputButton
         updateSpeechRecognitionState={mockUpdateSpeechRecognitionState}
@@ -29,7 +29,9 @@ describe('SpeechInputButton', () => {
     expect(mockUpdateSpeechRecognitionState).toHaveBeenCalledTimes(1);
   });
 
-  test("When SpeechRecognitionState.Stopped is passed to it, then it should display Start Speech Input", function () {
+  test(
+    `When SpeechRecognitionState.Stopped is passed to it
+    Then it should display "Start Speech Input"`, function () {
     wrapper = render(
       <SpeechInputButton
         updateSpeechRecognitionState={mockUpdateSpeechRecognitionState}
@@ -40,7 +42,8 @@ describe('SpeechInputButton', () => {
     expect(wrapper.queryByText("Start Speech Input")).not.toBeNull();
   });
 
-  test("When SpeechRecognitionState.Started is passed to it, then it should display Stop Speech Input", function () {
+  test(`When SpeechRecognitionState.Started is passed to it
+    Then it should display "Stop Speech Input"`, function () {
     wrapper = render(
       <SpeechInputButton
         updateSpeechRecognitionState={mockUpdateSpeechRecognitionState}
