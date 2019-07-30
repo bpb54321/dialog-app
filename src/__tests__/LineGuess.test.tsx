@@ -6,16 +6,18 @@ import {
   cleanup,
 } from "@testing-library/react";
 import LineGuess from "../LineGuess";
-// import {testDialog} from "../data/test-dialog";
-import {createMockSpeechRecognition} from "../MockSpeechRecognition";
+import {createMockSpeechRecognition, MockSpeechRecognition} from "../MockSpeechRecognition";
 import Role from "../types/Role";
 
 describe('LineGuess', () => {
   let wrapper: RenderResult;
   let mockAddLineGuessToLastLine: jest.Mock;
-  let guessText: string;
   let userRole: Role;
-  let mockSpeechRecognition: any;
+  let mockSpeechRecognition: MockSpeechRecognition;
+  let guessText: string;
+  let guessInput: HTMLInputElement;
+  let submitButton: HTMLInputElement;
+  let startSpeechInputButton: HTMLButtonElement;
 
   beforeEach(() => {
     mockAddLineGuessToLastLine = jest.fn();
@@ -24,6 +26,7 @@ describe('LineGuess', () => {
       id: "abcdef",
       name: "Role 0"
     };
+
     mockSpeechRecognition = createMockSpeechRecognition();
 
     wrapper = render(
@@ -33,19 +36,19 @@ describe('LineGuess', () => {
         speechRecognition={mockSpeechRecognition}
       />
     );
+
+    const placeholderText = `Text of the next line for ${userRole.name}`;
+    guessInput = (wrapper.getByPlaceholderText(placeholderText) as HTMLInputElement);
+    submitButton = (wrapper.getByText("Submit Guess") as HTMLInputElement);
+    startSpeechInputButton = (wrapper.getByText("Start Speech Input") as HTMLButtonElement);
+
   });
 
   afterEach(cleanup)
 
-  it('should render an input with placeholder text that specifies the role', function () {
-    wrapper.getByPlaceholderText(`Text of the next line for ${userRole.name}`);
-  });
-
-  it("When the submit button is pressed, the function which adds the guess to the line should be called with "
-    + "the current value of the guess.", function () {
-
-    const guessInput = wrapper.getByPlaceholderText(`Text of the next line for ${testDialog.roles[0]}`);
-    const guessSubmit = wrapper.getByText("Submit Guess");
+  it(`When the submit button is pressed
+    Then the component should call the function which adds the guess to the line with the current value of the guess`,
+    function () {
 
     fireEvent.change(guessInput, {
       target: {
@@ -53,25 +56,24 @@ describe('LineGuess', () => {
       },
     });
 
-    fireEvent.click(guessSubmit);
+    fireEvent.click(submitButton);
 
     expect(mockAddLineGuessToLastLine).toHaveBeenCalledWith(guessText);
   });
 
-  it("when the speech recognition input button is pressed, then the component should not call the function " +
-    "which adds the guess to the line", function() {
-    let startSpeechInputButton = wrapper.getByText("Start Speech Input");
+  it(`When the speech recognition input button is pressed
+    Then the component should NOT call the function which adds the guess to the line`, function() {
+
+    const startSpeechInputButton = wrapper.getByText("Start Speech Input");
 
     fireEvent.click(startSpeechInputButton);
 
     expect(mockAddLineGuessToLastLine).toHaveBeenCalledTimes(0);
+
   });
 
-  it('should reset the guess to an empty string after a guess is submitted', function () {
-    const guessInput = wrapper.getByPlaceholderText(`Text of the next line for ${testDialog.roles[0]}`) as
-      HTMLInputElement;
-    const guessSubmit = wrapper.getByText("Submit Guess");
-
+  it(`When a guess is submitted,
+    Then the component should reset the guess to an empty string`, function () {
 
     fireEvent.change(guessInput, {
       target: {
@@ -79,29 +81,29 @@ describe('LineGuess', () => {
       },
     });
 
-    fireEvent.click(guessSubmit);
+    fireEvent.click(submitButton);
 
     expect(guessInput.value).toBe("");
 
   });
 
-  it("When the user submits the guess, Then speech recognition button should be reset to 'Start Speech Input' " +
-    "And the stop() method on the SpeechRecognition object should be automatically called.", function () {
-    let startSpeechInputButton = wrapper.getByText("Start Speech Input");
+  it(`When the user submits the guess, 
+    Then speech recognition button should be reset to 'Start Speech Input'
+    And the stop() method on the SpeechRecognition object should be automatically called.`, function () {
 
     fireEvent.click(startSpeechInputButton);
 
-    let submitButton = wrapper.getByText("Submit Guess");
-
     fireEvent.click(submitButton);
+
+    expect(mockSpeechRecognition.stop).toHaveBeenCalledTimes(1);
 
     expect(wrapper.queryByText("Start Speech Input")).not.toBeNull();
 
-    expect(mockSpeechRecognition.stop).toHaveBeenCalledTimes(1);
   });
 
-  it('should allow the user to transcribe speech input for their guess', function () {
-    let startSpeechInputButton = wrapper.getByText("Start Speech Input");
+  it(`When the user clicks the Start Speech button
+    And he starts speaking into the mic
+    Then the component should transcribe the user's speech into the text input`, function () {
 
     fireEvent.click(startSpeechInputButton);
 
@@ -115,7 +117,10 @@ describe('LineGuess', () => {
         ],
       ],
     };
-    mockSpeechRecognition.onresult(mockSpeechRecognitionResultEvent1);
+
+    if (mockSpeechRecognition.onresult) {
+      mockSpeechRecognition.onresult(mockSpeechRecognitionResultEvent1);
+    }
 
     // The value of the LineGuess input should have the spoken phrase
     expect(wrapper.queryByDisplayValue("first spoken phrase")).not.toBeNull();
@@ -137,27 +142,28 @@ describe('LineGuess', () => {
         ],
       ],
     };
-    mockSpeechRecognition.onresult(mockSpeechRecognitionResultEvent2);
+    if (mockSpeechRecognition.onresult) {
+      mockSpeechRecognition.onresult(mockSpeechRecognitionResultEvent2);
+    }
 
     expect(wrapper.queryByDisplayValue("first spoken phrase second spoken phrase")).not.toBeNull();
   });
 
-  test("When the Start Speech Input button is clicked, it should toggle its text.", function () {
-    let button = wrapper.getByText("Start Speech Input");
+  test(`When the Start Speech Input button is clicked
+    Then the button text should toggle back and forth between Start and Stop`, function () {
 
-    fireEvent.click(button);
+    fireEvent.click(startSpeechInputButton);
 
-    expect(button.textContent).toBe("Stop Speech Input");
+    expect(startSpeechInputButton.textContent).toBe("Stop Speech Input");
 
-    fireEvent.click(button);
+    fireEvent.click(startSpeechInputButton);
 
-    expect(button.textContent).toBe("Start Speech Input");
+    expect(startSpeechInputButton.textContent).toBe("Start Speech Input");
+
   });
 
-  test("When a user clicks Start Speech Input, " +
-    "Then it should call the start() method of the SpeechRecognition object", function () {
-
-    let startSpeechInputButton = wrapper.getByText("Start Speech Input");
+  test(`When a user clicks Start Speech Input
+    Then it should call the start() method of the SpeechRecognition object`, function () {
 
     fireEvent.click(startSpeechInputButton);
 
@@ -165,10 +171,8 @@ describe('LineGuess', () => {
 
   });
 
-  test("When a user clicks Stop Speech Input " +
-    "Then it should call the stop() method of the SpeechRecognition object ", function () {
-
-    let startSpeechInputButton = wrapper.getByText("Start Speech Input");
+  test(`When a user clicks Stop Speech Input
+    Then it should call the stop() method of the SpeechRecognition object`, function () {
 
     fireEvent.click(startSpeechInputButton);
 
