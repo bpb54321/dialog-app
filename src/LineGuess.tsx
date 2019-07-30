@@ -37,7 +37,7 @@ export default class LineGuess extends React.Component<Props, State> {
     };
   }
 
-  handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+  handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     this.setState({
       guess: event.target.value,
     });
@@ -73,13 +73,12 @@ export default class LineGuess extends React.Component<Props, State> {
             onSubmit={this.handleSubmit}
           >
               <label htmlFor="line-guess__text-input" data-testid={"line-guess__label"}>Line Guess</label>
-              <input
+              <textarea
                 className={"line-guess__text-input"}
                 data-testid={"line-guess__text-input"}
                 id={"line-guess__text-input"}
                 onChange={this.handleInputChange}
                 placeholder={`Text of the next line for ${this.props.userRole.name}`}
-                type="text"
                 value={this.state.guess}
               />
               <SpeechInputButton
