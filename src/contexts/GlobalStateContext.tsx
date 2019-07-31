@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useContext} from "react";
 import Role from "../types/Role";
 
 export interface GlobalState {
@@ -56,5 +56,25 @@ export const GlobalProvider: React.FunctionComponent<Props> = (props) => {
     </GlobalStateContext.Provider>
   );
 };
+
+export function useGlobalState() {
+  const globalState = useContext(GlobalStateContext);
+
+  if (globalState) {
+    return globalState;
+  } else {
+    throw Error("useGlobalState was called in a function that is not wrapped in GlobalStateContext.Provider.");
+  }
+}
+
+export function useGlobalDispatch() {
+  const globalDispatch = useContext(GlobalDispatchContext);
+
+  if (globalDispatch) {
+    return globalDispatch;
+  } else {
+    throw Error("useGlobalState was called in a function that is not wrapped in GlobalStateContext.Provider.");
+  }
+}
 
 export const GlobalConsumer = GlobalStateContext.Consumer;
