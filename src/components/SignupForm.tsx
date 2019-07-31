@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FormEvent, FunctionComponent, useContext, useState} from 'react';
-import {GlobalContext} from "../contexts/GlobalContext";
+import {GlobalStateContext} from "../contexts/GlobalStateContext";
 import fetchData from "../utils/fetch-data";
 
 const signupQuery =
@@ -16,7 +16,7 @@ const signupQuery =
 
 export const SignupForm: FunctionComponent = () => {
 
-  const context = useContext(GlobalContext);
+  const context = useContext(GlobalStateContext);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

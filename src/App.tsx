@@ -11,8 +11,8 @@ import {AuthPage} from "./pages/AuthPage";
 import {ChooseRolePage} from "./pages/ChooseRolePage";
 import PracticePage from "./pages/PracticePage";
 
-import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalContext";
-import {GlobalContextObject} from "./contexts/GlobalContext";
+import {GlobalConsumer, GlobalProvider} from "./contexts/GlobalStateContext";
+import {GlobalContextObject} from "./contexts/GlobalStateContext";
 import SignupPage from "./pages/SignupPage";
 import DialogEditPage from "./pages/DialogEditPage";
 import {LogoutButton} from "./components/LogoutButton";

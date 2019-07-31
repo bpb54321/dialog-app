@@ -7,7 +7,7 @@ import {
   waitForDomChange
 } from "@testing-library/react";
 import {RolePicker} from "../components/RolePicker";
-import {GlobalContextObject} from "../contexts/GlobalContext";
+import {GlobalContextObject} from "../contexts/GlobalStateContext";
 
 
 

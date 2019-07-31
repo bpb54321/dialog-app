@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from "react-router-dom";
-import {GlobalContextObject} from "../contexts/GlobalContext";
-import {GlobalConsumer} from "../contexts/GlobalContext";
+import {GlobalContextObject} from "../contexts/GlobalStateContext";
+import {GlobalConsumer} from "../contexts/GlobalStateContext";
 import {SignupForm} from "../components/SignupForm";
 
 interface Props {

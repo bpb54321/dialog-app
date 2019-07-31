@@ -1,6 +1,6 @@
 import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalContext} from "../contexts/GlobalContext";
+import {GlobalStateContext} from "../contexts/GlobalStateContext";
 import {ShallowDialog} from "../types/Dialog";
 import {LANGUAGE_CODES} from "../utils/constants";
 
@@ -24,7 +24,7 @@ const createDialogQuery =
 
 export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const context = useContext(GlobalStateContext);
 
   const [name, setName] = useState("");
   const [languageCode, setLanguageCode] = useState("en-US");

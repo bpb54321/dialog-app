@@ -1,5 +1,5 @@
 import React from 'react';
-import {GlobalContextObject} from "../contexts/GlobalContext";
+import {GlobalContextObject} from "../contexts/GlobalStateContext";
 import {Dialog, ShallowDialog} from "../types/Dialog";
 import fetchData from "../utils/fetch-data";
 import {AddNewDialogForm} from "../components/AddNewDialogForm";

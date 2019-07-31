@@ -1,6 +1,6 @@
 import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalContext} from "../contexts/GlobalContext";
+import {GlobalStateContext} from "../contexts/GlobalStateContext";
 import LineData from "../types/LineData";
 import Role from "../types/Role";
 
@@ -34,7 +34,7 @@ const deleteLineQuery =
 
 export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const context = useContext(GlobalStateContext);
 
   const [text, setText] = useState(props.line.text);
   const [number, setNumber] = useState(String(props.line.number));

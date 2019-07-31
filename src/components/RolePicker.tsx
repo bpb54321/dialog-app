@@ -1,7 +1,7 @@
 import React, {ChangeEvent, FormEvent, useContext, useEffect, useState} from 'react';
 import Role from "../types/Role";
 import fetchData from "../utils/fetch-data";
-import {GlobalContext} from "../contexts/GlobalContext";
+import {GlobalStateContext} from "../contexts/GlobalStateContext";
 
 interface Props {
   history: any;
@@ -22,7 +22,7 @@ const dialogQuery = `
 
 export const RolePicker: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const context = useContext(GlobalStateContext);
 
   const [possibleRoles, setPossibleRoles] = useState<Role[]>([]);
   const [chosenRole, setChosenRole] = useState<Role>({

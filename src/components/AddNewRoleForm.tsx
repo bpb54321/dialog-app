@@ -1,6 +1,6 @@
 import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalContext} from "../contexts/GlobalContext";
+import {GlobalStateContext} from "../contexts/GlobalStateContext";
 import Role from "../types/Role";
 
 interface Props {
@@ -25,7 +25,7 @@ const createRoleQuery =
 
 export const AddNewRoleForm: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const context = useContext(GlobalStateContext);
 
   const [name, setName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");

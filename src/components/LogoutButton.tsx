@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {GlobalContext} from "../contexts/GlobalContext";
+import {GlobalStateContext} from "../contexts/GlobalStateContext";
 
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 
 export const LogoutButton: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const context = useContext(GlobalStateContext);
 
   const logout = () => {
     window.sessionStorage.removeItem("token");

@@ -1,6 +1,6 @@
 import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalContext} from "../contexts/GlobalContext";
+import {GlobalStateContext} from "../contexts/GlobalStateContext";
 import {ShallowDialog} from "../types/Dialog";
 import {Link} from "react-router-dom";
 import {LANGUAGE_CODES} from "../utils/constants";
@@ -35,7 +35,7 @@ const deleteDialogQuery =
 
 export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const context = useContext(GlobalStateContext);
 
   const [name, setName] = useState(props.dialog.name);
   const [languageCode, setLanguageCode] = useState(props.dialog.languageCode);

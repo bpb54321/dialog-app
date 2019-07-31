@@ -1,4 +1,4 @@
-import {GlobalContextObject} from "../contexts/GlobalContext";
+import {GlobalContextObject} from "../contexts/GlobalStateContext";
 
 export default async function fetchData(query: string, queryVariables: {[index: string]: any},
                                         topLevelQueryField: string, globalContext: GlobalContextObject) {

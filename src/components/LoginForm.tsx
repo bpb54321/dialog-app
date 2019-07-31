@@ -1,6 +1,6 @@
 import React, {ChangeEvent, FormEvent} from 'react';
-import {GlobalContextObject} from "../contexts/GlobalContext";
-import {GlobalConsumer} from "../contexts/GlobalContext";
+import {GlobalContextObject} from "../contexts/GlobalStateContext";
+import {GlobalConsumer} from "../contexts/GlobalStateContext";
 import fetchData from "../utils/fetch-data";
 
 interface Props {
