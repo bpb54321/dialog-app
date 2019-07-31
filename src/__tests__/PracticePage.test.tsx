@@ -88,10 +88,9 @@ describe('PracticePage', () => {
   beforeEach(async () => {
     await act((async () => {
       wrapper = render(<PracticePage match={match}/>);
-    }) as (() => void));
 
-    wrapper.debug();
-    await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
+      await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
+    }) as (() => void));
   });
 
   afterEach(cleanup);
