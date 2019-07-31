@@ -4,6 +4,7 @@ import {
   render,
   RenderResult,
   cleanup,
+  waitForDomChange
 } from "@testing-library/react";
 import {RolePicker} from "../components/RolePicker";
 import {GlobalContextObject} from "../contexts/GlobalContext";
@@ -44,6 +45,9 @@ describe('RolePicker', () => {
     mockFunction = jest.fn();
     await act(async () => {
       wrapper = render(<RolePicker history={history} match={match}/>);
+
+      // Wait for fetch data to run
+      await waitForDomChange();
     });
   });
 
