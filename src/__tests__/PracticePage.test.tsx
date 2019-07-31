@@ -27,11 +27,13 @@ describe('PracticePage', () => {
     fetchMock.resetMocks();
     fetchMock.mockResponseOnce(JSON.stringify(testDialogsResponse));
     mockSpeechRecognition = createMockSpeechRecognition();
-    wrapper = render(
-      <GlobalProvider speechRecognition={mockSpeechRecognition}/>
-        <PracticePage />
-      </GlobalProvider>
-    );
+    await act(async () => {
+      wrapper = render(
+        <GlobalProvider speechRecognition={mockSpeechRecognition}>
+          <PracticePage />
+        </GlobalProvider>
+      );  
+    })    
     await waitForElementToBeRemoved(() => wrapper.getByText("Waiting for data to load..."));
   });
 
