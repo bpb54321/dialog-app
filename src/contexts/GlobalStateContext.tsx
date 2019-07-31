@@ -76,5 +76,3 @@ export function useGlobalDispatch() {
     throw Error("useGlobalState was called in a function that is not wrapped in GlobalStateContext.Provider.");
   }
 }
-
-export const GlobalConsumer = GlobalStateContext.Consumer;
