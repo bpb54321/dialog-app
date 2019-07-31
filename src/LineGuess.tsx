@@ -1,92 +1,79 @@
-import React, {ChangeEvent, FormEvent} from 'react';
+import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import "./LineGuess.css";
 import SpeechInputButton from "./SpeechInputButton";
 import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
-import Role from "./types/Role";
+import {useGlobalState} from "./contexts/GlobalStateContext";
 
 interface Props {
-    userRole: Role;
     addLineGuessToLastLine: (lineGuess: string) => void;
-    speechRecognition: any;
 }
 
-interface State {
-  guess: string;
-  speechRecognitionState: SpeechRecognitionState;
-}
+export const LineGuess: React.FunctionComponent<Props> = (props) => {
+  const [guess, setGuess] = useState("");
+  const [speechRecognitionState, setSpeechRecognitionState] = useState(SpeechRecognitionState.Stopped);
 
-export default class LineGuess extends React.Component<Props, State> {
+  const globalState = useGlobalState();
 
-  state: State = {
-    guess: "",
-    speechRecognitionState: SpeechRecognitionState.Stopped,
+  const handleSpeechRecognitionResult = (event: any) => {
+    let results: SpeechRecognitionResultList = event.results;
+
+    let resultPhrase = "";
+    for (let i = 0; i < results.length; i++) {
+      resultPhrase += results[i][0].transcript;
+    }
+
+    setGuess(resultPhrase);
   };
 
-  componentDidMount(): void {
-    this.props.speechRecognition.onresult = (event: any) => {
-      let results: SpeechRecognitionResultList = event.results;
-
-      let result_phrase = "";
-      for (let i = 0; i < results.length; i++) {
-        result_phrase += results[i][0].transcript;
-      }
-
-      this.setState({
-        guess: result_phrase,
-      });
-    };
-  }
-
-  handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    this.setState({
-      guess: event.target.value,
-    });
+  const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    setGuess(event.target.value);
   };
 
-  handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    this.props.speechRecognition.stop();
+    globalState.speechRecognition.stop();
 
-    this.props.addLineGuessToLastLine(this.state.guess);
+    props.addLineGuessToLastLine(guess);
 
-    this.setState({
-      guess: "",
-      speechRecognitionState: SpeechRecognitionState.Stopped,
-    });
+    setGuess("");
+    setSpeechRecognitionState(SpeechRecognitionState.Stopped);
   };
 
-  updateSpeechRecognitionState = () => {
-    if (this.state.speechRecognitionState === SpeechRecognitionState.Stopped) {
-      this.props.speechRecognition.start();
-      this.setState({speechRecognitionState: SpeechRecognitionState.Started});
+  const updateSpeechRecognitionState = () => {
+    if (speechRecognitionState === SpeechRecognitionState.Stopped) {
+      globalState.speechRecognition.start();
+      setSpeechRecognitionState(SpeechRecognitionState.Started);
     } else {
-      this.props.speechRecognition.stop();
-      this.setState({speechRecognitionState: SpeechRecognitionState.Stopped});
+      globalState.speechRecognition.stop();
+
+      setSpeechRecognitionState(SpeechRecognitionState.Stopped);
     }
   };
 
-  render() {
-      return (
-          <form
-            data-testid={"line-guess"}
-            onSubmit={this.handleSubmit}
-          >
-              <label htmlFor="line-guess__text-input" data-testid={"line-guess__label"}>Line Guess</label>
-              <textarea
-                className={"line-guess__text-input"}
-                data-testid={"line-guess__text-input"}
-                id={"line-guess__text-input"}
-                onChange={this.handleInputChange}
-                placeholder={`Text of the next line for ${this.props.userRole.name}`}
-                value={this.state.guess}
-              />
-              <SpeechInputButton
-                updateSpeechRecognitionState={this.updateSpeechRecognitionState}
-                speechRecognitionState={this.state.speechRecognitionState}
-              />
-              <input type="submit" data-testid={"line-guess__submit"} value={"Submit Guess"}/>
-          </form>
-      );
-  }
-}
+  useEffect(() => {
+    globalState.speechRecognition.onresult = handleSpeechRecognitionResult;
+  }, []);
+
+  return (
+    <form
+      data-testid={"line-guess"}
+      onSubmit={handleSubmit}
+    >
+      <label htmlFor="line-guess__text-input" data-testid={"line-guess__label"}>Line Guess</label>
+      <textarea
+        className={"line-guess__text-input"}
+        data-testid={"line-guess__text-input"}
+        id={"line-guess__text-input"}
+        onChange={handleInputChange}
+        placeholder={`Text of the next line for ${globalState.chosenRole.name}`}
+        value={guess}
+      />
+      <SpeechInputButton
+        updateSpeechRecognitionState={updateSpeechRecognitionState}
+        speechRecognitionState={speechRecognitionState}
+      />
+      <input type="submit" data-testid={"line-guess__submit"} value={"Submit Guess"}/>
+    </form>
+  );
+};
