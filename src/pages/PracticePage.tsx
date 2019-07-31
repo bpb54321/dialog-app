@@ -29,8 +29,6 @@ const singleDialogQuery = `
 
 interface Props {
   match: any;
-  location: any;
-  history: any;
 }
 
 export const PracticePage: React.FunctionComponent<Props> = (props) => {
@@ -39,7 +37,7 @@ export const PracticePage: React.FunctionComponent<Props> = (props) => {
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
   const [dialog, setDialog] = useState({} as Dialog);
   const [errorMessage, setErrorMessage] = useState("");
-  const [mode, setMode] = useState(InteractionMode.PracticingLines);
+  const [mode, setMode] = useState(InteractionMode.LoadingData);
 
   const globalState = useGlobalState();
 
@@ -137,7 +135,7 @@ export const PracticePage: React.FunctionComponent<Props> = (props) => {
     }).catch((error) => {
       setErrorMessage(error.message);
     })
-  });
+  }, [props.match.params.dialogId]);
 
   switch (mode) {
     case InteractionMode.PracticingLines:
@@ -164,6 +162,8 @@ export const PracticePage: React.FunctionComponent<Props> = (props) => {
         </>
       );
     default:
-      return null;
+      return (
+        <p>Waiting for data to load...</p>
+      );
   }
 };
