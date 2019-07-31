@@ -1,5 +1,4 @@
 import React from 'react';
-import {GlobalContextObject} from "../contexts/GlobalStateContext";
 import {Dialog} from "../types/Dialog";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
@@ -10,7 +9,6 @@ import {AddNewLineForm} from "../components/AddNewLineForm";
 import {AddNewRoleForm} from "../components/AddNewRoleForm";
 
 interface Props {
-  context: GlobalContextObject;
   match: any;
   location: any;
   history: any;

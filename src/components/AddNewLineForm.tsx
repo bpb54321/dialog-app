@@ -1,6 +1,6 @@
 import React, {ChangeEvent, SyntheticEvent, useContext, useEffect, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalStateContext} from "../contexts/GlobalStateContext";
+import {GlobalStateContext, useGlobalState} from "../contexts/GlobalStateContext";
 import LineData from "../types/LineData";
 import Role from "../types/Role";
 
@@ -29,7 +29,7 @@ const createLineQuery =
 
 export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalStateContext);
+  const globalState = useGlobalState();
 
   const [text, setText] = useState("");
   const [roleId, setRoleId] = useState("");
@@ -63,7 +63,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
   }): Promise<void> => {
 
     try {
-      const createdLine: LineData = await fetchData(createLineQuery, queryVariables, "createLine", context);
+      const createdLine: LineData = await fetchData(createLineQuery, queryVariables, "createLine", globalState);
       props.addLineToDialog(createdLine);
     } catch(error) {
       setErrorMessage(error.message);

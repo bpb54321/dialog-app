@@ -1,5 +1,5 @@
 import React, {FunctionComponent} from 'react';
-import LoginForm from "../components/LoginForm";
+import {LoginForm} from "../components/LoginForm";
 import {Link} from "react-router-dom";
 
 interface Props {

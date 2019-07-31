@@ -1,6 +1,6 @@
 import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalStateContext} from "../contexts/GlobalStateContext";
+import {GlobalStateContext, useGlobalState} from "../contexts/GlobalStateContext";
 import Role from "../types/Role";
 
 interface Props {
@@ -25,7 +25,7 @@ const createRoleQuery =
 
 export const AddNewRoleForm: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalStateContext);
+  const globalState = useGlobalState();
 
   const [name, setName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -36,7 +36,7 @@ export const AddNewRoleForm: React.FunctionComponent<Props> = (props) => {
   }): Promise<void> => {
 
     try {
-      const createdRole: Role = await fetchData(createRoleQuery, queryVariables, "createRole", context);
+      const createdRole: Role = await fetchData(createRoleQuery, queryVariables, "createRole", globalState);
       props.addRoleToDialog(createdRole);
     } catch(error) {
       setErrorMessage(error.message);

@@ -57,7 +57,7 @@ export const GlobalProvider: React.FunctionComponent<Props> = (props) => {
   );
 };
 
-export function useGlobalState() {
+export const useGlobalState = () => {
   const globalState = useContext(GlobalStateContext);
 
   if (globalState) {
@@ -65,9 +65,9 @@ export function useGlobalState() {
   } else {
     throw Error("useGlobalState was called in a function that is not wrapped in GlobalStateContext.Provider.");
   }
-}
+};
 
-export function useGlobalDispatch() {
+export const useGlobalDispatch = () => {
   const globalDispatch = useContext(GlobalDispatchContext);
 
   if (globalDispatch) {
@@ -75,4 +75,4 @@ export function useGlobalDispatch() {
   } else {
     throw Error("useGlobalState was called in a function that is not wrapped in GlobalStateContext.Provider.");
   }
-}
+};

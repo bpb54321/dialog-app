@@ -1,7 +1,7 @@
 import React, {ChangeEvent, FormEvent, useContext, useEffect, useState} from 'react';
 import Role from "../types/Role";
 import fetchData from "../utils/fetch-data";
-import {GlobalStateContext} from "../contexts/GlobalStateContext";
+import {GlobalStateContext, useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 
 interface Props {
   history: any;
@@ -22,7 +22,8 @@ const dialogQuery = `
 
 export const RolePicker: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalStateContext);
+  const globalState = useGlobalState();
+  const globalDispatch = useGlobalDispatch();
 
   const [possibleRoles, setPossibleRoles] = useState<Role[]>([]);
   const [chosenRole, setChosenRole] = useState<Role>({
@@ -46,7 +47,7 @@ export const RolePicker: React.FunctionComponent<Props> = (props) => {
         id: dialogId,
       };
 
-      fetchData(dialogQuery, queryVariables, "dialog", context).then((dialog: {
+      fetchData(dialogQuery, queryVariables, "dialog", globalState).then((dialog: {
         name: string;
         roles: Role[];
       }) => {
@@ -72,8 +73,9 @@ export const RolePicker: React.FunctionComponent<Props> = (props) => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    context.actions.setGlobalState({
-      chosenRole: chosenRole
+    globalDispatch({
+      ...globalState,
+      chosenRole
     });
 
     // Navigate to practice page for this dialog

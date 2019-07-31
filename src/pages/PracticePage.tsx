@@ -31,7 +31,9 @@ interface Props {
   match: any;
 }
 
-export const PracticePage: React.FunctionComponent<Props> = (props) => {
+export type PracticePageInterface = React.FunctionComponent<Props>;
+
+export const PracticePage: PracticePageInterface = (props) => {
   const [userLineNumberIndex, setUserLineNumberIndex] = useState(0);
   const [userLineNumbers, setUserLineNumbers] = useState([] as number[]);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
