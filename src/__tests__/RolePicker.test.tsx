@@ -43,12 +43,13 @@ describe('RolePicker', () => {
 
   beforeEach(async () => {
     mockFunction = jest.fn();
-    await act(async () => {
+    await act((async () => {
       wrapper = render(<RolePicker history={history} match={match}/>);
 
       // Wait for fetch data to run
       await waitForDomChange();
-    });
+    }) as (() => void)); // Hack to prevent TS from complaining about signature of callback passed to act().
+    // TODO: Remove TS hack once typings for react-dom are updated.
   });
 
   afterEach(cleanup);
