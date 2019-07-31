@@ -2,7 +2,6 @@ import React from 'react';
 import {App} from "../App";
 
 // Sample dialog data
-import { testDialogsResponse, testRolesResponse } from "../data/test-dialog";
 import {
   cleanup,
   fireEvent,
@@ -11,11 +10,56 @@ import {
   waitForElement,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import {FetchMock} from "jest-fetch-mock";
 import {createMockSpeechRecognition} from "../MockSpeechRecognition";
-import {GlobalProvider} from "../contexts/GlobalContext";
+import {GlobalContextObject, GlobalProvider} from "../contexts/GlobalContext";
 import PracticePage from "../pages/PracticePage";
-const fetchMock = fetch as FetchMock;
+import {act} from "react-dom/test-utils";
+
+jest.mock("../utils/fetch-data", () => {
+
+  return jest.fn( (query: string, queryVariables: {[index: string]: any},
+                   topLevelQueryField: string, globalContext: GlobalContextObject) => {
+
+    return Promise.resolve({
+      "name": "Test Dialog",
+      "languageCode": "en-US",
+      "lines": [
+        {
+          "text": "How's it going?",
+          "number": 1,
+          "role": {
+            "id": "cjynk61ukhgif0b99ae1ol60j",
+            "name": "Joe"
+          }
+        },
+        {
+          "text": "Pretty good, how bout yourself?",
+          "number": 2,
+          "role": {
+            "id": "cjynk65pfhgj90b99mrj87wa3",
+            "name": "Jane"
+          }
+        },
+        {
+          "text": "Could be better.",
+          "number": 3,
+          "role": {
+            "id": "cjynk61ukhgif0b99ae1ol60j",
+            "name": "Joe"
+          }
+        },
+        {
+          "text": "Aww, sorry to hear that.",
+          "number": 4,
+          "role": {
+            "id": "cjynk65pfhgj90b99mrj87wa3",
+            "name": "Jane"
+          }
+        }
+      ]
+    });
+  });
+});
 
 describe('PracticePage', () => {
 
@@ -24,8 +68,6 @@ describe('PracticePage', () => {
   let mockSpeechRecognition: any;
 
   beforeEach(async () => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(testDialogsResponse));
     mockSpeechRecognition = createMockSpeechRecognition();
     await act(async () => {
       wrapper = render(
