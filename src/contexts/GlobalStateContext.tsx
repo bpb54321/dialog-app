@@ -1,19 +1,24 @@
 import React from "react";
 import Role from "../types/Role";
 
-export const GlobalStateContext = React.createContext<GlobalState | undefined>(undefined);
-
-export const GlobalConsumer = GlobalStateContext.Consumer;
-
-interface Props {
-  speechRecognition: any;
-}
-
-interface GlobalState {
+export interface GlobalState {
   apiEndpoint: string;
   chosenRole: Role;
   speechRecognition: any;
   token: string | null;
+}
+
+export interface GlobalDispatch {
+  (globalState: GlobalState): void;
+}
+
+export const GlobalStateContext = React.createContext<GlobalState | undefined>(undefined);
+export const GlobalDispatchContext = React.createContext<GlobalDispatch | undefined>(undefined);
+
+
+
+interface Props {
+  speechRecognition: any;
 }
 
 export const GlobalProvider: React.FunctionComponent<Props> = (props) => {
@@ -45,7 +50,11 @@ export const GlobalProvider: React.FunctionComponent<Props> = (props) => {
 
   return (
     <GlobalStateContext.Provider value={globalState}>
-      {props.children}
+      <GlobalDispatchContext.Provider value={setGlobalState}>
+        {props.children}
+      </GlobalDispatchContext.Provider>
     </GlobalStateContext.Provider>
   );
 };
+
+export const GlobalConsumer = GlobalStateContext.Consumer;
