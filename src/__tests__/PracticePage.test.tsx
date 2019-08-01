@@ -6,9 +6,10 @@ import {
   waitForElement,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import {PracticePageInterface} from "../pages/PracticePage";
+import {PracticePageInterface, PracticePage} from "../pages/PracticePage";
 import {act} from "react-dom/test-utils";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
+import Role from "../types/Role";
 
 jest.mock("../utils/fetch-data", () => {
 
@@ -57,6 +58,26 @@ jest.mock("../utils/fetch-data", () => {
   };
 });
 
+jest.mock("../contexts/GlobalStateContext", () => {
+  const mockSpeechRecognition = {
+    start: jest.fn(),
+    stop: jest.fn(),
+    onresult: null,
+    lang: 'en-US',
+  };
+
+  return {
+    __esModule: true,
+    useGlobalState: jest.fn(() => {
+      return {
+        apiEndpoint: "https://fake-url.com",
+        speechRecognition: mockSpeechRecognition,
+        token: "123456"
+      };
+    }),
+  }
+});
+
 describe('PracticePage', () => {
 
   let wrapper: RenderResult;
@@ -66,47 +87,24 @@ describe('PracticePage', () => {
     }
   };
 
+  let chosenRole: Role;
+
   beforeEach(async () => {
-    jest.resetModules();
+
   });
 
   afterEach(cleanup);
 
-  it(`Given Role 1 is the chose role
-    Then it should print out Role 0's first line`, async function () {
+  it(`Given Role 2 is the chose role
+    Then it should print out Role 1's first line`, async function () {
 
-    /**
-     * This is because in the test dialog, Role 0 has one line before Role 1's first line.
-     */
-
-    jest.doMock("../contexts/GlobalStateContext", () => {
-      const mockSpeechRecognition = {
-        start: jest.fn(),
-        stop: jest.fn(),
-        onresult: null,
-        lang: 'en-US',
-      };
-
-      return {
-        __esModule: true,
-        useGlobalState: jest.fn(() => {
-          return {
-            apiEndpoint: "https://fake-url.com",
-            chosenRole: {
-              "id": "def",
-              "name": "Role 1"
-            },
-            speechRecognition: mockSpeechRecognition,
-            token: "123456"
-          };
-        }),
-      }
-    });
-
-    const {PracticePage} = await import("../pages/PracticePage") as {PracticePage: PracticePageInterface};
+    chosenRole = {
+      "id": "def",
+      "name": "Role 2"
+    };
 
     await act((async () => {
-      wrapper = render(<PracticePage match={match}/>);
+      wrapper = render(<PracticePage match={match} chosenRole={chosenRole}/>);
 
       await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
     }) as (() => void));
