@@ -1,7 +1,7 @@
-import React, {ChangeEvent, FormEvent, useContext, useEffect, useState} from 'react';
+import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import Role from "../types/Role";
 import fetchData from "../utils/fetch-data";
-import {GlobalStateContext, useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
+import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 
 interface Props {
   history: any;

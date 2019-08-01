@@ -7,7 +7,7 @@ import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
 import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
 import {AddNewLineForm} from "../components/AddNewLineForm";
 import {AddNewRoleForm} from "../components/AddNewRoleForm";
-import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
+import {useGlobalState} from "../contexts/GlobalStateContext";
 
 interface Props {
   match: any;
@@ -48,7 +48,6 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const globalState = useGlobalState();
-  const globalDispatch = useGlobalDispatch();
 
   useEffect(() => {
 
@@ -64,7 +63,7 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
     }).catch((error) => {
       setErrorMessage(error.message);
     });
-  }, []);
+  }, [props.match, globalState]);
 
   const addRoleToParentState = (role: Role) => {
     setDialog({
@@ -161,4 +160,4 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
       }
     </>
   );
-}
+};

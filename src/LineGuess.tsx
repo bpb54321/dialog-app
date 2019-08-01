@@ -53,7 +53,7 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
 
   useEffect(() => {
     globalState.speechRecognition.onresult = handleSpeechRecognitionResult;
-  }, []);
+  }, [globalState.speechRecognition]);
 
   return (
     <form

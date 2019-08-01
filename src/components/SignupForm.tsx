@@ -1,5 +1,5 @@
-import React, {ChangeEvent, FormEvent, FunctionComponent, useContext, useState} from 'react';
-import {GlobalStateContext, useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
+import React, {ChangeEvent, FormEvent, FunctionComponent, useState} from 'react';
+import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 import fetchData from "../utils/fetch-data";
 
 const signupQuery =

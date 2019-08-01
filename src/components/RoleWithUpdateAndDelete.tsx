@@ -1,7 +1,7 @@
-import React, {ChangeEvent, useContext, useState, FocusEvent, SyntheticEvent} from 'react';
+import React, {ChangeEvent, useState, FocusEvent, SyntheticEvent} from 'react';
 import Role from "../types/Role";
 import fetchData from "../utils/fetch-data";
-import {GlobalStateContext, useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
+import {useGlobalState} from "../contexts/GlobalStateContext";
 
 interface Props {
   role: Role;
@@ -32,7 +32,6 @@ const deleteRoleQuery =
 export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
   const globalState = useGlobalState();
-  const globalDispatch = useGlobalDispatch();
 
   const [name, setName] = useState(props.role.name);
   const [errorMessage, setErrorMessage] = useState("");

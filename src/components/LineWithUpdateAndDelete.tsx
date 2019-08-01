@@ -1,6 +1,6 @@
-import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalStateContext, useGlobalState} from "../contexts/GlobalStateContext";
+import {useGlobalState} from "../contexts/GlobalStateContext";
 import LineData from "../types/LineData";
 import Role from "../types/Role";
 

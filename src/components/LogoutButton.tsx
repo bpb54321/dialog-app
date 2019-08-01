@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import {GlobalStateContext, useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
+import React from 'react';
+import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 
 
 interface Props {

@@ -137,7 +137,7 @@ export const PracticePage: PracticePageInterface = (props) => {
     }).catch((error) => {
       setErrorMessage(error.message);
     })
-  }, [props.match.params.dialogId]);
+  }, [props.match, globalState]);
 
   switch (mode) {
     case InteractionMode.PracticingLines:

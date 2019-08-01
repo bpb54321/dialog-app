@@ -8,7 +8,7 @@ import {ChooseRolePage} from "./pages/ChooseRolePage";
 import {PracticePage} from "./pages/PracticePage";
 import {useGlobalState} from "./contexts/GlobalStateContext";
 import {SignupPage} from "./pages/SignupPage";
-import DialogEditPage from "./pages/DialogEditPage";
+import {DialogEditPage} from "./pages/DialogEditPage";
 import {LogoutButton} from "./components/LogoutButton";
 
 interface Props {
@@ -70,7 +70,6 @@ export const App: React.FunctionComponent<Props> = (props) => {
                       return (
                         <DialogEditPage
                           {...routeProps}
-                          context={globalState}
                         />
                       );
                     }}

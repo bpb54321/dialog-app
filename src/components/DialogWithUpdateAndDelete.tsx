@@ -1,6 +1,6 @@
-import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalStateContext, useGlobalState} from "../contexts/GlobalStateContext";
+import {useGlobalState} from "../contexts/GlobalStateContext";
 import {ShallowDialog} from "../types/Dialog";
 import {Link} from "react-router-dom";
 import {LANGUAGE_CODES} from "../utils/constants";
