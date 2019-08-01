@@ -3,9 +3,11 @@ import "./LineGuess.css";
 import SpeechInputButton from "./SpeechInputButton";
 import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
 import {useGlobalState} from "./contexts/GlobalStateContext";
+import Role from "./types/Role";
 
 interface Props {
     addLineGuessToLastLine: (lineGuess: string) => void;
+    chosenRole: Role;
 }
 
 export const LineGuess: React.FunctionComponent<Props> = (props) => {
@@ -66,7 +68,7 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
         data-testid={"line-guess__text-input"}
         id={"line-guess__text-input"}
         onChange={handleInputChange}
-        placeholder={`Text of the next line for ${globalState.chosenRole.name}`}
+        placeholder={`Text of the next line for ${props.chosenRole.name}`}
         value={guess}
       />
       <SpeechInputButton
