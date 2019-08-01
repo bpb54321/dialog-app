@@ -29,11 +29,14 @@ const singleDialogQuery = `
 
 interface Props {
   match: any;
+  chosenRole: Role;
 }
 
 export type PracticePageInterface = React.FunctionComponent<Props>;
 
 export const PracticePage: PracticePageInterface = (props) => {
+  debugger;
+
   const [userLineNumberIndex, setUserLineNumberIndex] = useState(0);
   const [userLineNumbers, setUserLineNumbers] = useState([] as number[]);
   const [currentLineNumber, setCurrentLineNumber] = useState(0);
@@ -42,6 +45,8 @@ export const PracticePage: PracticePageInterface = (props) => {
   const [mode, setMode] = useState(InteractionMode.LoadingData);
 
   const globalState = useGlobalState();
+
+  debugger;
 
   /**
    * Given a dialog and a role, returns an array of the line numbers that the role has in the dialog.
@@ -100,6 +105,8 @@ export const PracticePage: PracticePageInterface = (props) => {
   };
 
   useEffect(() => {
+    debugger;
+
     const {
       params: {
         dialogId
@@ -112,8 +119,10 @@ export const PracticePage: PracticePageInterface = (props) => {
 
     fetchData(singleDialogQuery, queryVariables, "dialog", globalState).then((dialog) => {
 
+      debugger;
+
       // Calculate the user line numbers
-      const userLineNumbers = calculateUserLineNumbers(dialog, globalState.chosenRole);
+      const userLineNumbers = calculateUserLineNumbers(dialog, props.chosenRole);
 
       let currentLineNumber: number;
       let mode: InteractionMode;
@@ -126,10 +135,12 @@ export const PracticePage: PracticePageInterface = (props) => {
         currentLineNumber = dialog.lines.slice(-1)[0].number;
       }
 
+      debugger;
       setDialog(dialog);
-      setUserLineNumbers(userLineNumbers);
+      // setUserLineNumbers(userLineNumbers);
+      debugger;
       setMode(mode);
-      setCurrentLineNumber(currentLineNumber);
+      // setCurrentLineNumber(currentLineNumber);
 
       const speechRecognition = globalState.speechRecognition;
       speechRecognition.lang = dialog.languageCode;
@@ -137,8 +148,9 @@ export const PracticePage: PracticePageInterface = (props) => {
     }).catch((error) => {
       setErrorMessage(error.message);
     })
-  }, [props.match, globalState]);
+  }, [props.match.params.dialogId, globalState, props.chosenRole]);
 
+  debugger;
   switch (mode) {
     case InteractionMode.PracticingLines:
       return (
@@ -149,6 +161,7 @@ export const PracticePage: PracticePageInterface = (props) => {
           />
           <LineGuess
             addLineGuessToLastLine={addGuessToCurrentLineAndIncrementLineNumber}
+            chosenRole={props.chosenRole}
           />
           {errorMessage ? <p>{errorMessage}</p> : null}
         </>
