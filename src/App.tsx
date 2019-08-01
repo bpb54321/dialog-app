@@ -57,9 +57,17 @@ export const App: React.FunctionComponent<Props> = (props) => {
                 <Route
                   path={"/dialogs/:dialogId/practice"}
                   render={(routeProps) => {
-                    return (<PracticePage
-                      {...routeProps}
-                    />);
+                    if (globalState.chosenRole.id) {
+                      return (
+                        <PracticePage
+                          {...routeProps}
+                          chosenRole={globalState.chosenRole}
+                        />);
+                    } else {
+                      return (
+                        <Redirect to={`/dialogs/${routeProps.match.params.dialogId}/choose-role`}/>
+                      );
+                    }
                   }}
                 />
                 <Route
