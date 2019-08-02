@@ -6,7 +6,7 @@ import {
   waitForElement,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import {PracticePageInterface, PracticePage} from "../pages/PracticePage";
+import {PracticePage} from "../pages/PracticePage";
 import {act} from "react-dom/test-utils";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
 import Role from "../types/Role";
@@ -21,7 +21,7 @@ jest.mock("../utils/fetch-data", () => {
         "languageCode": "en-US",
         "lines": [
           {
-            "text": "How's it going?",
+            "text": "This is the text for line 1.",
             "number": 1,
             "role": {
               "id": "abc",
@@ -29,7 +29,7 @@ jest.mock("../utils/fetch-data", () => {
             }
           },
           {
-            "text": "Pretty good, how bout yourself?",
+            "text": "This is the text for line 2.",
             "number": 2,
             "role": {
               "id": "def",
@@ -37,7 +37,7 @@ jest.mock("../utils/fetch-data", () => {
             }
           },
           {
-            "text": "Could be better.",
+            "text": "This is the text for line 3.",
             "number": 3,
             "role": {
               "id": "abc",
@@ -45,7 +45,7 @@ jest.mock("../utils/fetch-data", () => {
             }
           },
           {
-            "text": "Aww, sorry to hear that.",
+            "text": "This is the text for line 4.",
             "number": 4,
             "role": {
               "id": "def",
@@ -81,7 +81,7 @@ describe('PracticePage', () => {
 
   afterEach(cleanup);
 
-  it(`Given Role 2 is the chose role
+  test(`Given Role 2 is the chose role
     Then it should print out Role 1's first line`, async function () {
 
     chosenRole = {
@@ -97,25 +97,34 @@ describe('PracticePage', () => {
       );
     });
 
-    await waitForElementToBeRemoved(() => wrapper.getByText("Waiting for data to load..."));
+    await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
 
-    await waitForElement(() => wrapper.getByText(/how's it going/i));
+    await waitForElement(() => wrapper.getByText(/this is the text for line 2/i));
   });
 
-  it(`Given Role 0 is the chosen role
+  test(`Given Role 1 is the chosen role
     And the dialog is loaded
     Then no lines should be printed out
     And the user should be presented with the line guess input`, async function () {
 
-    // await act((async () => {
-    //   wrapper = render(<PracticePage match={match}/>);
-    //
-    //   await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
-    // }) as (() => void));
-    //
-    // expect(wrapper.queryByText(/how's it going/i)).toBeNull();
-    //
-    // wrapper.getByPlaceholderText(`Text of the next line for Role 0`);
+    chosenRole = {
+      "id": "abc",
+      "name": "Role 1"
+    };
+
+    act(() => {
+      wrapper = render(
+        <GlobalProvider speechRecognition={mockSpeechRecognition}
+                        children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        />
+      );
+    });
+
+    await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
+
+    expect(wrapper.queryByText(/this is the text for line 1/i)).toBeNull();
+
+    wrapper.getByPlaceholderText(/text of the next line for role 1/i);
   });
 
   it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", function () {

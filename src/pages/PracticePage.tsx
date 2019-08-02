@@ -59,6 +59,7 @@ export const PracticePage: PracticePageInterface = (props) => {
    * @return {number[]} An array of line numbers of the lines that are assigned to the given role in the dialog.
    */
   const calculateUserLineNumbers = (dialog: Dialog, role: Role): number[] => {
+    debugger;
     const {lines} = dialog;
 
     let userLines: LineData[] = lines.filter((line: LineData) => {
