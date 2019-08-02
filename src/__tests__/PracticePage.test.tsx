@@ -58,26 +58,6 @@ jest.mock("../utils/fetch-data", () => {
   };
 });
 
-jest.mock("../contexts/GlobalStateContext", () => {
-  const mockSpeechRecognition = {
-    start: jest.fn(),
-    stop: jest.fn(),
-    onresult: null,
-    lang: 'en-US',
-  };
-
-  return {
-    __esModule: true,
-    useGlobalState: jest.fn(() => {
-      return {
-        apiEndpoint: "https://fake-url.com",
-        speechRecognition: mockSpeechRecognition,
-        token: "123456"
-      };
-    }),
-  }
-});
-
 describe('PracticePage', () => {
 
   let wrapper: RenderResult;
@@ -88,6 +68,12 @@ describe('PracticePage', () => {
   };
 
   let chosenRole: Role;
+  const mockSpeechRecognition = {
+    start: jest.fn(),
+    stop: jest.fn(),
+    onresult: null,
+    lang: 'en-US',
+  };
 
   beforeEach(async () => {
 
@@ -103,11 +89,15 @@ describe('PracticePage', () => {
       "name": "Role 2"
     };
 
-    await act((async () => {
-      wrapper = render(<PracticePage match={match} chosenRole={chosenRole}/>);
+    act(() => {
+      wrapper = render(
+        <GlobalProvider speechRecognition={mockSpeechRecognition}
+          children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        />
+      );
+    });
 
-      await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
-    }) as (() => void));
+    await waitForElementToBeRemoved(() => wrapper.getByText("Waiting for data to load..."));
 
     await waitForElement(() => wrapper.getByText(/how's it going/i));
   });
