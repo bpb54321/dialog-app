@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   cleanup,
+  fireEvent,
   render,
   RenderResult,
   waitForElement,
@@ -127,43 +128,41 @@ describe('PracticePage', () => {
     wrapper.getByPlaceholderText(/text of the next line for role 1/i);
   });
 
-  it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", function () {
+  it(`When Role 1 enters a guess
+    And he submits the guess
+    Then the submitted guess and the correct text for the line should be displayed.`, async function () {
 
-    // // Confirm that the first line of the dialog is not displayed before a user role is picked
-    // let line0 = wrapper.queryByText(testDialog.lines[0].text);
-    // expect(line0).toBeNull();
-    //
-    // // Click submit to confirm role selection of default role (Role 0)
-    // fireEvent.click(wrapper.getByText("Confirm Role Selection"));
-    //
-    // const line0Guess = await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for ` +
-    //   `${testDialog.roles[0]}`));
+    chosenRole = {
+      "id": "abc",
+      "name": "Role 1"
+    };
 
-  });
+    act(() => {
+      wrapper = render(
+        <GlobalProvider speechRecognition={mockSpeechRecognition}
+                        children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        />
+      );
+    });
 
-  it("When I make a guess and submit the guess, the guess and the correct text for " +
-    "the line are displayed.", function () {
-    //
-    // // Click submit to confirm role selection of default role (Role 0)
-    // fireEvent.click(wrapper.getByText("Confirm Role Selection"));
-    //
-    // const line0Guess = await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for ` +
-    //   `${testDialog.roles[0]}`));
-    //
-    // const guess = "This is my guess for Line 0";
-    //
-    // fireEvent.change(line0Guess, {
-    //   target: {
-    //     value: guess,
-    //   }
-    // });
-    //
-    // fireEvent.click(wrapper.getByDisplayValue("Submit Guess"))
-    //
-    // const line0 = await waitForElement(() => [
-    //   wrapper.getByText(`Line text: ${testDialog.lines[0].text}`),
-    //   wrapper.getByText(`Guess: ${guess}`),
-    // ]);
+    const guessInput = await waitForElement(() => {
+      return wrapper.getByPlaceholderText(/text of the next line for role 1/i);
+    });
+
+    const guess = "This is my guess for Line 1";
+
+    fireEvent.change(guessInput, {
+      target: {
+        value: guess,
+      }
+    });
+
+    fireEvent.click(wrapper.getByDisplayValue(/submit guess/i));
+
+    await waitForElement(() => [
+      wrapper.getByText(/this is the text for line 1/i),
+      wrapper.getByText(/this is my guess for line 1/i),
+    ]);
   });
 
   it("When I guess my second line, the guess and the correct text for " +
