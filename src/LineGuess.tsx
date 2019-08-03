@@ -2,19 +2,19 @@ import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
 import "./LineGuess.css";
 import SpeechInputButton from "./SpeechInputButton";
 import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
-import {useGlobalState} from "./contexts/GlobalStateContext";
 import Role from "./types/Role";
 
 interface Props {
     addLineGuessToLastLine: (lineGuess: string) => void;
     chosenRole: Role;
+    dialogLanguageCode: string;
 }
 
 export const LineGuess: React.FunctionComponent<Props> = (props) => {
+  debugger;
   const [guess, setGuess] = useState("");
   const [speechRecognitionState, setSpeechRecognitionState] = useState(SpeechRecognitionState.Stopped);
-
-  const globalState = useGlobalState();
+  const [speechRecognition, setSpeechRecognition] = useState(null as (SpeechRecognition | null));
 
   const handleSpeechRecognitionResult = (event: any) => {
     let results: SpeechRecognitionResultList = event.results;
@@ -34,7 +34,9 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    globalState.speechRecognition.stop();
+    if(speechRecognition) {
+      speechRecognition.stop();
+    }
 
     props.addLineGuessToLastLine(guess);
 
@@ -43,19 +45,29 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
   };
 
   const updateSpeechRecognitionState = () => {
-    if (speechRecognitionState === SpeechRecognitionState.Stopped) {
-      globalState.speechRecognition.start();
-      setSpeechRecognitionState(SpeechRecognitionState.Started);
-    } else {
-      globalState.speechRecognition.stop();
-
-      setSpeechRecognitionState(SpeechRecognitionState.Stopped);
+    if (speechRecognition) {
+      if (speechRecognitionState === SpeechRecognitionState.Stopped) {
+        speechRecognition.start();
+        setSpeechRecognitionState(SpeechRecognitionState.Started);
+      } else {
+        speechRecognition.stop();
+        setSpeechRecognitionState(SpeechRecognitionState.Stopped);
+      }
     }
   };
 
   useEffect(() => {
-    globalState.speechRecognition.onresult = handleSpeechRecognitionResult;
-  }, [globalState.speechRecognition]);
+    debugger;
+    if((window as any).webkitSpeechRecognition) {
+      const newSpeechRecognition: SpeechRecognition = new (window as any).webkitSpeechRecognition();
+      newSpeechRecognition.onresult = handleSpeechRecognitionResult;
+      newSpeechRecognition.interimResults = true;
+      newSpeechRecognition.maxAlternatives = 1;
+      newSpeechRecognition.continuous = true;
+      newSpeechRecognition.lang = props.dialogLanguageCode;
+      setSpeechRecognition(newSpeechRecognition);
+    }
+  }, [(window as any).webkitSpeechRecognition, props.dialogLanguageCode]);
 
   return (
     <form
@@ -71,10 +83,13 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
         placeholder={`Text of the next line for ${props.chosenRole.name}`}
         value={guess}
       />
-      <SpeechInputButton
-        updateSpeechRecognitionState={updateSpeechRecognitionState}
-        speechRecognitionState={speechRecognitionState}
-      />
+      {speechRecognition ?
+        <SpeechInputButton
+          updateSpeechRecognitionState={updateSpeechRecognitionState}
+          speechRecognitionState={speechRecognitionState}
+        /> :
+        null
+      }
       <input type="submit" data-testid={"line-guess__submit"} value={"Submit Guess"}/>
     </form>
   );

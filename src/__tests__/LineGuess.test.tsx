@@ -4,10 +4,17 @@ import {
   RenderResult,
   fireEvent,
   cleanup,
+  waitForElement
 } from "@testing-library/react";
 import {LineGuess} from "../LineGuess";
-import {createMockSpeechRecognition, MockSpeechRecognition} from "../MockSpeechRecognition";
+import {createMockSpeechRecognition, MockSpeechRecognition} from "../__mocks__/MockSpeechRecognition";
 import Role from "../types/Role";
+import {act} from "react-dom/test-utils";
+import {SpeechRecognition} from "../__mocks__/SpeechRecognition";
+
+jest.mock("../__mocks__/SpeechRecognition");
+
+(window as any).webkitSpeechRecognition = SpeechRecognition;
 
 describe('LineGuess', () => {
   let wrapper: RenderResult;
@@ -19,7 +26,7 @@ describe('LineGuess', () => {
   let submitButton: HTMLInputElement;
   let startSpeechInputButton: HTMLButtonElement;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     mockAddLineGuessToLastLine = jest.fn();
     guessText = "This is my guess for the line";
     userRole = {
@@ -27,27 +34,34 @@ describe('LineGuess', () => {
       name: "Role 0"
     };
 
-    mockSpeechRecognition = createMockSpeechRecognition();
-
-    wrapper = render(
-      <LineGuess
-        chosenRole={userRole}
-        addLineGuessToLastLine={mockAddLineGuessToLastLine}
-      />
-    );
+    // act(() => {
+      wrapper = render(
+        <LineGuess
+          chosenRole={userRole}
+          addLineGuessToLastLine={mockAddLineGuessToLastLine}
+          dialogLanguageCode={"fr-FR"}
+        />
+      );
+    // });
 
     const placeholderText = `Text of the next line for ${userRole.name}`;
     guessInput = (wrapper.getByPlaceholderText(placeholderText) as HTMLInputElement);
     submitButton = (wrapper.getByText("Submit Guess") as HTMLInputElement);
     startSpeechInputButton = (wrapper.getByText("Start Speech Input") as HTMLButtonElement);
+    await waitForElement(() => wrapper.getByText(/start speech input/i));
 
   });
 
   afterEach(cleanup);
 
-  // TODO: Re-implement the commented out tests
-  test("Then the app's SpeechRecognition object's language should be set to French.", function() {
-    // expect(mockSpeechRecognition.lang).toBe("fr-FR");
+  test(`
+    Given the dialog's language is "fr-FR",
+    Then the component's SpeechRecognition object's language should be set to "fr-FR"
+    And the other settings on the SpeechRecognition's object should be set in a certain way`, function() {
+    expect((window as any).webkitSpeechRecognition.mock.instances[0].lang).toBe("fr-FR");
+    expect((window as any).webkitSpeechRecognition.mock.instances[0].interimResults).toBe(true);
+    expect((window as any).webkitSpeechRecognition.mock.instances[0].maxAlternatives).toBe(1);
+    expect((window as any).webkitSpeechRecognition.mock.instances[0].continuous).toBe(true);
   });
 
   test("Then the app's SpeechRecognition should listen continuously from when the user presses Start Speech Input " +
@@ -100,7 +114,7 @@ describe('LineGuess', () => {
 
   });
 
-  it(`When the user submits the guess, 
+  it(`When the user submits the guess,
     Then speech recognition button should be reset to 'Start Speech Input'
     And the stop() method on the SpeechRecognition object should be automatically called.`, function () {
 
