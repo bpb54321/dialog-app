@@ -32,6 +32,7 @@ describe('LineGuess', () => {
       name: "Role 1"
     };
 
+    debugger;
     act(() => {
       wrapper = render(
         <LineGuess
@@ -51,11 +52,14 @@ describe('LineGuess', () => {
 
   });
 
-  afterEach(cleanup);
+  afterEach(() => {
+    (window as any).webkitSpeechRecognition.mockReset();
+    cleanup();
+  });
 
   test(`Given the dialog's language is "fr-FR",
     Then the component's SpeechRecognition object's language should be set to "fr-FR"
-    And the other settings on the SpeechRecognition's object should be set in a certain way`, function() {
+    And the other settings on the SpeechRecognition's object should be set in a certain way`, async function() {
     expect((window as any).webkitSpeechRecognition.mock.instances[0].lang).toBe("fr-FR");
     expect((window as any).webkitSpeechRecognition.mock.instances[0].interimResults).toBe(true);
     expect((window as any).webkitSpeechRecognition.mock.instances[0].maxAlternatives).toBe(1);
@@ -64,7 +68,7 @@ describe('LineGuess', () => {
 
   it(`When the submit button is pressed
     Then the component should call the function which adds the guess to the line with the current value of the guess`,
-    function () {
+    async function () {
 
     act(() => {
       fireEvent.change(guessInput, {
@@ -82,50 +86,52 @@ describe('LineGuess', () => {
   });
 
   it(`When the speech recognition input button is pressed
-    Then the component should NOT call the function which adds the guess to the line`, function() {
+    Then the component should NOT call the function which adds the guess to the line`, async function() {
 
-    const startSpeechInputButton = wrapper.getByText("Start Speech Input");
-
-    fireEvent.click(startSpeechInputButton);
+    act(() => {
+      fireEvent.click(speechInputButton);
+    });
 
     expect(mockAddLineGuessToLastLine).toHaveBeenCalledTimes(0);
-
   });
 
   it(`When a guess is submitted,
-    Then the component should reset the guess to an empty string`, function () {
+    Then the component should reset the guess to an empty string`, async function () {
 
-    fireEvent.change(guessInput, {
-      target: {
-        value: guessText,
-      },
+    act(() => {
+      fireEvent.change(guessInput, {
+        target: {
+          value: guessText,
+        },
+      });
     });
 
-    fireEvent.click(submitButton);
+    act(() => {
+      fireEvent.click(submitButton);
+    });
 
     expect(guessInput.value).toBe("");
-
   });
 
   it(`When the user submits the guess,
     Then speech recognition button should be reset to 'Start Speech Input'
-    And the stop() method on the SpeechRecognition object should be automatically called.`, function () {
+    And the stop() method on the SpeechRecognition object should be automatically called.`, async function () {
 
     act(() => {
       fireEvent.click(speechInputButton);
+    });
 
+    act(() => {
       fireEvent.click(submitButton);
     });
 
     expect((window as any).webkitSpeechRecognition.mock.instances[0].stop).toHaveBeenCalledTimes(1);
-
     expect(wrapper.queryByText("Start Speech Input")).not.toBeNull();
-
   });
 
   it(`When the user clicks the Start Speech button
     And he starts speaking into the mic
-    Then the component should transcribe the user's speech into the text input`, function () {
+    Then the component should transcribe the user's speech into the text input`, async function () {
 
     act(() => {
       fireEvent.click(speechInputButton);
@@ -179,20 +185,24 @@ describe('LineGuess', () => {
   });
 
   test(`When the Start Speech Input button is clicked
-    Then the button text should toggle back and forth between Start and Stop`, function () {
+    Then the button text should toggle back and forth between Start and Stop`, async function () {
 
-    fireEvent.click(speechInputButton);
+    act(() => {
+      fireEvent.click(speechInputButton);
+    });
 
     expect(speechInputButton.textContent).toBe("Stop Speech Input");
 
-    fireEvent.click(speechInputButton);
+    act(() => {
+      fireEvent.click(speechInputButton);
+    });
 
     expect(speechInputButton.textContent).toBe("Start Speech Input");
 
   });
 
   test(`When a user clicks Start Speech Input
-    Then it should call the start() method of the SpeechRecognition object`, function () {
+    Then it should call the start() method of the SpeechRecognition object`, async function () {
 
     act(() => {
       fireEvent.click(speechInputButton);
@@ -203,16 +213,17 @@ describe('LineGuess', () => {
   });
 
   test(`When a user clicks Stop Speech Input
-    Then it should call the stop() method of the SpeechRecognition object`, function () {
+    Then it should call the stop() method of the SpeechRecognition object`, async function () {
 
     act(() => {
       fireEvent.click(speechInputButton);
+    });
 
+    act(() => {
       fireEvent.click(speechInputButton);
     });
 
     expect((window as any).webkitSpeechRecognition.mock.instances[0].stop).toHaveBeenCalledTimes(1);
-
   });
 
 });
