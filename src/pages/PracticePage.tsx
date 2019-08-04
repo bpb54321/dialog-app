@@ -5,8 +5,8 @@ import Role from "../types/Role";
 import LineData from "../types/LineData";
 import {Dialog} from "../types/Dialog";
 import {InteractionMode} from "../types/InteractionMode";
-import ListOfLines from "../ListOfLines";
-import {LineGuess} from "../LineGuess";
+import ListOfLines from "../components/ListOfLines";
+import {LineGuess} from "../components/LineGuess";
 
 //region singleDialogQuery
 const singleDialogQuery = `
@@ -120,9 +120,6 @@ export const PracticePage: PracticePageInterface = (props) => {
     };
 
     fetchData(singleDialogQuery, queryVariables, "dialog", globalState).then((dialog) => {
-
-      debugger;
-
       // Calculate the user line numbers
       const userLineNumbers = calculateUserLineNumbers(dialog, props.chosenRole);
 
@@ -137,10 +134,6 @@ export const PracticePage: PracticePageInterface = (props) => {
         currentLineNumber = dialog.lines.slice(-1)[0].number;
       }
 
-      const speechRecognition = globalState.speechRecognition;
-      speechRecognition.lang = dialog.languageCode;
-
-      debugger;
       setState((previousState) => {
         return {
           ...previousState,
@@ -172,6 +165,7 @@ export const PracticePage: PracticePageInterface = (props) => {
           <LineGuess
             addLineGuessToLastLine={addGuessToCurrentLineAndIncrementLineNumber}
             chosenRole={props.chosenRole}
+            dialogLanguageCode={state.dialog.languageCode}
           />
           {state.errorMessage ? <p>{state.errorMessage}</p> : null}
         </>

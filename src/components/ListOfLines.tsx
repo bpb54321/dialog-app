@@ -1,7 +1,7 @@
 import React from 'react';
-import LineData from "./types/LineData";
+import LineData from "../types/LineData";
 import Line from "./Line";
-import {Dialog} from "./types/Dialog";
+import {Dialog} from "../types/Dialog";
 
 interface Props {
   dialog: Dialog,

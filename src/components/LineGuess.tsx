@@ -1,8 +1,8 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import "./LineGuess.css";
+import "../css/LineGuess.css";
 import SpeechInputButton from "./SpeechInputButton";
-import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
-import Role from "./types/Role";
+import {SpeechRecognitionState} from "../types/SpeechRecognitionState";
+import Role from "../types/Role";
 
 interface Props {
     addLineGuessToLastLine: (lineGuess: string) => void;
@@ -73,7 +73,7 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
       newSpeechRecognition.lang = props.dialogLanguageCode;
       setSpeechRecognition(newSpeechRecognition);
     }
-  }, [(window as any).webkitSpeechRecognition, props.dialogLanguageCode]);
+  }, [props.dialogLanguageCode]);
 
   debugger;
 
