@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter, Route, Redirect, Switch, Link} from 'react-router-dom';
-import './App.css';
+import './css/App.css';
 import DialogListPage from "./pages/DialogListPage";
 import {AuthPage} from "./pages/AuthPage";
 import {ChooseRolePage} from "./pages/ChooseRolePage";
