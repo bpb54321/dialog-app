@@ -7,24 +7,21 @@ import {
   waitForDomChange
 } from "@testing-library/react";
 import {RolePicker} from "../components/RolePicker";
-import {GlobalContextObject} from "../contexts/GlobalStateContext";
-
-
+import {GlobalProvider} from "../contexts/GlobalStateContext";
 
 jest.mock("../utils/fetch-data", () => {
 
-  return jest.fn( (query: string, queryVariables: {[index: string]: any},
-                  topLevelQueryField: string, globalContext: GlobalContextObject) => {
+  return jest.fn(() => {
 
     return Promise.resolve({
       name: "Test Dialog",
       roles: [
         {
           id: "abc",
-          name: "Role 0",
+          name: "Role 1",
         }, {
           id: "def",
-          name: "Role 1"
+          name: "Role 2"
         }
       ],
     });
@@ -44,23 +41,25 @@ describe('RolePicker', () => {
   beforeEach(async () => {
     mockFunction = jest.fn();
     await act((async () => {
-      wrapper = render(<RolePicker history={history} match={match}/>);
+      wrapper = render(
+        <GlobalProvider speechRecognition={{}}
+          children={<RolePicker history={history} match={match}/>}
+        />
+      );
 
-      // Wait for fetch data to run
       await waitForDomChange();
-    }) as (() => void)); // Hack to prevent TS from complaining about signature of callback passed to act().
-    // TODO: Remove TS hack once typings for react-dom are updated.
+    }) as () => void);
   });
 
   afterEach(cleanup);
 
   it(`When the component fetches the roles associated with a given Dialog
-        Then it should display the roles as options in it's select element`, function () {
+    Then it should display the roles as options in it's select element`, async function () {
 
-    const firstRoleOption = wrapper.getByText("Role 0");
+    const firstRoleOption = wrapper.getByText("Role 1");
     expect(firstRoleOption.tagName).toBe("OPTION");
 
-    const secondRoleOption = wrapper.getByText("Role 1");
+    const secondRoleOption = wrapper.getByText("Role 2");
     expect(secondRoleOption.tagName).toBe("OPTION");
   });
 });
