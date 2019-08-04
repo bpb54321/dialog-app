@@ -1,10 +1,8 @@
-import { thisTypeAnnotation } from "@babel/types";
 
 /**
  * Mocks the SpeechRecognition interface of the Web Speech API - currently only available on Chrome
  * @link (https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition)
  */
-
 
 export function SpeechRecognition(this: SpeechRecognition) {
   this.continuous = false;
@@ -24,7 +22,8 @@ export function SpeechRecognition(this: SpeechRecognition) {
   this.onstart = null;
 }
 
-SpeechRecognition.prototype.start = function() {}
+SpeechRecognition.prototype.start = function() {};
 SpeechRecognition.prototype.stop = function() {};
+
 
 

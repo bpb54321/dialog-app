@@ -7,12 +7,11 @@ import {
   waitForElement
 } from "@testing-library/react";
 import {LineGuess} from "../LineGuess";
-import {createMockSpeechRecognition, MockSpeechRecognition} from "../__mocks__/MockSpeechRecognition";
 import Role from "../types/Role";
+import {SpeechRecognition} from "../window-modules/SpeechRecognition";
 import {act} from "react-dom/test-utils";
-import {SpeechRecognition} from "../__mocks__/SpeechRecognition";
 
-jest.mock("../__mocks__/SpeechRecognition");
+jest.mock("../window-modules/SpeechRecognition");
 
 (window as any).webkitSpeechRecognition = SpeechRecognition;
 
@@ -20,21 +19,20 @@ describe('LineGuess', () => {
   let wrapper: RenderResult;
   let mockAddLineGuessToLastLine: jest.Mock;
   let userRole: Role;
-  let mockSpeechRecognition: MockSpeechRecognition;
   let guessText: string;
   let guessInput: HTMLInputElement;
   let submitButton: HTMLInputElement;
-  let startSpeechInputButton: HTMLButtonElement;
+  let speechInputButton: HTMLButtonElement;
 
   beforeEach(async () => {
     mockAddLineGuessToLastLine = jest.fn();
     guessText = "This is my guess for the line";
     userRole = {
       id: "abcdef",
-      name: "Role 0"
+      name: "Role 1"
     };
 
-    // act(() => {
+    act(() => {
       wrapper = render(
         <LineGuess
           chosenRole={userRole}
@@ -42,20 +40,20 @@ describe('LineGuess', () => {
           dialogLanguageCode={"fr-FR"}
         />
       );
-    // });
+    });
 
-    const placeholderText = `Text of the next line for ${userRole.name}`;
-    guessInput = (wrapper.getByPlaceholderText(placeholderText) as HTMLInputElement);
+    guessInput = (wrapper.getByPlaceholderText(`Text of the next line for ${userRole.name}`) as HTMLInputElement);
     submitButton = (wrapper.getByText("Submit Guess") as HTMLInputElement);
-    startSpeechInputButton = (wrapper.getByText("Start Speech Input") as HTMLButtonElement);
-    await waitForElement(() => wrapper.getByText(/start speech input/i));
+
+    // speechInputButton is added asynchronously by useEffect()
+    speechInputButton = (await waitForElement(() => wrapper.getByText(/start speech input/i))) as
+      HTMLButtonElement;
 
   });
 
   afterEach(cleanup);
 
-  test(`
-    Given the dialog's language is "fr-FR",
+  test(`Given the dialog's language is "fr-FR",
     Then the component's SpeechRecognition object's language should be set to "fr-FR"
     And the other settings on the SpeechRecognition's object should be set in a certain way`, function() {
     expect((window as any).webkitSpeechRecognition.mock.instances[0].lang).toBe("fr-FR");
@@ -64,26 +62,21 @@ describe('LineGuess', () => {
     expect((window as any).webkitSpeechRecognition.mock.instances[0].continuous).toBe(true);
   });
 
-  test("Then the app's SpeechRecognition should listen continuously from when the user presses Start Speech Input " +
-    "to when he presses Stop Speech Input", function() {
-    // expect(mockSpeechRecognition.continuous).toBe(true);
-  });
-
-  test("Then the app's SpeechRecognition return interim results", function() {
-    // expect(mockSpeechRecognition.interimResults).toBe(true);
-  });
-
   it(`When the submit button is pressed
     Then the component should call the function which adds the guess to the line with the current value of the guess`,
     function () {
 
-    fireEvent.change(guessInput, {
-      target: {
-        value: guessText,
-      },
+    act(() => {
+      fireEvent.change(guessInput, {
+        target: {
+          value: guessText,
+        },
+      });
     });
 
-    fireEvent.click(submitButton);
+    act(() => {
+      fireEvent.click(submitButton);
+    });
 
     expect(mockAddLineGuessToLastLine).toHaveBeenCalledWith(guessText);
   });
@@ -118,11 +111,13 @@ describe('LineGuess', () => {
     Then speech recognition button should be reset to 'Start Speech Input'
     And the stop() method on the SpeechRecognition object should be automatically called.`, function () {
 
-    fireEvent.click(startSpeechInputButton);
+    act(() => {
+      fireEvent.click(speechInputButton);
 
-    fireEvent.click(submitButton);
+      fireEvent.click(submitButton);
+    });
 
-    expect(mockSpeechRecognition.stop).toHaveBeenCalledTimes(1);
+    expect((window as any).webkitSpeechRecognition.mock.instances[0].stop).toHaveBeenCalledTimes(1);
 
     expect(wrapper.queryByText("Start Speech Input")).not.toBeNull();
 
@@ -132,7 +127,9 @@ describe('LineGuess', () => {
     And he starts speaking into the mic
     Then the component should transcribe the user's speech into the text input`, function () {
 
-    fireEvent.click(startSpeechInputButton);
+    act(() => {
+      fireEvent.click(speechInputButton);
+    });
 
     // Pretend like a user spoke into the mike
     const mockSpeechRecognitionResultEvent1 = {
@@ -145,9 +142,11 @@ describe('LineGuess', () => {
       ],
     };
 
-    if (mockSpeechRecognition.onresult) {
-      mockSpeechRecognition.onresult(mockSpeechRecognitionResultEvent1);
-    }
+    act(() => {
+      if ((window as any).webkitSpeechRecognition.mock.instances[0].onresult) {
+        ((window as any).webkitSpeechRecognition.mock.instances[0].onresult as (event: any) => void)(mockSpeechRecognitionResultEvent1);
+      }
+    });
 
     // The value of the LineGuess input should have the spoken phrase
     expect(wrapper.queryByDisplayValue("first spoken phrase")).not.toBeNull();
@@ -169,9 +168,12 @@ describe('LineGuess', () => {
         ],
       ],
     };
-    if (mockSpeechRecognition.onresult) {
-      mockSpeechRecognition.onresult(mockSpeechRecognitionResultEvent2);
-    }
+
+    act(() => {
+      if ((window as any).webkitSpeechRecognition.mock.instances[0].onresult) {
+        ((window as any).webkitSpeechRecognition.mock.instances[0].onresult as (event: any) => void)(mockSpeechRecognitionResultEvent2);
+      }
+    });
 
     expect(wrapper.queryByDisplayValue("first spoken phrase second spoken phrase")).not.toBeNull();
   });
@@ -179,33 +181,37 @@ describe('LineGuess', () => {
   test(`When the Start Speech Input button is clicked
     Then the button text should toggle back and forth between Start and Stop`, function () {
 
-    fireEvent.click(startSpeechInputButton);
+    fireEvent.click(speechInputButton);
 
-    expect(startSpeechInputButton.textContent).toBe("Stop Speech Input");
+    expect(speechInputButton.textContent).toBe("Stop Speech Input");
 
-    fireEvent.click(startSpeechInputButton);
+    fireEvent.click(speechInputButton);
 
-    expect(startSpeechInputButton.textContent).toBe("Start Speech Input");
+    expect(speechInputButton.textContent).toBe("Start Speech Input");
 
   });
 
   test(`When a user clicks Start Speech Input
     Then it should call the start() method of the SpeechRecognition object`, function () {
 
-    fireEvent.click(startSpeechInputButton);
+    act(() => {
+      fireEvent.click(speechInputButton);
+    });
 
-    expect(mockSpeechRecognition.start).toHaveBeenCalledTimes(1);
+    expect((window as any).webkitSpeechRecognition.mock.instances[0].start).toHaveBeenCalledTimes(1);
 
   });
 
   test(`When a user clicks Stop Speech Input
     Then it should call the stop() method of the SpeechRecognition object`, function () {
 
-    fireEvent.click(startSpeechInputButton);
+    act(() => {
+      fireEvent.click(speechInputButton);
 
-    fireEvent.click(startSpeechInputButton);
+      fireEvent.click(speechInputButton);
+    });
 
-    expect(mockSpeechRecognition.stop).toHaveBeenCalledTimes(1);
+    expect((window as any).webkitSpeechRecognition.mock.instances[0].stop).toHaveBeenCalledTimes(1);
 
   });
 

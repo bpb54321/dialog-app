@@ -16,7 +16,10 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
   const [speechRecognitionState, setSpeechRecognitionState] = useState(SpeechRecognitionState.Stopped);
   const [speechRecognition, setSpeechRecognition] = useState(null as (SpeechRecognition | null));
 
+  debugger;
+
   const handleSpeechRecognitionResult = (event: any) => {
+    debugger;
     let results: SpeechRecognitionResultList = event.results;
 
     let resultPhrase = "";
@@ -28,10 +31,12 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    debugger;
     setGuess(event.target.value);
   };
 
   const handleSubmit = (event: FormEvent) => {
+    debugger;
     event.preventDefault();
 
     if(speechRecognition) {
@@ -45,6 +50,7 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
   };
 
   const updateSpeechRecognitionState = () => {
+    debugger;
     if (speechRecognition) {
       if (speechRecognitionState === SpeechRecognitionState.Stopped) {
         speechRecognition.start();
@@ -68,6 +74,8 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
       setSpeechRecognition(newSpeechRecognition);
     }
   }, [(window as any).webkitSpeechRecognition, props.dialogLanguageCode]);
+
+  debugger;
 
   return (
     <form
