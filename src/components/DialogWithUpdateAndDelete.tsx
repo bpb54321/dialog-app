@@ -1,6 +1,6 @@
-import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalContext} from "../contexts/GlobalContext";
+import {useGlobalState} from "../contexts/GlobalStateContext";
 import {ShallowDialog} from "../types/Dialog";
 import {Link} from "react-router-dom";
 import {LANGUAGE_CODES} from "../utils/constants";
@@ -35,7 +35,7 @@ const deleteDialogQuery =
 
 export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const globalState = useGlobalState();
 
   const [name, setName] = useState(props.dialog.name);
   const [languageCode, setLanguageCode] = useState(props.dialog.languageCode);
@@ -48,7 +48,7 @@ export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props)
     }): Promise<void> => {
 
     try {
-      await fetchData(updateDialogQuery, queryVariables, "updateDialog", context);
+      await fetchData(updateDialogQuery, queryVariables, "updateDialog", globalState);
     } catch(error) {
       setErrorMessage(error.message);
     }
@@ -63,7 +63,7 @@ export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props)
 
     try {
       const deletionWasSuccessful: boolean = await fetchData(
-        deleteDialogQuery, queryVariables, "deleteDialog", context
+        deleteDialogQuery, queryVariables, "deleteDialog", globalState
       );
 
       if(deletionWasSuccessful) {

@@ -1,5 +1,5 @@
-import React, {ChangeEvent, FormEvent, FunctionComponent, useContext, useState} from 'react';
-import {GlobalContext} from "../contexts/GlobalContext";
+import React, {ChangeEvent, FormEvent, FunctionComponent, useState} from 'react';
+import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 import fetchData from "../utils/fetch-data";
 
 const signupQuery =
@@ -16,7 +16,8 @@ const signupQuery =
 
 export const SignupForm: FunctionComponent = () => {
 
-  const context = useContext(GlobalContext);
+  const globalState = useGlobalState();
+  const globalDispatch = useGlobalDispatch();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -33,12 +34,13 @@ export const SignupForm: FunctionComponent = () => {
         password,
       };
 
-      const {token} = await fetchData(signupQuery, queryVariables, "signup", context);
+      const {token} = await fetchData(signupQuery, queryVariables, "signup", globalState);
 
       window.sessionStorage.setItem('token', token);
 
-      context.actions.setGlobalState({
-        token: token
+      globalDispatch({
+        ...globalState,
+        token
       });
 
     } catch (error) {

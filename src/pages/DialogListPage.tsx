@@ -1,12 +1,12 @@
 import React from 'react';
-import {GlobalContextObject} from "../contexts/GlobalContext";
 import {Dialog, ShallowDialog} from "../types/Dialog";
 import fetchData from "../utils/fetch-data";
 import {AddNewDialogForm} from "../components/AddNewDialogForm";
 import {DialogWithUpdateAndDelete} from "../components/DialogWithUpdateAndDelete";
+import {GlobalState} from "../contexts/GlobalStateContext";
 
 interface Props {
-  context: GlobalContextObject;
+  context: GlobalState;
   match: any;
   location: any;
   history: any;

@@ -1,50 +1,65 @@
 import React from 'react';
+import {act} from 'react-dom/test-utils';
 import {
-    render,
-    RenderResult,
-    fireEvent,
-    waitForElement, cleanup,
+  render,
+  RenderResult,
+  cleanup,
+  waitForDomChange
 } from "@testing-library/react";
-import RolePicker from "../components/RolePicker";
-import {testDialog} from "../data/test-dialog";
+import {RolePicker} from "../components/RolePicker";
+import {GlobalProvider} from "../contexts/GlobalStateContext";
+
+jest.mock("../utils/fetch-data", () => {
+
+  return jest.fn(() => {
+
+    return Promise.resolve({
+      name: "Test Dialog",
+      roles: [
+        {
+          id: "abc",
+          name: "Role 1",
+        }, {
+          id: "def",
+          name: "Role 2"
+        }
+      ],
+    });
+  });
+});
 
 describe('RolePicker', () => {
-    let rolePicker: RenderResult;
-    let mockFunction: jest.Mock;
-    const roles: string[] = ["Role 0", "Role 1"];
+  let wrapper: RenderResult;
+  let mockFunction: jest.Mock;
+  const history = {};
+  const match = {
+    params: {
+      dialogId: "abc"
+    }
+  };
 
-    beforeEach(() => {
-        mockFunction = jest.fn();
-        rolePicker = render(<RolePicker roles={roles} setChosenRole={mockFunction}/>);
-    });
+  beforeEach(async () => {
+    mockFunction = jest.fn();
+    await act((async () => {
+      wrapper = render(
+        <GlobalProvider speechRecognition={{}}
+          children={<RolePicker history={history} match={match}/>}
+        />
+      );
 
-    afterEach(cleanup);
+      await waitForDomChange();
+    }) as () => void);
+  });
 
-    it('should render a form which contains a select and a submit input', function () {
-        rolePicker.getByTestId("role-picker");
-        rolePicker.getByTestId("role-picker__select");
-        rolePicker.getByTestId("role-picker__submit");
-    });
+  afterEach(cleanup);
 
-    it("should display the roles passed into as options in it's select element", function () {
-        const firstRoleOption = rolePicker.getByText(roles[0]);
-        expect(firstRoleOption.tagName).toBe("OPTION");
+  it(`When the component fetches the roles associated with a given Dialog
+    Then it should display the roles as options in it's select element`, async function () {
 
-        const secondRoleOption = rolePicker.getByText(roles[1]);
-        expect(secondRoleOption.tagName).toBe("OPTION");
-    });
+    const firstRoleOption = wrapper.getByText("Role 1");
+    expect(firstRoleOption.tagName).toBe("OPTION");
 
-    it("should call a function passed to it with the role data as function parameters" +
-        " when the submit button is pressed", function () {
-
-        fireEvent.change(rolePicker.getByTestId("role-picker__select"), {
-            target: {
-                value: roles[1],
-            },
-        });
-
-        fireEvent.click(rolePicker.getByTestId("role-picker__submit"));
-
-        expect(mockFunction).toHaveBeenCalledWith(roles[1]);
-    });
+    const secondRoleOption = wrapper.getByText("Role 2");
+    expect(secondRoleOption.tagName).toBe("OPTION");
+  });
 });

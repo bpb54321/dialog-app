@@ -1,8 +1,4 @@
 import React from 'react';
-import {App} from "../App";
-
-// Sample dialog data
-import { testDialogsResponse, testRolesResponse } from "../data/test-dialog";
 import {
   cleanup,
   fireEvent,
@@ -11,213 +7,214 @@ import {
   waitForElement,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import {FetchMock} from "jest-fetch-mock";
-import {createMockSpeechRecognition} from "../MockSpeechRecognition";
-import {GlobalProvider} from "../contexts/GlobalContext";
-import PracticePage from "../pages/PracticePage";
-const fetchMock = fetch as FetchMock;
+import {PracticePage} from "../pages/PracticePage";
+import {act} from "react-dom/test-utils";
+import {GlobalProvider} from "../contexts/GlobalStateContext";
+import Role from "../types/Role";
+
+jest.mock("../utils/fetch-data", () => {
+
+  return {
+    __esModule: true,
+    default: jest.fn( () => {
+      return Promise.resolve({
+        "name": "Test Dialog",
+        "languageCode": "en-US",
+        "lines": [
+          {
+            "text": "This is the text for line 1.",
+            "number": 1,
+            "role": {
+              "id": "abc",
+              "name": "Role 1"
+            }
+          },
+          {
+            "text": "This is the text for line 2.",
+            "number": 2,
+            "role": {
+              "id": "def",
+              "name": "Role 2"
+            }
+          },
+          {
+            "text": "This is the text for line 3.",
+            "number": 3,
+            "role": {
+              "id": "abc",
+              "name": "Role 1"
+            }
+          },
+          {
+            "text": "This is the text for line 4.",
+            "number": 4,
+            "role": {
+              "id": "def",
+              "name": "Role 2"
+            }
+          },
+          {
+            "text": "This is the text for line 5.",
+            "number": 5,
+            "role": {
+              "id": "abc",
+              "name": "Role 1"
+            }
+          }
+        ]
+      });
+    })
+  };
+});
 
 describe('PracticePage', () => {
 
   let wrapper: RenderResult;
-  let appInstance: App;
-  let mockSpeechRecognition: any;
+  const match = {
+    params: {
+      dialogId: "abc"
+    }
+  };
+
+  let chosenRole: Role;
+  const mockSpeechRecognition = {
+    start: jest.fn(),
+    stop: jest.fn(),
+    onresult: null,
+    lang: 'en-US',
+  };
 
   beforeEach(async () => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponseOnce(JSON.stringify(testDialogsResponse));
-    mockSpeechRecognition = createMockSpeechRecognition();
-    wrapper = render(
-      <GlobalProvider speechRecognition={mockSpeechRecognition}/>
-        <PracticePage />
-      </GlobalProvider>
-    );
-    await waitForElementToBeRemoved(() => wrapper.getByText("Waiting for data to load..."));
+
   });
 
   afterEach(cleanup);
 
-  test("When the app is loaded, " +
-    "Then a list of available dialogs should be displayed.", function () {
+  test(`Given Role 1 is the chosen role
+    And the dialog is loaded
+    Then no lines should be printed out
+    And the user should be presented with the line guess input`, async function () {
 
-    wrapper.getByText("Test Dialog 0");
-    wrapper.getByText("Test Dialog 1");
+    chosenRole = {
+      "id": "abc",
+      "name": "Role 1"
+    };
 
-  });
-
-  it("should calculate the line numbers for the user's role", function () {
-
-    appInstance = new App({
-      speechRecognition: mockSpeechRecognition,
+    act(() => {
+      wrapper = render(
+        <GlobalProvider speechRecognition={mockSpeechRecognition}
+                        children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        />
+      );
     });
 
-    // Check that the line numbers for Role 0 are correct
-    const roleOLineNumbers = appInstance.calculateUserLineNumbers(testDialogsResponse[0], "Role 0");
+    await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
 
-    expect(roleOLineNumbers).toEqual([0, 2]);
+    expect(wrapper.queryByText(/this is the text for line 1/i)).toBeNull();
 
-    // Check that the line numbers for Role 1 are correct
-    const role1LineNumbers = appInstance.calculateUserLineNumbers(testDialog, "Role 1");
-
-    expect(role1LineNumbers).toEqual([1, 3]);
-
+    wrapper.getByPlaceholderText(/text of the next line for role 1/i);
   });
 
-  it("should display a role picker when rendered", async function () {
-    wrapper.getByText("Role Picker");
-  });
+  test(`Given Role 2 is the chosen role
+    Then it should print out Role 1's first line
+    And the user should be presented with the line guess input`, async function () {
 
-  it("should not show any lines before a role is picked", async function () {
+    chosenRole = {
+      "id": "def",
+      "name": "Role 2"
+    };
 
-    const lines = testDialog.lines;
-
-    for (const line of lines) {
-      expect(wrapper.queryByText(line.text)).toBeNull();
-    }
-  });
-
-  it("should print out Role 0's first line after Role 1 is picked", async function () {
-
-    /**
-     * This is because in the test dialog, Role 0 has one line before Role 1's first line.
-     */
-
-    // Confirm that the first line of the dialog is not displayed before a user role is picked
-    let line0 = wrapper.queryByText(testDialog.lines[0].text);
-    expect(line0).toBeNull();
-
-    // Get the role select by searching for an input, textarea, or select with the default role as display value
-    const roleSelect = wrapper.getByDisplayValue(testDialog.roles[0]);
-
-    // Select Role 1 (the second role in testDialog)
-    fireEvent.change(roleSelect, {
-      target: {
-        value: testDialog.roles[1]
-      }
+    act(() => {
+      wrapper = render(
+        <GlobalProvider speechRecognition={mockSpeechRecognition}
+          children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        />
+      );
     });
 
-    // Click submit to confirm role selection
-    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
+    await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
 
-    // Wait for line0 to be displayed
-    await waitForElement(() => wrapper.getByText(`Line text: ${testDialog.lines[0].text}`));
+    await waitForElement(() => wrapper.getByText(/this is the text for line 1/i));
+
+    wrapper.getByPlaceholderText(/text of the next line for role 2/i);
   });
 
-  it("should not print out any lines after Role 0 is picked", async function () {
+  it(`When Role 1 enters a guess for Line 1
+    And he submits the guess
+    Then the submitted guess and the correct text for the line should be displayed
+    And Role 1 should be presented with a guess input
+    When Role 1 enters a guess for Line 3
+    And he submits the guess
+    Then the submitted guess and the correct text for the line should be displayed
+    And Role 1 should be presented with a guess input
+    When Role 1 enters a guess for Line 5
+    Then all the line guesses and correct answers should be displayed
+    And there should be no guess input on the page`, async function () {
 
-    // This is because Role 0 has the first line in our test dialog.
+    chosenRole = {
+      "id": "abc",
+      "name": "Role 1"
+    };
 
-    // Confirm that the first line of the dialog is not displayed before a user role is picked
-    let line0 = wrapper.queryByText(testDialog.lines[0].text);
-    expect(line0).toBeNull();
-
-    // Get the role select by searching for an input, textarea, or select with the default role as display value
-    const roleSelect = wrapper.getByDisplayValue(testDialog.roles[0]);
-
-    // Role 0 (the default role) is already selected
-
-    // Click submit to confirm role selection
-    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
-
-    // Wait for the guess input to be displayed
-    await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for ` +
-      `${testDialog.roles[0]}`));
-
-    // Confirm that the first line of the dialog is still not displayed
-    line0 = wrapper.queryByText(`Line text: ${testDialog.lines[0].text}`);
-    expect(line0).toBeNull();
-  });
-
-  it("When Role 0 is picked, Then Role 0 should be asked to enter his first line", async function () {
-
-    // Confirm that the first line of the dialog is not displayed before a user role is picked
-    let line0 = wrapper.queryByText(testDialog.lines[0].text);
-    expect(line0).toBeNull();
-
-    // Click submit to confirm role selection of default role (Role 0)
-    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
-
-    const line0Guess = await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for ` +
-      `${testDialog.roles[0]}`));
-
-  });
-
-  it("When I make a guess and submit the guess, the guess and the correct text for " +
-    "the line are displayed.", async function () {
-
-    // Click submit to confirm role selection of default role (Role 0)
-    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
-
-    const line0Guess = await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for ` +
-      `${testDialog.roles[0]}`));
-
-    const guess = "This is my guess for Line 0";
-
-    fireEvent.change(line0Guess, {
-      target: {
-        value: guess,
-      }
+    act(() => {
+      wrapper = render(
+        <GlobalProvider speechRecognition={mockSpeechRecognition}
+                        children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        />
+      );
     });
 
-    fireEvent.click(wrapper.getByDisplayValue("Submit Guess"))
-
-    const line0 = await waitForElement(() => [
-      wrapper.getByText(`Line text: ${testDialog.lines[0].text}`),
-      wrapper.getByText(`Guess: ${guess}`),
-    ]);
-  });
-
-  it("When I guess my second line, the guess and the correct text for " +
-    "the first line and the second line are displayed.", async function () {
-
-    // Click submit to confirm role selection of default role (Role 0)
-    fireEvent.click(wrapper.getByText("Confirm Role Selection"));
-
-    const guessInput = await waitForElement(() => wrapper.getByPlaceholderText(`Text of the next line for Role 0`));
-    const submitButton = wrapper.getByDisplayValue("Submit Guess");
-
-    const guessForLine0 = "This is my guess for Line 0";
+    let guessInput = await waitForElement(() => {
+      return wrapper.getByPlaceholderText(/text of the next line for role 1/i);
+    });
 
     fireEvent.change(guessInput, {
       target: {
-        value: guessForLine0,
+        value: "This is my guess for Line 1",
       }
     });
 
-    fireEvent.click(submitButton);
+    fireEvent.click(wrapper.getByDisplayValue(/submit guess/i));
 
     await waitForElement(() => [
-      wrapper.getByText(`Line text: ${testDialog.lines[0].text}`),
-      wrapper.getByText(`Guess: ${guessForLine0}`),
+      wrapper.getByText(/this is the text for line 1/i),
+      wrapper.getByText(/this is my guess for line 1/i),
     ]);
 
-    const guessForLine2 = "This is my guess for Line 2.";
-
-    fireEvent.change(guessInput, {
+    // Second guess
+    fireEvent.change(wrapper.getByPlaceholderText(/text of the next line for role 1/i), {
       target: {
-        value: guessForLine2,
+        value: "This is my guess for Line 3"
       }
     });
 
-    fireEvent.click(submitButton);
+    fireEvent.click(wrapper.getByDisplayValue(/submit guess/i));
 
     await waitForElement(() => [
-      wrapper.getByText(`Line text: ${testDialog.lines[2].text}`),
-      wrapper.getByText(`Guess: ${guessForLine2}`),
+      wrapper.getByText(/this is the text for line 3/i),
+      wrapper.getByText(/this is my guess for line 3/i),
     ]);
-  });
 
-  test("Then the app's SpeechRecognition object's language should be set to French.", function() {
-    expect(mockSpeechRecognition.lang).toBe("fr-FR");
-  });
+    // Third guess
+    fireEvent.change(wrapper.getByPlaceholderText(/text of the next line for role 1/i), {
+      target: {
+        value: "This is my guess for Line 5"
+      }
+    });
 
-  test("Then the app's SpeechRecognition should listen continuously from when the user presses Start Speech Input " +
-    "to when he presses Stop Speech Input", function() {
-    expect(mockSpeechRecognition.continuous).toBe(true);
-  });
+    fireEvent.click(wrapper.getByDisplayValue(/submit guess/i));
 
-  test("Then the app's SpeechRecognition return interim results", function() {
-    expect(mockSpeechRecognition.interimResults).toBe(true);
+    await waitForElement(() => [
+      wrapper.getByText(/this is the text for line 1/i),
+      wrapper.getByText(/this is the text for line 3/i),
+      wrapper.getByText(/this is the text for line 5/i),
+      wrapper.getByText(/this is my guess for line 1/i),
+      wrapper.getByText(/this is my guess for line 3/i),
+      wrapper.getByText(/this is my guess for line 5/i),
+    ]);
+
+    expect(wrapper.queryByPlaceholderText(/text of the next line for role 1/i)).toBeNull();
+
   });
 });
 

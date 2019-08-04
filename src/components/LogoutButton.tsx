@@ -1,5 +1,5 @@
-import React, {useContext} from 'react';
-import {GlobalContext} from "../contexts/GlobalContext";
+import React from 'react';
+import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 
 
 interface Props {
@@ -8,11 +8,13 @@ interface Props {
 
 export const LogoutButton: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const globalState = useGlobalState();
+  const globalDispatch = useGlobalDispatch();
 
   const logout = () => {
     window.sessionStorage.removeItem("token");
-    context.actions.setGlobalState({
+    globalDispatch({
+      ...globalState,
       token: "",
     });
 

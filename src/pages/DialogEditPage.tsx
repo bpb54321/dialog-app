@@ -1,5 +1,4 @@
-import React from 'react';
-import {GlobalContextObject} from "../contexts/GlobalContext";
+import React, {useState, useEffect} from 'react';
 import {Dialog} from "../types/Dialog";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
@@ -8,18 +7,12 @@ import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
 import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
 import {AddNewLineForm} from "../components/AddNewLineForm";
 import {AddNewRoleForm} from "../components/AddNewRoleForm";
+import {useGlobalState} from "../contexts/GlobalStateContext";
 
 interface Props {
-  context: GlobalContextObject;
   match: any;
   location: any;
   history: any;
-}
-
-interface State {
-  dialog: Dialog;
-  loading: boolean;
-  errorMessage: string;
 }
 
 //region dialogQuery
@@ -48,158 +41,123 @@ const dialogQuery =
   `;
 //endregion
 
-export default class DialogEditPage extends React.Component<Props, State> {
+export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
 
-  state = {
-    dialog: {
-      id: "",
-      name: "",
-      roles: [],
-      lines: [],
-      languageCode: "",
-    },
-    loading: true,
-    errorMessage: "",
-  };
+  const [dialog, setDialog] = useState({} as Dialog);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  async componentDidMount() {
+  const globalState = useGlobalState();
 
-    const {context} = this.props;
-    const {dialogId} = this.props.match.params;
+  useEffect(() => {
 
-    try {
-      const dialog = await fetchData(
-        dialogQuery,
-        {
-          id: dialogId,
-        },
-        "dialog",
-        context
-      );
+    const {dialogId} = props.match.params;
 
-      this.setState({
-        dialog,
-        loading: false,
-      });
+    const queryVaribles = {
+      id: dialogId,
+    };
 
-    } catch(error) {
+    fetchData(dialogQuery, queryVaribles, "dialog", globalState).then((dialog) => {
+      setDialog(dialog);
+      setLoading(false);
+    }).catch((error) => {
+      setErrorMessage(error.message);
+    });
+  }, [props.match, globalState]);
 
-      this.setState({
-        errorMessage: error.message,
-      });
-
-    }
-  }
-
-  addRoleToParentState = (role: Role) => {
-    this.setState((previousState: State) => {
-      return {
-        dialog: {
-          ...previousState.dialog,
-          roles: [...previousState.dialog.roles, role],
-        }
-      };
+  const addRoleToParentState = (role: Role) => {
+    setDialog({
+      ...dialog,
+      roles: [...dialog.roles, role]
     });
   };
 
-  addLineToParentState = (line: LineData) => {
-    this.setState((previousState: State) => {
-      return {
-        dialog: {
-          ...previousState.dialog,
-          lines: [...previousState.dialog.lines, line],
-        }
-      };
+  const addLineToParentState = (line: LineData) => {
+    setDialog({
+      ...dialog,
+      lines: [...dialog.lines, line]
     });
   };
 
-  deleteRoleInDialog = (roleId: string): void => {
-    this.setState((previousState) => {
-      let newRoles = previousState.dialog.roles.filter((role: Role) => {
-        return role.id !== roleId;
-      });
+  const deleteRoleInDialog = (roleId: string): void => {
 
-      return {
-        dialog: {
-          ...previousState.dialog,
-          roles: newRoles,
-        }
-      };
+    const newRoles = dialog.roles.filter((role: Role) => {
+      return role.id !== roleId;
+    });
+
+    setDialog({
+      ...dialog,
+      roles: newRoles
     });
   };
 
-  deleteLineInDialog = (lineId: string): void => {
-    this.setState((previousState) => {
-      let newLines = previousState.dialog.lines.filter((line: LineData) => {
-        return line.id !== lineId;
-      });
+  const deleteLineInDialog = (lineId: string): void => {
 
-      return {
-        dialog: {
-          ...previousState.dialog,
-          lines: newLines,
-        }
-      };
+    const newLines = dialog.lines.filter((line: LineData) => {
+      return line.id !== lineId;
+    });
+
+    setDialog({
+      ...dialog,
+      lines: newLines
     });
   };
 
-  render() {
-    const {dialogId} = this.props.match.params;
+  const {dialogId} = props.match.params;
 
-    return (
-      <>
-        {
-          this.state.loading
-          ?
-            <p>Loading dialog...</p>
-          :
+  return (
+    <>
+      {
+        loading
+        ?
+          <p>Loading dialog...</p>
+        :
+          <div>
+            <h1>Edit Dialog: {dialog.name}</h1>
             <div>
-              <h1>Edit Dialog: {this.state.dialog.name}</h1>
-              <div>
-                <h2>Roles</h2>
-                <ul>
-                  {this.state.dialog.roles.map((role: Role) => {
-                      return (
-                        <RoleWithUpdateAndDelete
-                          role={role}
-                          key={role.id}
-                          deleteRoleInDialog={this.deleteRoleInDialog}
-                        />
-                      );
-                  })}
-                </ul>
-                <AddNewRoleForm dialogId={dialogId} addRoleToDialog={this.addRoleToParentState}/>
-              </div>
-              <div>
-                <h2>Lines</h2>
-                <ul>
-                  {this.state.dialog.lines.map((line: LineData) => {
+              <h2>Roles</h2>
+              <ul>
+                {dialog.roles.map((role: Role) => {
                     return (
-                      <LineWithUpdateAndDelete
-                        line={line}
-                        rolesInDialog={this.state.dialog.roles}
-                        key={line.id}
-                        deleteLineInDialog={this.deleteLineInDialog}
+                      <RoleWithUpdateAndDelete
+                        role={role}
+                        key={role.id}
+                        deleteRoleInDialog={deleteRoleInDialog}
                       />
                     );
-                  })}
-                </ul>
-                <AddNewLineForm
-                  dialogId={dialogId}
-                  rolesInDialog={this.state.dialog.roles}
-                  addLineToDialog={this.addLineToParentState}
-                />
-              </div>
+                })}
+              </ul>
+              <AddNewRoleForm dialogId={dialogId} addRoleToDialog={addRoleToParentState}/>
             </div>
-        }
-        {
-          this.state.errorMessage
-          ?
-            <p>{this.state.errorMessage}</p>
-          :
-            null
-        }
-      </>
-    );
-  }
-}
+            <div>
+              <h2>Lines</h2>
+              <ul>
+                {dialog.lines.map((line: LineData) => {
+                  return (
+                    <LineWithUpdateAndDelete
+                      line={line}
+                      rolesInDialog={dialog.roles}
+                      key={line.id}
+                      deleteLineInDialog={deleteLineInDialog}
+                    />
+                  );
+                })}
+              </ul>
+              <AddNewLineForm
+                dialogId={dialogId}
+                rolesInDialog={dialog.roles}
+                addLineToDialog={addLineToParentState}
+              />
+            </div>
+          </div>
+      }
+      {
+        errorMessage
+        ?
+          <p>{errorMessage}</p>
+        :
+          null
+      }
+    </>
+  );
+};

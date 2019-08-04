@@ -1,6 +1,6 @@
-import React, {ChangeEvent, SyntheticEvent, useContext, useState} from 'react';
+import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
 import fetchData from "../utils/fetch-data";
-import {GlobalContext} from "../contexts/GlobalContext";
+import {useGlobalState} from "../contexts/GlobalStateContext";
 import LineData from "../types/LineData";
 import Role from "../types/Role";
 
@@ -34,7 +34,7 @@ const deleteLineQuery =
 
 export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const globalState = useGlobalState();
 
   const [text, setText] = useState(props.line.text);
   const [number, setNumber] = useState(String(props.line.number));
@@ -49,7 +49,7 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
     }): Promise<void> => {
 
     try {
-      await fetchData(updateLineQuery, queryVariables, "updateLine", context);
+      await fetchData(updateLineQuery, queryVariables, "updateLine", globalState);
     } catch(error) {
       setErrorMessage(error.message);
     }
@@ -64,7 +64,7 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
 
     try {
       const deletionWasSuccessful: boolean = await fetchData(
-        deleteLineQuery, queryVariables, "deleteLine", context
+        deleteLineQuery, queryVariables, "deleteLine", globalState
       );
 
       if(deletionWasSuccessful) {

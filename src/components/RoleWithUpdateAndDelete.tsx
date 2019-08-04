@@ -1,7 +1,7 @@
-import React, {ChangeEvent, useContext, useState, FocusEvent, SyntheticEvent} from 'react';
+import React, {ChangeEvent, useState, FocusEvent, SyntheticEvent} from 'react';
 import Role from "../types/Role";
 import fetchData from "../utils/fetch-data";
-import {GlobalContext} from "../contexts/GlobalContext";
+import {useGlobalState} from "../contexts/GlobalStateContext";
 
 interface Props {
   role: Role;
@@ -31,7 +31,7 @@ const deleteRoleQuery =
 
 export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
-  const context = useContext(GlobalContext);
+  const globalState = useGlobalState();
 
   const [name, setName] = useState(props.role.name);
   const [errorMessage, setErrorMessage] = useState("");
@@ -48,7 +48,7 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
         updateRoleQuery,
         queryVariables,
         "updateRole",
-        context
+        globalState
       );
       setName(updatedRole.name);
     } catch(error) {
@@ -65,7 +65,7 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
 
     try {
       const deletionWasSuccessful: boolean = await fetchData(
-        deleteRoleQuery, queryVariables, "deleteRole", context
+        deleteRoleQuery, queryVariables, "deleteRole", globalState
       );
 
       if(deletionWasSuccessful) {

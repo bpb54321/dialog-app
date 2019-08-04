@@ -1,16 +1,9 @@
-import React, {ChangeEvent, FormEvent} from 'react';
-import {GlobalContextObject} from "../contexts/GlobalContext";
-import {GlobalConsumer} from "../contexts/GlobalContext";
+import React, {ChangeEvent, FormEvent, useState} from 'react';
+import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 import fetchData from "../utils/fetch-data";
 
 interface Props {
   history: any;
-}
-
-interface State {
-  email?: string;
-  password?: string;
-  errorMessage?: string;
 }
 
 const loginQuery =
@@ -22,18 +15,17 @@ const loginQuery =
     }
   `;
 
-export default class LoginForm extends React.Component<Props, State> {
+export const LoginForm: React.FunctionComponent<Props> = (props) => {
 
-  state = {
-    email: "",
-    password: "",
-    errorMessage: "",
-  };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  handleSubmit = async (event: FormEvent, context: GlobalContextObject) => {
+  const globalState = useGlobalState();
+  const globalDispatch = useGlobalDispatch();
+
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-
-    const {email, password} = this.state;
 
     try {
       const queryVariables = {
@@ -41,70 +33,64 @@ export default class LoginForm extends React.Component<Props, State> {
         password,
       };
 
-      const {token} = await fetchData(loginQuery, queryVariables, "login", context);
+      const {token} = await fetchData(loginQuery, queryVariables, "login", globalState);
 
       window.sessionStorage.setItem('token', token);
 
-      context.actions.setGlobalState({
+      globalDispatch({
+        ...globalState,
         token: token,
       });
 
     } catch (error) {
-
-      this.setState({
-        errorMessage: error.message,
-      });
-
+      setErrorMessage(error.message);
     }
   };
 
-  handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      [event.target.id]: event.target.value,
-    });
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    switch (event.target.id) {
+      case "email":
+        setEmail(event.target.value);
+        break;
+      case "password":
+        setPassword(event.target.value);
+        break;
+    }
   };
 
-  render() {
-    return (
-      <GlobalConsumer>
-        {(context: GlobalContextObject) => {
-          return (
-            <div>
-              <form
-                className={"auth-form"}
-                onSubmit={(event) => this.handleSubmit(event, context)}
-              >
-                <div className={"form-control"}>
-                  <label htmlFor="email">Email</label>
-                  <input
-                    id={"email"}
-                    type={"email"}
-                    onChange={this.handleInputChange}
-                  />
-                </div>
-                <div className={"form-control"}>
-                  <label htmlFor="password">Password</label>
-                  <input
-                    id={"password"}
-                    type={"password"}
-                    onChange={this.handleInputChange}
-                  />
-                </div>
-                <div className="form-actions">
-                  <button type={"submit"}>Submit</button>
-                </div>
-                {
-                  this.state.errorMessage
-                  ?
-                    <p>{this.state.errorMessage}</p>
-                  :
-                    null
-                }
-              </form>
-            </div>
-          );
-        }}
-      </GlobalConsumer>
-    );
-  }
+  return (
+    <div>
+      <form
+        className={"auth-form"}
+        onSubmit={handleSubmit}
+      >
+        <div className={"form-control"}>
+          <label htmlFor="email">Email</label>
+          <input
+            id={"email"}
+            type={"email"}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className={"form-control"}>
+          <label htmlFor="password">Password</label>
+          <input
+            id={"password"}
+            type={"password"}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-actions">
+          <button type={"submit"}>Submit</button>
+        </div>
+        {
+          errorMessage
+          ?
+            <p>{errorMessage}</p>
+          :
+            null
+        }
+      </form>
+    </div>
+  );
 }
