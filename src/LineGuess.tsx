@@ -73,7 +73,7 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
       newSpeechRecognition.lang = props.dialogLanguageCode;
       setSpeechRecognition(newSpeechRecognition);
     }
-  }, [(window as any).webkitSpeechRecognition, props.dialogLanguageCode]);
+  }, [props.dialogLanguageCode]);
 
   debugger;
 
