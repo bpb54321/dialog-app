@@ -5,7 +5,7 @@ import {
   fireEvent,
   cleanup,
 } from "@testing-library/react";
-import {LineGuess} from "../LineGuess";
+import {LineGuess} from "../components/LineGuess";
 import Role from "../types/Role";
 import {SpeechRecognition} from "../window-modules/SpeechRecognition";
 import {act} from "react-dom/test-utils";

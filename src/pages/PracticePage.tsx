@@ -5,8 +5,8 @@ import Role from "../types/Role";
 import LineData from "../types/LineData";
 import {Dialog} from "../types/Dialog";
 import {InteractionMode} from "../types/InteractionMode";
-import ListOfLines from "../ListOfLines";
-import {LineGuess} from "../LineGuess";
+import ListOfLines from "../components/ListOfLines";
+import {LineGuess} from "../components/LineGuess";
 
 //region singleDialogQuery
 const singleDialogQuery = `

@@ -1,5 +1,5 @@
 import React, {SyntheticEvent} from 'react';
-import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
+import {SpeechRecognitionState} from "../types/SpeechRecognitionState";
 
 interface Props {
   updateSpeechRecognitionState: () => void;

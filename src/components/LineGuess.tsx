@@ -1,8 +1,8 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import "./LineGuess.css";
+import "../LineGuess.css";
 import SpeechInputButton from "./SpeechInputButton";
-import {SpeechRecognitionState} from "./types/SpeechRecognitionState";
-import Role from "./types/Role";
+import {SpeechRecognitionState} from "../types/SpeechRecognitionState";
+import Role from "../types/Role";
 
 interface Props {
     addLineGuessToLastLine: (lineGuess: string) => void;

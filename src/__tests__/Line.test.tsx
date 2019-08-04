@@ -1,6 +1,6 @@
 import React from "react";
 import {cleanup, render, RenderResult} from "@testing-library/react";
-import Line from "../Line";
+import Line from "../components/Line";
 
 describe('Line', () => {
 

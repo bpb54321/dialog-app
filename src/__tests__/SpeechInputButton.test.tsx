@@ -1,6 +1,6 @@
 import React from 'react';
 import {cleanup, fireEvent, render, RenderResult,} from "@testing-library/react";
-import SpeechInputButton from "../SpeechInputButton";
+import SpeechInputButton from "../components/SpeechInputButton";
 import {SpeechRecognitionState} from "../types/SpeechRecognitionState";
 
 describe('SpeechInputButton', () => {
