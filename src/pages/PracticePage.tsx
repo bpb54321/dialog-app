@@ -172,6 +172,7 @@ export const PracticePage: PracticePageInterface = (props) => {
           <LineGuess
             addLineGuessToLastLine={addGuessToCurrentLineAndIncrementLineNumber}
             chosenRole={props.chosenRole}
+            dialogLanguageCode={state.dialog.languageCode}
           />
           {state.errorMessage ? <p>{state.errorMessage}</p> : null}
         </>
