@@ -5,13 +5,8 @@ import './index.css';
 import {App} from './App';
 import {GlobalProvider} from "./contexts/GlobalStateContext";
 
-declare let webkitSpeechRecognition: {
-  new(): SpeechRecognition;
-};
-
 ReactDOM.render(
   <GlobalProvider
-    speechRecognition={new webkitSpeechRecognition()}
     children={
       <App/>
     }

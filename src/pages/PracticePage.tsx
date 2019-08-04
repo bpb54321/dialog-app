@@ -120,9 +120,6 @@ export const PracticePage: PracticePageInterface = (props) => {
     };
 
     fetchData(singleDialogQuery, queryVariables, "dialog", globalState).then((dialog) => {
-
-      debugger;
-
       // Calculate the user line numbers
       const userLineNumbers = calculateUserLineNumbers(dialog, props.chosenRole);
 
@@ -137,10 +134,6 @@ export const PracticePage: PracticePageInterface = (props) => {
         currentLineNumber = dialog.lines.slice(-1)[0].number;
       }
 
-      const speechRecognition = globalState.speechRecognition;
-      speechRecognition.lang = dialog.languageCode;
-
-      debugger;
       setState((previousState) => {
         return {
           ...previousState,
