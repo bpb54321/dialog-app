@@ -1,4 +1,5 @@
 import React, {FunctionComponent} from "react";
+import "../css/LoadingSpinner.css";
 
 interface Props {
 
@@ -6,8 +7,12 @@ interface Props {
 
 export const LoadingSpinner: FunctionComponent<Props> = () => {
   return (
-    <div data-testid={"loading-spinner"}>
-      Loading...
+    // TODO: Added screen reader text that broadcasts "Loading..."
+    <div className="loading-spinner" data-testid={"loading-spinner"}>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
   );
 };
