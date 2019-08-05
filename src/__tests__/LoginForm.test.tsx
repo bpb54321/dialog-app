@@ -8,7 +8,7 @@ import {act} from "react-dom/test-utils";
 import {LoginForm} from "../components/LoginForm";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
 
-describe('LoginPage', () => {
+describe('LoginForm', () => {
 
   let wrapper: RenderResult;
 
