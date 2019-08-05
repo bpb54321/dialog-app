@@ -1,9 +1,9 @@
 import React, {ChangeEvent, FormEvent, useState} from 'react';
 import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 import fetchData from "../utils/fetch-data";
-import {LoadingSpinner} from "./LoadingSpinner";
+import {WithLoadingSpinnerProps} from "../higher-order-components/withLoadingSpinner";
 
-interface Props {
+export interface LoginFormProps {
   history: any;
 }
 
@@ -16,12 +16,11 @@ const loginQuery =
     }
   `;
 
-export const LoginForm: React.FunctionComponent<Props> = (props) => {
+export const LoginForm: React.FunctionComponent<LoginFormProps & WithLoadingSpinnerProps> = (props) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
 
   const globalState = useGlobalState();
   const globalDispatch = useGlobalDispatch();
@@ -29,7 +28,7 @@ export const LoginForm: React.FunctionComponent<Props> = (props) => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    setIsLoading(true);
+    props.setIsLoading(true);
 
     try {
       const queryVariables = {
@@ -62,44 +61,40 @@ export const LoginForm: React.FunctionComponent<Props> = (props) => {
     }
   };
 
-  if (isLoading) {
-    return <LoadingSpinner/>;
-  } else {
-    return (
-      <div>
-        <form
-          className={"auth-form"}
-          onSubmit={handleSubmit}
-        >
-          <div className={"form-control"}>
-            <label htmlFor="email">Email</label>
-            <input
-              id={"email"}
-              type={"email"}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className={"form-control"}>
-            <label htmlFor="password">Password</label>
-            <input
-              id={"password"}
-              type={"password"}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className="form-actions">
-            <button type={"submit"}>Submit</button>
-          </div>
-          {
-            errorMessage
-              ?
-              <p>{errorMessage}</p>
-              :
-              null
-          }
-        </form>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <form
+        className={"auth-form"}
+        onSubmit={handleSubmit}
+      >
+        <div className={"form-control"}>
+          <label htmlFor="email">Email</label>
+          <input
+            id={"email"}
+            type={"email"}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className={"form-control"}>
+          <label htmlFor="password">Password</label>
+          <input
+            id={"password"}
+            type={"password"}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className="form-actions">
+          <button type={"submit"}>Submit</button>
+        </div>
+        {
+          errorMessage
+            ?
+            <p>{errorMessage}</p>
+            :
+            null
+        }
+      </form>
+    </div>
+  );
 
 };

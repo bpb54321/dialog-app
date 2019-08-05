@@ -5,18 +5,20 @@ import {
   render,
   RenderResult} from "@testing-library/react";
 import {act} from "react-dom/test-utils";
-import {LoginForm} from "../components/LoginForm";
+import {LoginForm, LoginFormProps} from "../components/LoginForm";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
+import {withLoadingSpinner} from "../higher-order-components/withLoadingSpinner";
 
 describe('LoginForm', () => {
 
   let wrapper: RenderResult;
 
   beforeEach(() => {
+    const LoginFormWithLoadingSpinner = withLoadingSpinner<LoginFormProps>(LoginForm);
     act(() => {
       wrapper = render(
         <GlobalProvider
-          children={<LoginForm history={{}}/>}
+          children={<LoginFormWithLoadingSpinner history={{}}/>}
         />
       );
     });
