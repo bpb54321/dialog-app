@@ -2,7 +2,7 @@ import React from 'react';
 import {BrowserRouter, Route, Redirect, Switch, Link} from 'react-router-dom';
 import './css/App.css';
 import DialogListPage from "./pages/DialogListPage";
-import {AuthPage} from "./pages/AuthPage";
+import {LoginPage} from "./pages/LoginPage";
 import {ChooseRolePage} from "./pages/ChooseRolePage";
 import {PracticePage} from "./pages/PracticePage";
 import {useGlobalState} from "./contexts/GlobalStateContext";
@@ -31,7 +31,7 @@ export const App: React.FunctionComponent<Props> = (props) => {
           {
             (!globalState.token) ?
               <Switch>
-                <Route path={"/auth"} component={AuthPage}/>
+                <Route path={"/auth"} component={LoginPage}/>
                 <Route path={"/sign-up"} component={SignupPage}/>
                 <Redirect from={"/"} to={"/auth"}/>
               </Switch>

@@ -6,7 +6,7 @@ interface Props {
   history: any;
 }
 
-export const AuthPage: FunctionComponent<Props> = (props) => {
+export const LoginPage: FunctionComponent<Props> = (props) => {
   return (
     <>
       <h1>Login</h1>
