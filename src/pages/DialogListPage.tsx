@@ -1,8 +1,7 @@
 import React from 'react';
-import {Dialog, ShallowDialog} from "../types/Dialog";
+import {ShallowDialog} from "../types/Dialog";
 import fetchData from "../utils/fetch-data";
 import {AddNewDialogForm} from "../components/AddNewDialogForm";
-import {DialogWithUpdateAndDelete} from "../components/DialogWithUpdateAndDelete";
 import {GlobalState} from "../contexts/GlobalStateContext";
 import {WithLoadingSpinnerProps} from "../higher-order-components/withLoadingSpinner";
 import {DialogList} from "../components/DialogList";
@@ -86,7 +85,11 @@ export default class DialogListPage extends React.Component<DialogListPageProps 
     return (
       <div>
         <h1>Dialogs</h1>
-        <DialogList dialogs={this.state.dialogs} match={this.props.match} removeDialogFromList={this.removeDialogFromList}/>
+        <DialogList
+          match={this.props.match}
+          removeDialogFromList={this.removeDialogFromList}
+          dialogs={this.state.dialogs}
+        />
         <AddNewDialogForm addDialogToDialogList={this.addDialogToState}/>
       </div>
     );
