@@ -16,7 +16,7 @@ const loginQuery =
     }
   `;
 
-export const LoginForm: React.FunctionComponent<LoginFormProps & WithLoadingSpinnerProps> = (props) => {
+export const LoginForm: React.FunctionComponent<LoginFormProps & Partial<WithLoadingSpinnerProps>> = (props) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,7 +28,9 @@ export const LoginForm: React.FunctionComponent<LoginFormProps & WithLoadingSpin
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    props.setIsLoading(true);
+    if (props.setIsLoading) {
+      props.setIsLoading(true);
+    }
 
     try {
       const queryVariables = {

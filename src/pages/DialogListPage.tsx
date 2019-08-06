@@ -5,7 +5,7 @@ import {AddNewDialogForm} from "../components/AddNewDialogForm";
 import {DialogWithUpdateAndDelete} from "../components/DialogWithUpdateAndDelete";
 import {GlobalState} from "../contexts/GlobalStateContext";
 
-interface Props {
+export interface DialogListPageProps {
   context: GlobalState;
   match: any;
   location: any;
@@ -28,7 +28,7 @@ const dialogsQuery =
     }
   `;
 
-export default class DialogListPage extends React.Component<Props, State> {
+export default class DialogListPage extends React.Component<DialogListPageProps, State> {
 
   state = {
     errorMessage: "",

@@ -1,7 +1,7 @@
 import React from 'react';
 import {BrowserRouter, Route, Redirect, Switch, Link} from 'react-router-dom';
 import './css/App.css';
-import DialogListPage from "./pages/DialogListPage";
+import DialogListPage, {DialogListPageProps} from "./pages/DialogListPage";
 import {LoginPage} from "./pages/LoginPage";
 import {ChooseRolePage} from "./pages/ChooseRolePage";
 import {PracticePage} from "./pages/PracticePage";
@@ -9,6 +9,7 @@ import {useGlobalState} from "./contexts/GlobalStateContext";
 import {SignupPage} from "./pages/SignupPage";
 import {DialogEditPage} from "./pages/DialogEditPage";
 import {LogoutButton} from "./components/LogoutButton";
+import {withLoadingSpinner} from "./higher-order-components/withLoadingSpinner";
 
 interface Props {
 }
@@ -45,7 +46,13 @@ export const App: React.FunctionComponent<Props> = (props) => {
                   exact
                   path={"/dialogs"}
                   render={(routeProps) => {
-                    return (<DialogListPage {...routeProps} context={globalState}/>);
+                    const DialogListPageWithLoadingSpinner = withLoadingSpinner<DialogListPageProps>(DialogListPage);
+                    return (
+                      <DialogListPageWithLoadingSpinner
+                        {...routeProps}
+                        context={globalState}
+                      />
+                    );
                   }}
                 />
                 <Route

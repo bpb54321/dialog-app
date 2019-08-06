@@ -2,7 +2,7 @@ import React, {useState, Dispatch, SetStateAction, FunctionComponent} from "reac
 import {LoadingSpinner} from "../components/LoadingSpinner";
 
 export interface WithLoadingSpinnerProps {
-  setIsLoading: Dispatch<SetStateAction<boolean>>
+  setIsLoading: Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -10,10 +10,11 @@ export interface WithLoadingSpinnerProps {
  * P is the props interface of the wrapped component.
  * @param Component The component to wrap.
  */
-export function withLoadingSpinner<P>(Component: React.ComponentType<P & WithLoadingSpinnerProps>) {
+export function withLoadingSpinner<P>(Component: React.ComponentType<P>) {
 
   const WrappedComponent: FunctionComponent<P> = (props) => {
     const [isLoading, setIsLoading] = useState(false);
+    debugger;
 
     if (isLoading) {
       return (
