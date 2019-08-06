@@ -2,13 +2,14 @@ import {ShallowDialog} from "../types/Dialog";
 import {DialogWithUpdateAndDelete} from "./DialogWithUpdateAndDelete";
 import React from "react";
 
-interface Props {
-  dialogs: ShallowDialog[];
+export interface DialogListProps {
   match: any;
   removeDialogFromList: (dialogId: string) => void;
+  dialogs: ShallowDialog[];
 }
 
-export const DialogList: React.FunctionComponent<Props> = (props) => {
+export const DialogList: React.FunctionComponent<DialogListProps> = (props) => {
+  
   return (
     <>
       <ul>
