@@ -4,6 +4,8 @@ import fetchData from "../utils/fetch-data";
 import {AddNewDialogForm} from "../components/AddNewDialogForm";
 import {DialogWithUpdateAndDelete} from "../components/DialogWithUpdateAndDelete";
 import {GlobalState} from "../contexts/GlobalStateContext";
+import {WithLoadingSpinnerProps} from "../higher-order-components/withLoadingSpinner";
+import {DialogList} from "../components/DialogList";
 
 export interface DialogListPageProps {
   context: GlobalState;
@@ -28,7 +30,7 @@ const dialogsQuery =
     }
   `;
 
-export default class DialogListPage extends React.Component<DialogListPageProps, State> {
+export default class DialogListPage extends React.Component<DialogListPageProps & Partial<WithLoadingSpinnerProps>, State> {
 
   state = {
     errorMessage: "",
@@ -42,9 +44,14 @@ export default class DialogListPage extends React.Component<DialogListPageProps,
         dialogsQuery, {}, "dialogs", this.props.context
       );
 
+      if (this.props.setIsLoading) {
+        this.props.setIsLoading(false);
+      }
+
       this.setState({
         dialogs
       });
+
 
     } catch(error) {
 
@@ -79,20 +86,7 @@ export default class DialogListPage extends React.Component<DialogListPageProps,
     return (
       <div>
         <h1>Dialogs</h1>
-        <ul>
-          {
-            this.state.dialogs.map((dialog: Dialog) => {
-              return (
-                <DialogWithUpdateAndDelete
-                  key={dialog.id}
-                  dialog={dialog}
-                  deleteDialogInDialogList={this.removeDialogFromList}
-                  match={this.props.match}
-                />
-              );
-            })
-          }
-        </ul>
+        <DialogList dialogs={this.state.dialogs} match={this.props.match} removeDialogFromList={this.removeDialogFromList}/>
         <AddNewDialogForm addDialogToDialogList={this.addDialogToState}/>
       </div>
     );

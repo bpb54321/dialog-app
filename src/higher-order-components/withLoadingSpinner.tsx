@@ -10,10 +10,10 @@ export interface WithLoadingSpinnerProps {
  * P is the props interface of the wrapped component.
  * @param Component The component to wrap.
  */
-export function withLoadingSpinner<P>(Component: React.ComponentType<P>) {
+export function withLoadingSpinner<P>(Component: React.ComponentType<P>, startsOutLoading: boolean = false) {
 
   const WrappedComponent: FunctionComponent<P> = (props) => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(startsOutLoading);
     debugger;
 
     if (isLoading) {

@@ -46,12 +46,8 @@ export const App: React.FunctionComponent<Props> = (props) => {
                   exact
                   path={"/dialogs"}
                   render={(routeProps) => {
-                    const DialogListPageWithLoadingSpinner = withLoadingSpinner<DialogListPageProps>(DialogListPage);
                     return (
-                      <DialogListPageWithLoadingSpinner
-                        {...routeProps}
-                        context={globalState}
-                      />
+                      <DialogListPage context={globalState} {...routeProps}/>
                     );
                   }}
                 />
