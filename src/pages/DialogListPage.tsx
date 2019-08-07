@@ -3,8 +3,8 @@ import {ShallowDialog} from "../types/Dialog";
 import fetchData from "../utils/fetch-data";
 import {AddNewDialogForm} from "../components/AddNewDialogForm";
 import {GlobalState} from "../contexts/GlobalStateContext";
-import {WithLoadingSpinnerProps} from "../higher-order-components/withLoadingSpinner";
 import {DialogList} from "../components/DialogList";
+import {LoadingSpinner} from "../components/LoadingSpinner";
 
 export interface DialogListPageProps {
   context: GlobalState;
@@ -14,6 +14,7 @@ export interface DialogListPageProps {
 }
 
 interface State {
+  isLoadingDialogs: boolean;
   errorMessage: string;
   dialogs: ShallowDialog[];
 }
@@ -29,9 +30,10 @@ const dialogsQuery =
     }
   `;
 
-export default class DialogListPage extends React.Component<DialogListPageProps & Partial<WithLoadingSpinnerProps>, State> {
+export default class DialogListPage extends React.Component<DialogListPageProps, State> {
 
   state = {
+    isLoadingDialogs: true,
     errorMessage: "",
     dialogs: [],
   };
@@ -43,12 +45,9 @@ export default class DialogListPage extends React.Component<DialogListPageProps 
         dialogsQuery, {}, "dialogs", this.props.context
       );
 
-      if (this.props.setIsLoading) {
-        this.props.setIsLoading(false);
-      }
-
       this.setState({
-        dialogs
+        dialogs,
+        isLoadingDialogs: false,
       });
 
 
@@ -56,6 +55,7 @@ export default class DialogListPage extends React.Component<DialogListPageProps 
 
       this.setState({
         errorMessage: error.message,
+        isLoadingDialogs: false,
       });
 
     }
@@ -85,11 +85,15 @@ export default class DialogListPage extends React.Component<DialogListPageProps 
     return (
       <div>
         <h1>Dialogs</h1>
-        <DialogList
-          match={this.props.match}
-          removeDialogFromList={this.removeDialogFromList}
-          dialogs={this.state.dialogs}
-        />
+        {
+          this.state.isLoadingDialogs ?
+          <LoadingSpinner/> :
+          <DialogList
+            match={this.props.match}
+            removeDialogFromList={this.removeDialogFromList}
+            dialogs={this.state.dialogs}
+          />
+        }
         <AddNewDialogForm addDialogToDialogList={this.addDialogToState}/>
       </div>
     );
