@@ -7,8 +7,16 @@ import {
   waitForElementToBeRemoved
 } from "@testing-library/react";
 import {act} from "react-dom/test-utils";
-import {LoginForm, LoginFormProps} from "../components/LoginForm";
+import {LoginForm} from "../components/LoginForm";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
+import fetchData from "../utils/fetch-data";
+
+jest.mock("../utils/fetch-data", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(),
+  };
+});
 
 describe('LoginForm', () => {
 
@@ -35,15 +43,10 @@ describe('LoginForm', () => {
   When the login form receives a succesful response
   Then the loading spinner should disappear`, async function () {
 
-    jest.mock("../utils/fetch-data", () => {
-      return {
-        __esModule: true,
-        default: jest.fn(() => {
-          return {
-            token: "123",
-          };
-        }),
-      };
+    (fetchData as jest.Mock).mockImplementation(() => {
+      return Promise.resolve({
+        token: "123",
+      });
     });
 
     act(() => {
@@ -76,13 +79,8 @@ describe('LoginForm', () => {
   And the login form receives a response with an error
   Then the error message should appear in the component`, async function () {
 
-    jest.mock("../utils/fetch-data", () => {
-      return {
-        __esModule: true,
-        default: jest.fn(() => {
-          throw Error("No such user found");
-        }),
-      };
+    (fetchData as jest.Mock).mockImplementation(() => {
+      return Promise.reject(new Error("No such user found"));
     });
 
     act(() => {
