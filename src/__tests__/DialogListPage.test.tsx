@@ -10,7 +10,7 @@ import {withLoadingSpinner} from "../higher-order-components/withLoadingSpinner"
 import {DialogList, DialogListProps} from "../components/DialogList";
 import {ShallowDialog} from "../types/Dialog";
 
-describe('DialogListWithLoadingSpinner', () => {
+describe('DialogListPage', () => {
 
   let wrapper: RenderResult;
   let mockRemoveDialogFromList = jest.fn();
