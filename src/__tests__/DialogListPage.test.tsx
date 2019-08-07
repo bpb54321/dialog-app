@@ -6,9 +6,6 @@ import {
   waitForElementToBeRemoved
 } from "@testing-library/react";
 import {act} from "react-dom/test-utils";
-import {withLoadingSpinner} from "../higher-order-components/withLoadingSpinner";
-import {DialogList, DialogListProps} from "../components/DialogList";
-import {ShallowDialog} from "../types/Dialog";
 import DialogListPage from "../pages/DialogListPage";
 import {GlobalProvider, GlobalState} from "../contexts/GlobalStateContext";
 import Role from "../types/Role";
@@ -25,9 +22,6 @@ jest.mock("../utils/fetch-data", () => {
 describe('DialogListPage', () => {
 
   let wrapper: RenderResult;
-  let mockRemoveDialogFromList = jest.fn();
-  let mockDialogs = [] as ShallowDialog[];
-  let DialogListWithLoadingSpinner = withLoadingSpinner<DialogListProps>(DialogList, true);
   let mockContext: GlobalState = {
     apiEndpoint: "",
     chosenRole: {} as Role,
