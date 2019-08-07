@@ -10,17 +10,6 @@ import {act} from "react-dom/test-utils";
 import {LoginForm, LoginFormProps} from "../components/LoginForm";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
 
-jest.mock("../utils/fetch-data", () => {
-  return {
-    __esModule: true,
-    default: jest.fn(() => {
-      return {
-        token: "123",
-      };
-    }),
-  };
-});
-
 describe('LoginForm', () => {
 
   let wrapper: RenderResult;
@@ -36,7 +25,7 @@ describe('LoginForm', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
     cleanup();
   });
 
@@ -45,6 +34,18 @@ describe('LoginForm', () => {
   Then a loading spinner should appear
   When the login form receives a succesful response
   Then the loading spinner should disappear`, async function () {
+
+    jest.mock("../utils/fetch-data", () => {
+      return {
+        __esModule: true,
+        default: jest.fn(() => {
+          return {
+            token: "123",
+          };
+        }),
+      };
+    });
+
     act(() => {
       fireEvent.change(wrapper.getByLabelText(/email/i), {
         target: {
@@ -68,6 +69,45 @@ describe('LoginForm', () => {
     wrapper.getByTestId("loading-spinner");
 
     await waitForElementToBeRemoved(() => wrapper.getByTestId("loading-spinner"));
+
+  });
+
+  test(`When the login form is submitted with usename and password not found in the database
+  And the login form receives a response with an error
+  Then the error message should appear in the component`, async function () {
+
+    jest.mock("../utils/fetch-data", () => {
+      return {
+        __esModule: true,
+        default: jest.fn(() => {
+          throw Error("No such user found");
+        }),
+      };
+    });
+
+    act(() => {
+      fireEvent.change(wrapper.getByLabelText(/email/i), {
+        target: {
+          value: "tester-without-account@gmail.com",
+        }
+      });
+    });
+
+    act(() => {
+      fireEvent.change(wrapper.getByLabelText(/password/i), {
+        target: {
+          value: "password",
+        }
+      });
+    });
+
+    act(() => {
+      fireEvent.click(wrapper.getByText(/submit/i));
+    });
+
+    await waitForElementToBeRemoved(() => wrapper.getByTestId("loading-spinner"));
+
+    wrapper.getByText(/no such user found/i);
 
   });
 });
