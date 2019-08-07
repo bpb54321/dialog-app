@@ -3,34 +3,48 @@ import {
   cleanup,
   fireEvent,
   render,
-  RenderResult} from "@testing-library/react";
+  RenderResult,
+  waitForElementToBeRemoved
+} from "@testing-library/react";
 import {act} from "react-dom/test-utils";
 import {LoginForm, LoginFormProps} from "../components/LoginForm";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
-import {withLoadingSpinner} from "../higher-order-components/withLoadingSpinner";
+
+jest.mock("../utils/fetch-data", () => {
+  return {
+    __esModule: true,
+    default: jest.fn(() => {
+      return {
+        token: "123",
+      };
+    }),
+  };
+});
 
 describe('LoginForm', () => {
 
   let wrapper: RenderResult;
 
   beforeEach(() => {
-    const LoginFormWithLoadingSpinner = withLoadingSpinner<LoginFormProps>(LoginForm);
     act(() => {
       wrapper = render(
         <GlobalProvider
-          children={<LoginFormWithLoadingSpinner history={{}}/>}
+          children={<LoginForm history={{}}/>}
         />
       );
     });
   });
 
   afterEach(() => {
+    jest.clearAllMocks();
     cleanup();
   });
 
 
   test(`When the login form is submitted
-  Then a loading spinner should appear`, function () {
+  Then a loading spinner should appear
+  When the login form receives a succesful response
+  Then the loading spinner should disappear`, async function () {
     act(() => {
       fireEvent.change(wrapper.getByLabelText(/email/i), {
         target: {
@@ -52,6 +66,8 @@ describe('LoginForm', () => {
     });
 
     wrapper.getByTestId("loading-spinner");
+
+    await waitForElementToBeRemoved(() => wrapper.getByTestId("loading-spinner"));
 
   });
 });
