@@ -42,7 +42,7 @@ describe('RolePicker', () => {
     mockFunction = jest.fn();
     await act((async () => {
       wrapper = render(
-        <GlobalProvider speechRecognition={{}}
+        <GlobalProvider
           children={<RolePicker history={history} match={match}/>}
         />
       );

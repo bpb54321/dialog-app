@@ -1,8 +1,10 @@
 import React, {ChangeEvent, FormEvent, useState} from 'react';
 import {useGlobalDispatch, useGlobalState} from "../contexts/GlobalStateContext";
 import fetchData from "../utils/fetch-data";
+import {WithLoadingSpinnerProps} from "../higher-order-components/withLoadingSpinner";
+import {LoadingSpinner} from "./LoadingSpinner";
 
-interface Props {
+export interface LoginFormProps {
   history: any;
 }
 
@@ -15,8 +17,8 @@ const loginQuery =
     }
   `;
 
-export const LoginForm: React.FunctionComponent<Props> = (props) => {
-
+export const LoginForm: React.FunctionComponent<LoginFormProps & Partial<WithLoadingSpinnerProps>> = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -27,6 +29,8 @@ export const LoginForm: React.FunctionComponent<Props> = (props) => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
+    setIsLoading(true);
+
     try {
       const queryVariables = {
         email,
@@ -34,6 +38,8 @@ export const LoginForm: React.FunctionComponent<Props> = (props) => {
       };
 
       const {token} = await fetchData(loginQuery, queryVariables, "login", globalState);
+
+      setIsLoading(false);
 
       window.sessionStorage.setItem('token', token);
 
@@ -43,6 +49,7 @@ export const LoginForm: React.FunctionComponent<Props> = (props) => {
       });
 
     } catch (error) {
+      setIsLoading(false);
       setErrorMessage(error.message);
     }
   };
@@ -58,39 +65,45 @@ export const LoginForm: React.FunctionComponent<Props> = (props) => {
     }
   };
 
-  return (
-    <div>
-      <form
-        className={"auth-form"}
-        onSubmit={handleSubmit}
-      >
-        <div className={"form-control"}>
-          <label htmlFor="email">Email</label>
-          <input
-            id={"email"}
-            type={"email"}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className={"form-control"}>
-          <label htmlFor="password">Password</label>
-          <input
-            id={"password"}
-            type={"password"}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="form-actions">
-          <button type={"submit"}>Submit</button>
-        </div>
-        {
-          errorMessage
-          ?
-            <p>{errorMessage}</p>
-          :
-            null
-        }
-      </form>
-    </div>
-  );
-}
+  if (isLoading) {
+    return (
+      <LoadingSpinner/>
+    );
+  } else {
+    return (
+      <div>
+        <form
+          className={"auth-form"}
+          onSubmit={handleSubmit}
+        >
+          <div className={"form-control"}>
+            <label htmlFor="email">Email</label>
+            <input
+              id={"email"}
+              type={"email"}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className={"form-control"}>
+            <label htmlFor="password">Password</label>
+            <input
+              id={"password"}
+              type={"password"}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="form-actions">
+            <button type={"submit"}>Submit</button>
+          </div>
+          {
+            errorMessage
+              ?
+              <p>{errorMessage}</p>
+              :
+              null
+          }
+        </form>
+      </div>
+    );
+  }
+};

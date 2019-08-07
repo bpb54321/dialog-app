@@ -6,13 +6,13 @@ interface Props {
   history: any;
 }
 
-export const AuthPage: FunctionComponent<Props> = (props) => {
+export const LoginPage: FunctionComponent<Props> = (props) => {
   return (
     <>
       <h1>Login</h1>
-      <LoginForm history={props.history}/>
+      <LoginForm history={props.history} />
       <Link to={"/sign-up"}>Sign Up</Link>
     </>
   );
 
-}
+};
