@@ -4,9 +4,6 @@ import {
   fireEvent,
   render,
   RenderResult,
-  wait,
-  waitForElement,
-  waitForElementToBeRemoved
 } from "@testing-library/react";
 import {act} from "react-dom/test-utils";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
@@ -168,7 +165,7 @@ describe('DialogEditPage', () => {
     }) as () => void);
 
     mockAddLineToDialogParameter = mockAddLineToDialog.mock.calls[1][0];
-    
+
     expect(mockAddLineToDialogParameter.number).toBe(2);
     expect(mockAddLineToDialogParameter.text).toBe(line2Text);
     expect(mockAddLineToDialogParameter.role.id).toBe(role2.id);
