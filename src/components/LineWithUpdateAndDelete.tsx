@@ -82,6 +82,7 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   return (
     <li>
       <form
+        data-testid={"line-with-update-and-delete"}
         onSubmit={(event: SyntheticEvent) => {
           event.preventDefault();
         }}

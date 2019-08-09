@@ -78,6 +78,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
       <>
         <h3>Add A New Line</h3>
         <form
+          data-testid={"add-new-line-form"}
           onSubmit={async (event: SyntheticEvent) => {
             event.preventDefault();
             await createLine({
@@ -94,6 +95,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
             <select
               name="role"
               id={`new-line-role`}
+              data-testid={`new-line-role`}
               value={roleId}
               onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
                 setRoleId(event.target.value);
@@ -108,6 +110,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
             <label htmlFor={`new-line-text`}>Line Text</label>
             <input
               id={`new-line-text`}
+              data-testid={`new-line-text`}
               type={"text"}
               value={text}
               onChange={(event: ChangeEvent<HTMLInputElement>) => {
