@@ -5,6 +5,7 @@ import LineData from "../types/LineData";
 import Role from "../types/Role";
 
 interface Props {
+  numberOfLinesInDialog: number;
   dialogId: string;
   rolesInDialog: Role[];
   addLineToDialog: (line: LineData) => void;
@@ -97,7 +98,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
               roleId,
               dialogId: props.dialogId,
               text,
-              number: 1,
+              number: props.numberOfLinesInDialog + 1,
             });
             setText("");
           }}

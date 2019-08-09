@@ -63,6 +63,7 @@ describe('DialogEditPage', () => {
           children={
             <BrowserRouter>
               <AddNewLineForm
+                numberOfLinesInDialog={0}
                 dialogId={dialogId}
                 rolesInDialog={[
                   role1,
@@ -116,8 +117,6 @@ describe('DialogEditPage', () => {
 
     let mockAddLineToDialogParameter = mockAddLineToDialog.mock.calls[0][0];
 
-    console.log(mockAddLineToDialogParameter);
-
     expect(mockAddLineToDialogParameter.number).toBe(1);
     expect(mockAddLineToDialogParameter.text).toBe(line1Text);
     expect(mockAddLineToDialogParameter.role.id).toBe(role1.id);
@@ -129,6 +128,7 @@ describe('DialogEditPage', () => {
           children={
             <BrowserRouter>
               <AddNewLineForm
+                numberOfLinesInDialog={1}
                 dialogId={dialogId}
                 rolesInDialog={[
                   role1,
@@ -168,9 +168,7 @@ describe('DialogEditPage', () => {
     }) as () => void);
 
     mockAddLineToDialogParameter = mockAddLineToDialog.mock.calls[1][0];
-
-    console.log(mockAddLineToDialogParameter);
-
+    
     expect(mockAddLineToDialogParameter.number).toBe(2);
     expect(mockAddLineToDialogParameter.text).toBe(line2Text);
     expect(mockAddLineToDialogParameter.role.id).toBe(role2.id);
