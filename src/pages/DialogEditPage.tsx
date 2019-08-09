@@ -144,6 +144,7 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
                 })}
               </ul>
               <AddNewLineForm
+                numberOfLinesInDialog={dialog.lines.length}
                 dialogId={dialogId}
                 rolesInDialog={dialog.roles}
                 addLineToDialog={addLineToParentState}
