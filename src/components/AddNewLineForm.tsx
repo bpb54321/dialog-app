@@ -64,7 +64,19 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
 
     try {
       const createdLine: LineData = await fetchData(createLineQuery, queryVariables, "createLine", globalState);
-      props.addLineToDialog(createdLine);
+      // Data parity check
+      if (
+        createdLine.text === createdLine.text &&
+        createdLine.role.id === queryVariables.roleId &&
+        createdLine.number === queryVariables.number
+      ) {
+        props.addLineToDialog(createdLine);
+      } else {
+        setErrorMessage("There was a problem with the creation of the line. The created line fetched from the " +
+          "API does not have the properties that were specified in the add new line form. Please try again or " +
+          "verify that the API server is running.");
+      }
+
     } catch(error) {
       setErrorMessage(error.message);
     }
