@@ -53,10 +53,18 @@ describe('DialogEditPage', () => {
 
     const line1: LineData = {
       id: "101112",
-      number: 0,
+      number: 0, // only used as a placeholder here, to satisfy LineData type
       guess: "",
       role: role1,
       text: "This is the text for line 1.",
+    };
+
+    const line2: LineData = {
+      id: "131415",
+      number: 0, // only used as a placeholder here, to satisfy LineData type
+      guess: "",
+      role: role2,
+      text: "This is the text for line 2.",
     };
 
     // Initial dialogs that are loaded
@@ -98,17 +106,17 @@ describe('DialogEditPage', () => {
     // Fill in inputs to create new line
     fireEvent.change(wrapper.getByTestId("new-line-role"), {
       target: {
-        value: line1.role.id, // Role ID
+        value: line1.role.id,
       }
     });
 
     fireEvent.change(wrapper.getByTestId("new-line-text"), {
       target: {
-        value: line1.text, // Role ID
+        value: line1.text,
       }
     });
 
-    // Set up mock return value from fetchData
+    // Set up mock return value from fetchData (just so fetchData doesn't throw error)
     (fetchData as jest.Mock).mockImplementationOnce(() => {
       return Promise.resolve(line1);
     });
@@ -129,6 +137,44 @@ describe('DialogEditPage', () => {
       roleId: line1.role.id,
       dialogId: dialogId,
       number: 1,
+    });
+
+    // --------Add Second Line --------------------  //
+
+    // Fill in inputs to create new line
+    fireEvent.change(wrapper.getByTestId("new-line-role"), {
+      target: {
+        value: line2.role.id,
+      }
+    });
+
+    fireEvent.change(wrapper.getByTestId("new-line-text"), {
+      target: {
+        value: line2.text,
+      }
+    });
+
+    // Set up mock return value from fetchData (just so fetchData doesn't throw error)
+    (fetchData as jest.Mock).mockImplementationOnce(() => {
+      return Promise.resolve(line2);
+    });
+
+    fireEvent.submit(wrapper.getByTestId("add-new-line-form"), {
+      preventDefault: jest.fn(),
+    });
+
+    // Wait for 2 line update components to appear
+    await wait(() => {
+      const lineUpdateComponents = wrapper.getAllByTestId("line-with-update-and-delete");
+      expect(lineUpdateComponents).toHaveLength(2);
+    });
+
+    // Assert that fetch data with CreateLineQuery was called with line number equal to 2
+    expect((fetchData as jest.Mock).mock.calls[2]).toContainEqual({
+      text: line2.text,
+      roleId: line2.role.id,
+      dialogId: dialogId,
+      number: 2,
     });
 
   });
