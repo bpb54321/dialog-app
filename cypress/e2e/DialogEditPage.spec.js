@@ -1,7 +1,22 @@
+
 describe("Dialog Edit Page", () => {
 
   // user token
   const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjano1aWlkbGIwMDAzMDc2NmNxYzJwbDFvIiwiaWF0IjoxNTY1NDM5OTIxfQ.DGZ3m6mZftHS5LODRKhl80DzHfFPXyxzpE-vKgHdQKY";
+
+  const role1 = {
+    id: "123",
+    name: "John",
+  };
+  const role2 = {
+    id: "456",
+    name: "Jane",
+  };
+
+  const dialogName = "Test Dialog";
+
+  const line1Text = "This is the text for line 1.";
+  const line2Text = "This is the text for line 2.";
 
   beforeEach(() => {
     // Load database with one user whose token corresponds to the above token
@@ -28,7 +43,8 @@ describe("Dialog Edit Page", () => {
       }
     });
 
+    cy.getByLabelText(/dialog name/i)
+      .type(dialogName);
 
-    cy.contains("Dialogs");
   })
 });
