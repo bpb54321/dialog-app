@@ -1,34 +1,34 @@
 describe("Dialog Edit Page", () => {
 
-    // user token
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjano1aWlkbGIwMDAzMDc2NmNxYzJwbDFvIiwiaWF0IjoxNTY1NDM5OTIxfQ.DGZ3m6mZftHS5LODRKhl80DzHfFPXyxzpE-vKgHdQKY";
+  // user token
+  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjano1aWlkbGIwMDAzMDc2NmNxYzJwbDFvIiwiaWF0IjoxNTY1NDM5OTIxfQ.DGZ3m6mZftHS5LODRKhl80DzHfFPXyxzpE-vKgHdQKY";
 
-    beforeEach(() => {
-        // Load database with one user whose token corresponds to the above token
-        cy.exec(`cat ${Cypress.env('sql_dump_directory')}single-user.sql | ` +
-          `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
-          `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
+  beforeEach(() => {
+    // Load database with one user whose token corresponds to the above token
+    cy.exec(`cat ${Cypress.env('sql_dump_directory')}single-user.sql | ` +
+      `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
+      `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
 
-        // Clear local storage of the user's token
-        cy.clearLocalStorage();
-    });
+    // Clear local storage of the user's token
+    cy.clearLocalStorage();
+  });
 
-    specify(`Given a dialog which has 0 lines
+  specify(`Given a dialog which has 0 lines
         And the dialog has two roles
         When we add lines to the dialog
         Then the lines should appear on the page
         And their line numbers should correspond to the order in which they were added.`, () => {
 
-        // Login directly using token
-        cy.visit('/', {
-            onBeforeLoad: function(window){
-                // and before the page finishes loading
-                // set the id_token in local storage
-                window.sessionStorage.setItem('token', token);
-            }
-        });
+    // Login directly using token
+    cy.visit('/', {
+      onBeforeLoad: function(window){
+        // and before the page finishes loading
+        // set the id_token in local storage
+        window.sessionStorage.setItem('token', token);
+      }
+    });
 
 
-        cy.contains("Dialogs");
-    })
+    cy.contains("Dialogs");
+  })
 });
