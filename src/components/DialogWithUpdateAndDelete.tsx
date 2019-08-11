@@ -79,7 +79,9 @@ export const DialogWithUpdateAndDelete: React.FunctionComponent<Props> = (props)
   };
 
   return (
-    <li>
+    <li
+      data-testid={"dialog-with-update-and-delete"}
+    >
       <form
         onSubmit={(event: SyntheticEvent) => {
           event.preventDefault();

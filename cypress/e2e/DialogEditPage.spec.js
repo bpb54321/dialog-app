@@ -43,8 +43,23 @@ describe("Dialog Edit Page", () => {
       }
     });
 
+    // Create Test Dialog
     cy.getByLabelText(/dialog name/i)
-      .type(dialogName);
+      .type(dialogName)
+      .getByTestId("add-new-dialog-form")
+      .submit();
 
+    // Navigate to Edit Dialog page
+    cy.getAllByTestId("dialog-with-update-and-delete")
+      .getByDisplayValue(dialogName)
+      .then(($dialogNameInput) => {
+        debugger;
+        const $parentComponent = $dialogNameInput.parents(`[data-testid="dialog-with-update-and-delete"]`).eq(0);
+        const $practiceLink = $parentComponent.find("a:contains('Edit')");
+        cy.wrap($practiceLink)
+          .click()
+          .url()
+          .should("include", "/edit");
+      });
   })
 });
