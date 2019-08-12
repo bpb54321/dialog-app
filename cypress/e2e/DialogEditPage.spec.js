@@ -42,11 +42,11 @@ describe("Dialog Edit Page", () => {
         cy.get("label")
           .contains(/dialog name/i)
           .siblings("input")
-          .type(dialogName);
+          .type(dialogName)
+          .should("have.value", dialogName);
 
         cy.wrap($addNewDialogForm).submit();
       });
-
 
     // Navigate to Edit Dialog page
     cy.get(`[data-testid="dialog-with-update-and-delete"]`)
@@ -63,30 +63,50 @@ describe("Dialog Edit Page", () => {
       });
 
     // Add two roles
-    cy.get("label")
-      .contains(/role name/i)
-      .siblings("input")
-      .type(role1Name);
 
+    // Type first role's name in input
+    cy.get("label:contains(Role Name)")
+      .siblings("input")
+      .type(role1Name)
+      .should('have.value', role1Name);
+
+    // Add role
+    cy.contains("Add Role")
+      .click();
+
+    // Verify role was added
+    cy.get(`[data-testid="role-with-update-and-delete"]`)
+      .should("have.length", 1)
+      .eq(0)
+      .find(`[data-testid="role-with-update-and-delete__name"]`)
+      .should("have.value", role1Name);
+
+    // Type sscond role's name
+    cy.get("label:contains(Role Name)")
+      .siblings("input")
+      .type(role2Name)
+      .should('have.value', role2Name);
+
+    // Add role
     cy.contains(/add role/i)
       .click();
 
-    cy.get("label")
-      .contains(/role name/i)
-      .siblings("input")
-      .type(role2Name);
+    // Verify role was added
+    cy.get(`[data-testid="role-with-update-and-delete"]`)
+      .should("have.length", 2)
+      .eq(1)
+      .find(`[data-testid="role-with-update-and-delete__name"]`)
+      .should("have.value", role2Name);
 
-    cy.contains(/add role/i)
-      .click();
+    // Add lines
 
     // Add line 1
     cy.get(`[data-testid="add-new-line-form"]`)
       .then(($addNewLineForm) => {
         cy.wrap($addNewLineForm)
-          .find("label")
-          .contains(/line text/i)
-          .siblings("input")
-          .type(line1Text);
+          .find(`[data-testid="new-line-text"]`)
+          .type(line1Text)
+          .should("have.value", line1Text);
 
         cy.wrap($addNewLineForm)
           .submit();
@@ -95,16 +115,17 @@ describe("Dialog Edit Page", () => {
     // Verify generated line number is correct
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 1)
-      .eq(0).then(($line1) => {
+      .eq(0)
+      .then(($line1) => {
         // Verify that the line text matches what we entered in the add new line form
         cy.wrap($line1)
           .find(`[value="${line1Text}"]`);
 
-      cy.wrap($line1)
-        .find("label")
-        .contains(/line number/i)
-        .siblings("input")
-        .should("have.value", "1");
+        cy.wrap($line1)
+          .find("label")
+          .contains(/line number/i)
+          .siblings("input")
+          .should("have.value", "1");
       });
 
     // Add line 2
@@ -114,13 +135,15 @@ describe("Dialog Edit Page", () => {
           .find("label")
           .contains(/role/i)
           .siblings("select")
-          .select(role2Name);
+          .select(role2Name)
+          .should(($select) => {
+            expect($select.find("option:selected").text()).to.equal(role2Name);
+          });
 
         cy.wrap($addNewLineForm)
-          .find("label")
-          .contains(/line text/i)
-          .siblings("input")
-          .type(line2Text);
+          .find(`[data-testid="new-line-text"]`)
+          .type(line2Text)
+          .should("have.value", line2Text);
 
         cy.wrap($addNewLineForm)
           .submit();
@@ -135,8 +158,7 @@ describe("Dialog Edit Page", () => {
           .find(`[value="${line2Text}"]`);
 
         cy.wrap($line2)
-          .find("label")
-          .contains(/line number/i)
+          .find("label:contains(Line Number)")
           .siblings("input")
           .should("have.value", "2");
       });

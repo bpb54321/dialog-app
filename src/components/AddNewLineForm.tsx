@@ -68,7 +68,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
       const createdLine: LineData = await fetchData(createLineQuery, queryVariables, "createLine", globalState);
       // Data parity check
       if (
-        createdLine.text === createdLine.text &&
+        createdLine.text === queryVariables.text &&
         createdLine.role.id === queryVariables.roleId &&
         createdLine.number === queryVariables.number
       ) {
