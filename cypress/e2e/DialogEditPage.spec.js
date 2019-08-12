@@ -23,10 +23,7 @@ describe("Dialog Edit Page", () => {
     cy.clearLocalStorage();
   });
 
-  specify(`Given a dialog which has 0 lines and 2 roles
-        When we add lines to the dialog
-        Then the lines should appear on the page
-        And their line numbers should correspond to the order in which they were added.`, () => {
+  specify(`Automatic line numbering when adding, deleting, or moving lines`, () => {
 
     // Login directly using token
     cy.visit('/', {
@@ -198,5 +195,29 @@ describe("Dialog Edit Page", () => {
         .should("have.value", "3");
     });
 
+    // Delete the 2nd line
+    cy.get(`[data-testid="line-with-update-and-delete"]`)
+      .eq(1)
+      .contains("Delete Line")
+      .click();
+
+    cy.get(`[data-testid="line-with-update-and-delete"]`)
+      .should("have.lengthOf", 2);
+
+    // Verify new line numbers of remaining two lines after the middle line was deleted
+    cy.get(`[data-testid="line-with-update-and-delete"]`)
+      .then(($lines) => {
+        cy.wrap($lines)
+          .eq(0)
+          .find("label:contains(Line Number)")
+          .siblings("input")
+          .should("have.value", "1");
+
+        cy.wrap($lines)
+          .eq(1)
+          .find("label:contains(Line Number)")
+          .siblings("input")
+          .should("have.value", "2");
+      });
   })
 });
