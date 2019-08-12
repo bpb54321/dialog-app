@@ -53,11 +53,11 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
 
     const {dialogId} = props.match.params;
 
-    const queryVaribles = {
+    const queryVariables = {
       id: dialogId,
     };
 
-    fetchData(dialogQuery, queryVaribles, "dialog", globalState).then((dialog) => {
+    fetchData(dialogQuery, queryVariables, "dialog", globalState).then((dialog) => {
       setDialog(dialog);
       setLoading(false);
     }).catch((error) => {
@@ -144,6 +144,7 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
                 })}
               </ul>
               <AddNewLineForm
+                numberOfLinesInDialog={dialog.lines.length}
                 dialogId={dialogId}
                 rolesInDialog={dialog.roles}
                 addLineToDialog={addLineToParentState}

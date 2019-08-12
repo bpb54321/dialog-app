@@ -83,11 +83,15 @@ export const RoleWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   return (
     <li>
       <form
+        data-testid={"role-with-update-and-delete"}
         onSubmit={(event: SyntheticEvent) => {
           event.preventDefault();
         }}
       >
+        <label htmlFor={`role-${props.role.id}-name`}>Name</label>
         <input
+          data-testid={"role-with-update-and-delete__name"}
+          id={`role-${props.role.id}-name`}
           type={"text"}
           value={name}
           onChange={(event: ChangeEvent<HTMLInputElement>) => {

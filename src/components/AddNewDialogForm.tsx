@@ -53,6 +53,7 @@ export const AddNewDialogForm: React.FunctionComponent<Props> = (props) => {
     <>
       <h3>Add A New Dialog</h3>
       <form
+        data-testid="add-new-dialog-form"
         onSubmit={async (event: SyntheticEvent) => {
           event.preventDefault();
           const returnedDialog = await createDialog({
