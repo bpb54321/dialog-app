@@ -3,6 +3,7 @@ import fetchData from "../utils/fetch-data";
 import {useGlobalState} from "../contexts/GlobalStateContext";
 import LineData from "../types/LineData";
 import Role from "../types/Role";
+import "../css/AddNewLineForm.css";
 
 interface Props {
   numberOfLinesInDialog: number;
@@ -84,61 +85,62 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
 
   };
 
-  if (props.rolesInDialog.length <= 0) {
-    return <p>You must add at least one role to the dialog in order to add a line to the dialog.</p>
-  } else {
-    return (
-      <>
-        <h3>Add A New Line</h3>
-        <form
-          data-testid={"add-new-line-form"}
-          onSubmit={async (event: SyntheticEvent) => {
-            event.preventDefault();
-            await createLine({
-              roleId,
-              dialogId: props.dialogId,
-              text,
-              number: props.numberOfLinesInDialog + 1,
-            });
-            setText("");
-          }}
-        >
-          <div>
-            <label htmlFor={`new-line-role`}>Role</label>
-            <select
-              name="role"
-              id={`new-line-role`}
-              data-testid={`new-line-role`}
-              value={roleId}
-              onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
-                setRoleId(event.target.value);
-              }}
-            >
-              {props.rolesInDialog.map((role) => {
-                return <option value={role.id} key={role.id}>{role.name}</option>;
-              })}
-            </select>
-          </div>
-          <div>
-            <label htmlFor={`new-line-text`}>Line Text</label>
-            <input
-              id={`new-line-text`}
-              data-testid={`new-line-text`}
-              type={"text"}
-              value={text}
-              onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                setText(event.target.value);
-              }}
-            />
-          </div>
-          <button
-            type={"submit"}
+  return (
+    <div className="add-new-line-form">
+      {props.rolesInDialog.length === 0 ?
+        <p>You must add at least one role to the dialog in order to add a line to the dialog.</p> :
+        <>
+          <h3>Add A New Line</h3>
+          <form
+            data-testid={"add-new-line-form"}
+            onSubmit={async (event: SyntheticEvent) => {
+              event.preventDefault();
+              await createLine({
+                roleId,
+                dialogId: props.dialogId,
+                text,
+                number: props.numberOfLinesInDialog + 1,
+              });
+              setText("");
+            }}
           >
-            Add Line
-          </button>
-        </form>
-        {errorMessage ? <p>{errorMessage}</p> : null}
-      </>
-    );
-  }
+            <div>
+              <label htmlFor={`new-line-role`}>Role</label>
+              <select
+                name="role"
+                id={`new-line-role`}
+                data-testid={`new-line-role`}
+                value={roleId}
+                onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
+                  setRoleId(event.target.value);
+                }}
+              >
+                {props.rolesInDialog.map((role) => {
+                  return <option value={role.id} key={role.id}>{role.name}</option>;
+                })}
+              </select>
+            </div>
+            <div>
+              <label htmlFor={`new-line-text`}>Line Text</label>
+              <textarea
+                className={"add-new-line-form__line-text-input"}
+                id={`new-line-text`}
+                data-testid={`new-line-text`}
+                value={text}
+                onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+                  setText(event.target.value);
+                }}
+              />
+            </div>
+            <button
+              type={"submit"}
+            >
+              Add Line
+            </button>
+          </form>
+          {errorMessage ? <p>{errorMessage}</p> : null}
+        </>
+      }
+    </div>
+  );
 };
