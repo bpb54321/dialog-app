@@ -11,6 +11,7 @@ describe("Dialog Edit Page", () => {
 
   const line1Text = "This is the text for line 1.";
   const line2Text = "This is the text for line 2.";
+  const line3Text = "This is the text for line 3.";
 
   beforeEach(() => {
     // Load database with one user whose token corresponds to the above token
@@ -162,6 +163,40 @@ describe("Dialog Edit Page", () => {
           .siblings("input")
           .should("have.value", "2");
       });
+
+    // Add line 3
+    cy.get(`[data-testid="add-new-line-form"]`)
+      .then(($addNewLineForm) => {
+        cy.wrap($addNewLineForm)
+          .find("label:contains(Role)")
+          .siblings("select")
+          .select(role1Name)
+          .should(($select) => {
+            expect($select.find("option:selected").text()).to.equal(role1Name);
+          });
+
+        cy.wrap($addNewLineForm)
+          .find(`[data-testid="new-line-text"]`)
+          .type(line3Text)
+          .should("have.value", line3Text);
+
+        cy.wrap($addNewLineForm)
+          .submit();
+      });
+
+    cy.get(`[data-testid="line-with-update-and-delete"]`)
+      .should("have.lengthOf", 3)
+      .eq(2).then(($line3) => {
+
+      // Verify that the line text matches what we entered in the add new line form
+      cy.wrap($line3)
+        .find(`[value="${line3Text}"]`);
+
+      cy.wrap($line3)
+        .find("label:contains(Line Number)")
+        .siblings("input")
+        .should("have.value", "3");
+    });
 
   })
 });
