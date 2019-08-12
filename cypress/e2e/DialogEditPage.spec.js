@@ -37,70 +37,93 @@ describe("Dialog Edit Page", () => {
     });
 
     // Create Test Dialog
-    cy.getByLabelText(/dialog name/i)
-      .type(dialogName)
-      .getByTestId("add-new-dialog-form")
-      .submit();
+    cy.get(`[data-testid="add-new-dialog-form"]`)
+      .then(($addNewDialogForm) => {
+        cy.get("label")
+          .contains(/dialog name/i)
+          .siblings("input")
+          .type(dialogName);
+
+        cy.wrap($addNewDialogForm).submit();
+      });
+
 
     // Navigate to Edit Dialog page
-    cy.getAllByTestId("dialog-with-update-and-delete")
-      .getByDisplayValue(dialogName)
-      .then(($dialogNameInput) => {
-        const $parentComponent = $dialogNameInput.parents(`[data-testid="dialog-with-update-and-delete"]`).eq(0);
-        const $practiceLink = $parentComponent.find("a:contains('Edit')");
-        cy.wrap($practiceLink)
-          .click()
-          .url()
+    cy.get(`[data-testid="dialog-with-update-and-delete"]`)
+      .then(($dialogWithUpdateAndDelete) => {
+        cy.wrap($dialogWithUpdateAndDelete)
+          .find(`[value="${dialogName}"]`);
+
+        cy.wrap($dialogWithUpdateAndDelete)
+          .contains(/edit/i)
+          .click();
+
+        cy.url()
           .should("include", "/edit");
       });
 
     // Add two roles
-    cy.getByLabelText(/role name/i)
+    cy.get("label")
+      .contains(/role name/i)
+      .siblings("input")
       .type(role1Name);
 
-    cy.getByText(/add role/i)
+    cy.contains(/add role/i)
       .click();
 
-    // Add two roles
-    cy.getByLabelText(/role name/i)
+    cy.get("label")
+      .contains(/role name/i)
+      .siblings("input")
       .type(role2Name);
 
-    cy.getByText(/add role/i)
+    cy.contains(/add role/i)
       .click();
 
     // Add line 1
-    cy.getByTestId("add-new-line-form")
-      .within(() => {
-        // Use default role (John), so don't need to select role
-      cy.getByLabelText(/line text/i)
-          .type(line1Text)
-          .getByText(/add line/i)
-          .click();
+    cy.get(`[data-testid="add-new-line-form"]`)
+      .then(($addNewLineForm) => {
+        cy.wrap($addNewLineForm)
+          .find("label")
+          .contains(/line text/i)
+          .siblings("input")
+          .type(line1Text);
+
+        cy.wrap($addNewLineForm)
+          .submit();
       });
 
     // Verify generated line number is correct
-    cy.getAllByTestId("line-with-update-and-delete")
+    cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 1)
       .eq(0).then(($line1) => {
         // Verify that the line text matches what we entered in the add new line form
         cy.wrap($line1)
           .find(`[value="${line1Text}"]`);
 
-        cy.wrap($line1)
-          .getByLabelText(/line number/i)
-          .should("have.value", "1");
+      cy.wrap($line1)
+        .find("label")
+        .contains(/line number/i)
+        .siblings("input")
+        .should("have.value", "1");
       });
 
     // Add line 2
-    cy.getByTestId("add-new-line-form")
-      .within(() => {
-        cy.getByLabelText(/role/i)
-          .select(role2Name)
-          .parents(`[data-testid="add-new-line-form"]`)
-          .getByLabelText(/line text/i)
-          .type(line2Text)
-          .getByText(/add line/i)
-          .click();
+    cy.get(`[data-testid="add-new-line-form"]`)
+      .then(($addNewLineForm) => {
+        cy.wrap($addNewLineForm)
+          .find("label")
+          .contains(/role/i)
+          .siblings("select")
+          .select(role2Name);
+
+        cy.wrap($addNewLineForm)
+          .find("label")
+          .contains(/line text/i)
+          .siblings("input")
+          .type(line2Text);
+
+        cy.wrap($addNewLineForm)
+          .submit();
       });
 
     cy.get(`[data-testid="line-with-update-and-delete"]`)
@@ -109,7 +132,7 @@ describe("Dialog Edit Page", () => {
 
         // Verify that the line text matches what we entered in the add new line form
         cy.wrap($line2)
-          .contains(line2Text);
+          .find(`[value="${line2Text}"]`);
 
         cy.wrap($line2)
           .find("label")
