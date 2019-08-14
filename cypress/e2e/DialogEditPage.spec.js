@@ -184,6 +184,7 @@ describe("Dialog Edit Page", () => {
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 3)
       .eq(2).then(($line3) => {
+        debugger;
 
       // Verify that the line text matches what we entered in the add new line form
       cy.wrap($line3)

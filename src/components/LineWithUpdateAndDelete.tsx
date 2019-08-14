@@ -23,15 +23,6 @@ const updateLineQuery =
   `;
 //endregion
 
-//region deleteLineQuery
-const deleteLineQuery =
-  `
-    mutation DeleteLine($id: String!) {
-      deleteLine(id: $id)
-    }
-  `;
-//endregion
-
 export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
 
   const globalState = useGlobalState();
@@ -57,26 +48,7 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   };
 
   const deleteLine = async (): Promise<void> =>  {
-
-    const queryVariables = {
-      id: props.line.id,
-    };
-
-    try {
-      const deletionWasSuccessful: boolean = await fetchData(
-        deleteLineQuery, queryVariables, "deleteLine", globalState
-      );
-
-      if(deletionWasSuccessful) {
-        props.deleteLineInDialog(props.line.id);
-      } else {
-        setErrorMessage(`There was a problem when attempting to delete the Line with id ${props.line.id}` +
-          `and text ${text}`);
-      }
-    } catch(error) {
-      setErrorMessage(error.message);
-    }
-
+    await props.deleteLineInDialog(props.line.id);
   };
 
   return (

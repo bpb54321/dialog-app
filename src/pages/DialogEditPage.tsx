@@ -41,6 +41,32 @@ const dialogQuery =
   `;
 //endregion
 
+//region deleteLineQuery
+const deleteLineQuery =
+  `
+    mutation DeleteLine($id: String!) {
+      deleteLine(id: $id)
+    }
+  `;
+//endregion
+
+//region updateLineQuery
+const updateLineQuery =
+  `
+    mutation UpdateLine($lines: [LineInput!]!) {
+      updateLine(lines: $lines) {
+        id
+        text
+        number
+        role {
+          id
+          name
+        }
+      }
+    }
+  `;
+//endregion
+
 export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
 
   const [dialog, setDialog] = useState({} as Dialog);
@@ -91,16 +117,49 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
     });
   };
 
-  const deleteLineInDialog = (lineId: string): void => {
+  const deleteLineInDialog = async (lineId: string): Promise<void> => {
 
-    const newLines = dialog.lines.filter((line: LineData) => {
-      return line.id !== lineId;
+    const deleteLineQueryVariables = {
+      id: lineId,
+    };
+
+    fetchData(
+      deleteLineQuery, deleteLineQueryVariables, "deleteLine", globalState
+    ).then((deletionWasSuccessful: boolean) => {
+
+      if(deletionWasSuccessful) {
+
+        const remainingLines = dialog.lines.filter((line: LineData) => {
+          return line.id !== lineId;
+        }).map((line: LineData, index: number) => {
+          return {
+            id: line.id,
+            number: index + 1,
+          };
+        });
+
+        const updateLineQueryVariables = {
+          lines: remainingLines
+        };
+
+        fetchData(
+          updateLineQuery, updateLineQueryVariables, "updateLine", globalState
+        ).then((updatedLines: LineData[]) => {
+          setDialog({
+            ...dialog,
+            lines: updatedLines
+          });
+        }).catch((error) => {
+          setErrorMessage(error.message);
+        });
+
+      } else {
+        setErrorMessage(`There was a problem when attempting to delete the Line with id ${lineId}`);
+      }
+    }).catch((error) => {
+      setErrorMessage(error.message);
     });
 
-    setDialog({
-      ...dialog,
-      lines: newLines
-    });
   };
 
   const {dialogId} = props.match.params;
