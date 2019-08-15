@@ -7,15 +7,23 @@ describe("Dialog Edit Page", () => {
   const role1Name = "John";
   const role2Name = "Jane";
 
-  const dialogName = "Test Dialog";
-
   const line1Text = "This is the text for line 1.";
   const line2Text = "This is the text for line 2.";
   const line3Text = "This is the text for line 3.";
 
+  const dialogId = "cjz9xb31902qo0766ig242hux";
+
+  before(() => {
+    cy.server();
+    cy.route({
+      method: 'POST',
+      url: 'localhost:4000',
+    }).as('api');
+  });
+
   beforeEach(() => {
     // Load database with one user whose token corresponds to the above token
-    cy.exec(`cat ${Cypress.env('sql_dump_directory')}single-user.sql | ` +
+    cy.exec(`cat ${Cypress.env('sql_dump_directory')}one-dialog-with-two-roles.sql | ` +
       `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
       `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
 
@@ -25,76 +33,13 @@ describe("Dialog Edit Page", () => {
 
   specify(`Automatic line numbering when adding, deleting, or moving lines`, () => {
 
-    // Login directly using token
-    cy.visit('/', {
+    cy.visit(`/dialogs/${dialogId}/edit`, {
       onBeforeLoad: function(window){
         // and before the page finishes loading
         // set the id_token in local storage
         window.sessionStorage.setItem('token', token);
       }
     });
-
-    // Create Test Dialog
-    cy.get(`[data-testid="add-new-dialog-form"]`)
-      .then(($addNewDialogForm) => {
-        cy.get("label")
-          .contains(/dialog name/i)
-          .siblings("input")
-          .type(dialogName)
-          .should("have.value", dialogName);
-
-        cy.wrap($addNewDialogForm).submit();
-      });
-
-    // Navigate to Edit Dialog page
-    cy.get(`[data-testid="dialog-with-update-and-delete"]`)
-      .then(($dialogWithUpdateAndDelete) => {
-        cy.wrap($dialogWithUpdateAndDelete)
-          .find(`[value="${dialogName}"]`);
-
-        cy.wrap($dialogWithUpdateAndDelete)
-          .contains(/edit/i)
-          .click();
-
-        cy.url()
-          .should("include", "/edit");
-      });
-
-    // Add two roles
-
-    // Type first role's name in input
-    cy.get("label:contains(Role Name)")
-      .siblings("input")
-      .type(role1Name)
-      .should('have.value', role1Name);
-
-    // Add role
-    cy.contains("Add Role")
-      .click();
-
-    // Verify role was added
-    cy.get(`[data-testid="role-with-update-and-delete"]`)
-      .should("have.length", 1)
-      .eq(0)
-      .find(`[data-testid="role-with-update-and-delete__name"]`)
-      .should("have.value", role1Name);
-
-    // Type sscond role's name
-    cy.get("label:contains(Role Name)")
-      .siblings("input")
-      .type(role2Name)
-      .should('have.value', role2Name);
-
-    // Add role
-    cy.contains(/add role/i)
-      .click();
-
-    // Verify role was added
-    cy.get(`[data-testid="role-with-update-and-delete"]`)
-      .should("have.length", 2)
-      .eq(1)
-      .find(`[data-testid="role-with-update-and-delete__name"]`)
-      .should("have.value", role2Name);
 
     // Add lines
 
@@ -125,6 +70,11 @@ describe("Dialog Edit Page", () => {
           .siblings("input")
           .should("have.value", "1");
       });
+
+    cy.wait('@api').then((xhr) => {
+      debugger;
+      assert.isNotNull(xhr.response.body.data, '1st API call has data')
+    })
 
     // Add line 2
     cy.get(`[data-testid="add-new-line-form"]`)
@@ -184,8 +134,6 @@ describe("Dialog Edit Page", () => {
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 3)
       .eq(2).then(($line3) => {
-        debugger;
-
       // Verify that the line text matches what we entered in the add new line form
       cy.wrap($line3)
         .find(`[value="${line3Text}"]`);
@@ -220,5 +168,10 @@ describe("Dialog Edit Page", () => {
           .siblings("input")
           .should("have.value", "2");
       });
+
+    cy.wait('@api').then((xhr) => {
+      debugger;
+      assert.isNotNull(xhr.response.body.data, '1st API call has data')
+    })
   })
 });
