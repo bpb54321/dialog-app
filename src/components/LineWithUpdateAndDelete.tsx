@@ -1,38 +1,15 @@
-import React, {ChangeEvent, SyntheticEvent, useState} from 'react';
-import fetchData from "../utils/fetch-data";
-import {useGlobalState} from "../contexts/GlobalStateContext";
+import React, {ChangeEvent, SyntheticEvent} from 'react';
 import LineData from "../types/LineData";
 import Role from "../types/Role";
 
 interface Props {
   line: LineData;
   rolesInDialog: Role[];
-  deleteLineInDialog: (line: LineData) => void;
-  updateLine: (line: LineData) => void;
+  deleteLineInDialog: (line: LineData) => Promise<void>;
+  updateLine: (line: LineData) => Promise<void>;
 }
 
-//region updateLineQuery
-const updateLineQuery =
-  `
-    mutation UpdateLine($id: String!, $text: String, $roleId: String, $number: Int) {
-      updateLine(id: $id, text: $text, roleId: $roleId, number: $number) {
-        id
-        text
-        number
-      }
-    }
-  `;
-//endregion
-
 export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
-
-  const globalState = useGlobalState();
-
-  const [text, setText] = useState(props.line.text);
-  const [roleId, setRoleId] = useState(props.line.role.id);
-  const [errorMessage, setErrorMessage] = useState("");
-
-
 
   return (
     <li>
@@ -47,12 +24,14 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
           <select
             name="role"
             id={`line-role-${props.line.id}`}
-            value={roleId}
+            value={props.line.role.id}
             onChange={async (event: ChangeEvent<HTMLSelectElement>) => {
-              setRoleId(event.target.value);
-              await updateLine({
-                id: props.line.id,
-                roleId: event.target.value,
+              await props.updateLine({
+                ...props.line,
+                role: {
+                  ...props.line.role,
+                  id: event.target.value,
+                }
               });
             }}
           >
@@ -66,14 +45,11 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
           <input
             id={`line-text-${props.line.id}`}
             type={"text"}
-            value={text}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              setText(event.target.value);
-            }}
-            onBlur={async () => {
-              await updateLine({
-                id: props.line.id,
-                text
+            value={props.line.text}
+            onChange={async (event: ChangeEvent<HTMLInputElement>) => {
+              await props.updateLine({
+                ...props.line,
+                text: event.target.value,
               });
             }}
           />
@@ -86,9 +62,9 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
             step={1}
             min={1}
             value={props.line.number}
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            onChange={async (event: ChangeEvent<HTMLInputElement>) => {
               if (!(event.target.value === "")) {
-                props.updateLine({
+                await props.updateLine({
                   ...props.line,
                   number: parseInt(event.target.value)
                 });
@@ -105,7 +81,6 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
           Delete Line
         </button>
       </form>
-      {errorMessage ? <p>{errorMessage}</p> : null}
     </li>
   );
 };
