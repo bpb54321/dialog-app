@@ -11,7 +11,7 @@ describe("Dialog Edit Page", () => {
   const line2Text = "This is the text for line 2.";
   const line3Text = "This is the text for line 3.";
 
-  const dialogId = "cjz9xb31902qo0766ig242hux";
+  const dialogId = "cjz63uiqi001a0766afqkfuec";
 
   before(() => {
     cy.server();
@@ -40,6 +40,9 @@ describe("Dialog Edit Page", () => {
         window.sessionStorage.setItem('token', token);
       }
     });
+
+    // Wait for the page to request dialogs from the api
+    cy.wait('@api');
 
     // Add lines
 
@@ -71,10 +74,11 @@ describe("Dialog Edit Page", () => {
           .should("have.value", "1");
       });
 
+    // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
-      debugger;
-      assert.isNotNull(xhr.response.body.data, '1st API call has data')
-    })
+      expect(xhr.response.body.data.createLine).to.have.property("text", line1Text);
+      expect(xhr.response.body.data.createLine).to.have.property("number", 1);
+    });
 
     // Add line 2
     cy.get(`[data-testid="add-new-line-form"]`)
@@ -111,6 +115,12 @@ describe("Dialog Edit Page", () => {
           .should("have.value", "2");
       });
 
+    // Wait for confirmation that the new line has been added to the database
+    cy.wait('@api').then((xhr) => {
+      expect(xhr.response.body.data.createLine).to.have.property("text", line2Text);
+      expect(xhr.response.body.data.createLine).to.have.property("number", 2);
+    });
+
     // Add line 3
     cy.get(`[data-testid="add-new-line-form"]`)
       .then(($addNewLineForm) => {
@@ -144,6 +154,12 @@ describe("Dialog Edit Page", () => {
         .should("have.value", "3");
     });
 
+    // Wait for confirmation that the new line has been added to the database
+    cy.wait('@api').then((xhr) => {
+      expect(xhr.response.body.data.createLine).to.have.property("text", line3Text);
+      expect(xhr.response.body.data.createLine).to.have.property("number", 3);
+    });
+
     // Delete the 2nd line
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .eq(1)
@@ -169,9 +185,19 @@ describe("Dialog Edit Page", () => {
           .should("have.value", "2");
       });
 
+    // deleteLine query
     cy.wait('@api').then((xhr) => {
-      debugger;
-      assert.isNotNull(xhr.response.body.data, '1st API call has data')
-    })
+      expect(xhr.response.body.data.deleteLine).to.equal(true);
+    });
+
+    // updateLine query
+    cy.wait('@api').then((xhr) => {
+      const lines = xhr.response.body.data.updateLine.lines;
+      const lineNumbers = lines.map((line) => {
+        return line.number;
+      });
+      expect(lineNumbers).to.have.length(2);
+      expect(lineNumbers).to.have.members([1, 2]);
+    });
   })
 });
