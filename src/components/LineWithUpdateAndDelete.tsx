@@ -7,7 +7,8 @@ import Role from "../types/Role";
 interface Props {
   line: LineData;
   rolesInDialog: Role[];
-  deleteLineInDialog: (lineId: string) => void;
+  deleteLineInDialog: (line: LineData) => void;
+  updateLine: (line: LineData) => void;
 }
 
 //region updateLineQuery
@@ -28,28 +29,10 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
   const globalState = useGlobalState();
 
   const [text, setText] = useState(props.line.text);
-  const [number, setNumber] = useState(String(props.line.number));
   const [roleId, setRoleId] = useState(props.line.role.id);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const updateLine = async (queryVariables: {
-      id: string;
-      text?: string;
-      roleId?: string;
-      number?: number;
-    }): Promise<void> => {
 
-    try {
-      await fetchData(updateLineQuery, queryVariables, "updateLine", globalState);
-    } catch(error) {
-      setErrorMessage(error.message);
-    }
-
-  };
-
-  const deleteLine = async (): Promise<void> =>  {
-    await props.deleteLineInDialog(props.line.id);
-  };
 
   return (
     <li>
@@ -102,24 +85,21 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
             type={"number"}
             step={1}
             min={1}
-            value={number}
+            value={props.line.number}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               if (!(event.target.value === "")) {
-                setNumber(event.target.value);
+                props.updateLine({
+                  ...props.line,
+                  number: parseInt(event.target.value)
+                });
               }
-            }}
-            onBlur={async () => {
-              await updateLine({
-                id: props.line.id,
-                number: parseInt(number)
-              });
             }}
           />
         </div>
         <button
           type={"button"}
           onClick={async () => {
-            await deleteLine();
+            await props.deleteLineInDialog(props.line);
           }}
         >
           Delete Line

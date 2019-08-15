@@ -236,9 +236,9 @@ describe('DialogEditPage', () => {
     }) as () => void);
 
     // Prepare for call to DeleteLine query
-    (fetchData as jest.Mock).mockImplementationOnce(() => {
-      return Promise.resolve(true); // true means deletion was successful
-    });
+    // (fetchData as jest.Mock).mockImplementationOnce(() => {
+    //   return Promise.resolve(true); // true means deletion was successful
+    // });
 
     await act((async () => {
       // Delete line 2

@@ -117,49 +117,98 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
     });
   };
 
-  const deleteLineInDialog = async (lineId: string): Promise<void> => {
+  const deleteLineInDialog = async (lineToDelete: LineData): Promise<void> => {
 
-    const deleteLineQueryVariables = {
-      id: lineId,
-    };
-
-    fetchData(
-      deleteLineQuery, deleteLineQueryVariables, "deleteLine", globalState
-    ).then((deletionWasSuccessful: boolean) => {
-
-      if(deletionWasSuccessful) {
-
-        const remainingLines = dialog.lines.filter((line: LineData) => {
-          return line.id !== lineId;
-        }).map((line: LineData, index: number) => {
-          return {
-            id: line.id,
-            number: index + 1,
-          };
-        });
-
-        const updateLineQueryVariables = {
-          lines: remainingLines
-        };
-
-        fetchData(
-          updateLineQuery, updateLineQueryVariables, "updateLine", globalState
-        ).then((updatedLines: LineData[]) => {
-          setDialog({
-            ...dialog,
-            lines: updatedLines
-          });
-        }).catch((error) => {
-          setErrorMessage(error.message);
-        });
-
-      } else {
-        setErrorMessage(`There was a problem when attempting to delete the Line with id ${lineId}`);
+    // Adjust line numbers of lines that are later than lineToDelete
+    const remainingLines = dialog.lines.map((line) => {
+      if (line.number > lineToDelete.number) {
+        line.number--;
       }
-    }).catch((error) => {
-      setErrorMessage(error.message);
+
+      return line;
+
+    // Remove the lineToDelete
+    }).filter((line) => {
+      return lineToDelete.id !== line.id;
     });
 
+    // Quickly update the lines on the page
+    setDialog({
+      ...dialog,
+      lines: remainingLines
+    });
+
+    // // Send deleteLine query
+    // const deleteLineQueryVariables = {
+    //   id: lineId,
+    // };
+    //
+    // fetchData(
+    //   deleteLineQuery, deleteLineQueryVariables, "deleteLine", globalState
+    // ).then((deletionWasSuccessful: boolean) => {
+    //
+    //   if(deletionWasSuccessful) {
+    //
+    //     const remainingLines = dialog.lines.filter((line: LineData) => {
+    //       return line.id !== lineId;
+    //     }).map((line: LineData, index: number) => {
+    //       return {
+    //         id: line.id,
+    //         number: index + 1,
+    //       };
+    //     });
+    //
+    //     const updateLineQueryVariables = {
+    //       lines: remainingLines
+    //     };
+    //
+    //     fetchData(
+    //       updateLineQuery, updateLineQueryVariables, "updateLine", globalState
+    //     ).then((updatedLines: LineData[]) => {
+    //       setDialog({
+    //         ...dialog,
+    //         lines: updatedLines
+    //       });
+    //     }).catch((error) => {
+    //       setErrorMessage(error.message);
+    //     });
+    //
+    //   } else {
+    //     setErrorMessage(`There was a problem when attempting to delete the Line with id ${lineId}`);
+    //   }
+    // }).catch((error) => {
+    //   setErrorMessage(error.message);
+    // });
+
+  };
+
+  const updateLine = async (lineToUpdate: LineData): Promise<void> => {
+
+    const linesWithUpdatedLine = dialog.lines.map((line) => {
+      if (line.id === lineToUpdate.id) {
+        return lineToUpdate;
+      } else {
+        return line;
+      }
+    });
+
+    setDialog({
+      ...dialog,
+      lines: linesWithUpdatedLine,
+    });
+
+    const queryVariables = {
+      id: lineToUpdate.id,
+      text: lineToUpdate.text,
+      roleId: lineToUpdate.role.id,
+      number: lineToUpdate.number,
+    };
+
+    try {
+      await fetchData(updateLineQuery, queryVariables, "updateLine", globalState);
+    } catch(error) {
+      setErrorMessage(error.message);
+    }
   };
 
   const {dialogId} = props.match.params;
@@ -198,6 +247,7 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
                       rolesInDialog={dialog.roles}
                       key={line.id}
                       deleteLineInDialog={deleteLineInDialog}
+                      updateLine={updateLine}
                     />
                   );
                 })}
