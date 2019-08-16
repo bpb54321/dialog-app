@@ -192,7 +192,7 @@ describe("Dialog Edit Page", () => {
 
     // updateLine query
     cy.wait('@api').then((xhr) => {
-      const lines = xhr.response.body.data.updateLine.lines;
+      const lines = xhr.response.body.data.updateLine;
       const lineNumbers = lines.map((line) => {
         return line.number;
       });

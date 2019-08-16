@@ -126,59 +126,53 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
       }
 
       return line;
-
+    })
     // Remove the lineToDelete
-    }).filter((line) => {
+    .filter((line) => {
       return lineToDelete.id !== line.id;
     });
 
-    // Quickly update the lines on the page
+    // Optimistically update the lines on the page
     setDialog({
       ...dialog,
       lines: remainingLines
     });
 
-    // // Send deleteLine query
-    // const deleteLineQueryVariables = {
-    //   id: lineId,
-    // };
-    //
-    // fetchData(
-    //   deleteLineQuery, deleteLineQueryVariables, "deleteLine", globalState
-    // ).then((deletionWasSuccessful: boolean) => {
-    //
-    //   if(deletionWasSuccessful) {
-    //
-    //     const remainingLines = dialog.lines.filter((line: LineData) => {
-    //       return line.id !== lineId;
-    //     }).map((line: LineData, index: number) => {
-    //       return {
-    //         id: line.id,
-    //         number: index + 1,
-    //       };
-    //     });
-    //
-    //     const updateLineQueryVariables = {
-    //       lines: remainingLines
-    //     };
-    //
-    //     fetchData(
-    //       updateLineQuery, updateLineQueryVariables, "updateLine", globalState
-    //     ).then((updatedLines: LineData[]) => {
-    //       setDialog({
-    //         ...dialog,
-    //         lines: updatedLines
-    //       });
-    //     }).catch((error) => {
-    //       setErrorMessage(error.message);
-    //     });
-    //
-    //   } else {
-    //     setErrorMessage(`There was a problem when attempting to delete the Line with id ${lineId}`);
-    //   }
-    // }).catch((error) => {
-    //   setErrorMessage(error.message);
-    // });
+    // Send deleteLine query
+    const deleteLineQueryVariables = {
+      id: lineToDelete.id,
+    };
+
+    fetchData(
+      deleteLineQuery, deleteLineQueryVariables, "deleteLine", globalState
+    ).then((deletionWasSuccessful: boolean) => {
+
+      if(deletionWasSuccessful) {
+
+        // Send query to update line numbers of remaining lines
+        const remainingLinesIdAndNumber = remainingLines.map((line: LineData) => {
+          return {
+            id: line.id,
+            number: line.number,
+          };
+        });
+
+        const updateLineQueryVariables = {
+          lines: remainingLinesIdAndNumber
+        };
+
+        fetchData(
+          updateLineQuery, updateLineQueryVariables, "updateLine", globalState
+        ).catch((error) => {
+          setErrorMessage(error.message);
+        });
+
+      } else {
+        setErrorMessage(`There was a problem when attempting to delete the Line with id ${lineToDelete.id}`);
+      }
+    }).catch((error) => {
+      setErrorMessage(error.message);
+    });
 
   };
 
