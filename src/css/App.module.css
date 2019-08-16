@@ -1,11 +1,8 @@
-.app {
-}
-
-.app__home-link {
+.homeLink {
   cursor: pointer;
 }
 
-.app__main {
+.main {
   display: block;
   max-width: 900px;
   margin-left: auto;

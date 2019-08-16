@@ -1,6 +1,6 @@
 import React from 'react';
 import {BrowserRouter, Route, Redirect, Switch, Link} from 'react-router-dom';
-import './css/App.css';
+import styles from './css/App.module.css';
 import DialogListPage from "./pages/DialogListPage";
 import {LoginPage} from "./pages/LoginPage";
 import {ChooseRolePage} from "./pages/ChooseRolePage";
@@ -23,11 +23,11 @@ export const App: React.FunctionComponent<Props> = (props) => {
       <>
         <header>
           <nav className="navbar navbar-light bg-light justify-content-between">
-            <Link className="navbar-brand app__home-link" to={"/"}>Dialog Practice</Link>
+            <Link className={`navbar-brand ${styles.homeLink}`} to={"/"}>Dialog Practice</Link>
             <LogoutButton/>
           </nav>
         </header>
-        <main className={"app__main"}>
+        <main className={styles.main}>
           {
             (!globalState.token) ?
               <Switch>
