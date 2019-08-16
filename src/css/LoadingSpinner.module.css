@@ -1,11 +1,11 @@
-.loading-spinner {
+.loadingSpinner {
     display: inline-block;
     position: relative;
     width: 64px;
     height: 64px;
     --loading-spinner-fill-color: #000;
 }
-.loading-spinner div {
+.segment {
     box-sizing: border-box;
     display: block;
     position: absolute;
@@ -17,15 +17,19 @@
     animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
     border-color: var(--loading-spinner-fill-color) transparent transparent transparent;
 }
-.loading-spinner div:nth-child(1) {
+.firstSegment {
+    composes: segment;
     animation-delay: -0.45s;
 }
-.loading-spinner div:nth-child(2) {
+.secondSegment {
+    composes: segment;
     animation-delay: -0.3s;
 }
-.loading-spinner div:nth-child(3) {
+.thirdSegment {
+    composes: segment;
     animation-delay: -0.15s;
 }
+
 @keyframes lds-ring {
     0% {
         transform: rotate(0deg);
