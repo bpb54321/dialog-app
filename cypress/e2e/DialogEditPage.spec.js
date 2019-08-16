@@ -218,13 +218,29 @@ describe("Dialog Edit Page", () => {
     // Wait for the page to request dialogs from the api
     cy.wait('@api');
 
-    const line1UpdatedText = "This is an update to the text for line 1.";
     cy.get(`[value="${line1Text}"]`)
-      .type(line1UpdatedText)
-      .should("have.value", line1UpdatedText);
+      .as("line-1-text-input")
+      .clear()
+      .should("have.value", "");
 
     cy.wait("@api").then((xhr) => {
-      expect(xhr.response.body.data.updateLine.text).to.equal(line1UpdatedText);
-    })
+      expect(xhr.response.body.data.updateLine[0].text).to.equal("");
+    });
+
+    cy.get("@line-1-text-input")
+      .type("a")
+      .should("have.value", "a");
+
+    cy.wait("@api").then((xhr) => {
+      expect(xhr.response.body.data.updateLine[0].text).to.equal("a");
+    });
+
+    cy.get("@line-1-text-input")
+      .type("b")
+      .should("have.value", "ab");
+
+    cy.wait("@api").then((xhr) => {
+      expect(xhr.response.body.data.updateLine[0].text).to.equal("ab");
+    });
   });
 });

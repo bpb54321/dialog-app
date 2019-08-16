@@ -178,6 +178,7 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
 
   const updateLine = async (lineToUpdate: LineData): Promise<void> => {
 
+    console.log("Update line has been called");
     const linesWithUpdatedLine = dialog.lines.map((line) => {
       if (line.id === lineToUpdate.id) {
         return lineToUpdate;
@@ -192,10 +193,15 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
     });
 
     const queryVariables = {
-      id: lineToUpdate.id,
-      text: lineToUpdate.text,
-      roleId: lineToUpdate.role.id,
-      number: lineToUpdate.number,
+      lines: [
+        {
+          id: lineToUpdate.id,
+          text: lineToUpdate.text,
+          roleId: lineToUpdate.role.id,
+          number: lineToUpdate.number,
+        }
+      ],
+
     };
 
     try {
