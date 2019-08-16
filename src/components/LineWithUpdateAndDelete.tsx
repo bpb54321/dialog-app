@@ -1,6 +1,7 @@
 import React, {ChangeEvent, SyntheticEvent} from 'react';
 import LineData from "../types/LineData";
 import Role from "../types/Role";
+import styles from "../css/shared.module.css";
 
 interface Props {
   line: LineData;
@@ -42,11 +43,11 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
         </div>
         <div>
           <label htmlFor={`line-text-${props.line.id}`}>Line Text</label>
-          <input
+          <textarea
             id={`line-text-${props.line.id}`}
-            type={"text"}
             value={props.line.text}
-            onChange={async (event: ChangeEvent<HTMLInputElement>) => {
+            className={styles.wideTextInput}
+            onChange={async (event: ChangeEvent<HTMLTextAreaElement>) => {
               await props.updateLine({
                 ...props.line,
                 text: event.target.value,
