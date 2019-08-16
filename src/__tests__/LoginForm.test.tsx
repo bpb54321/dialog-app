@@ -39,9 +39,9 @@ describe('LoginForm', () => {
 
 
   test(`When the login form is submitted
-  Then a loading spinner should appear
-  When the login form receives a succesful response
-  Then the loading spinner should disappear`, async function () {
+      Then a loading spinner should appear
+      When the login form receives a succesful response
+      Then the loading spinner should disappear`, async function () {
 
     (fetchData as jest.Mock).mockImplementation(() => {
       return Promise.resolve({
@@ -76,8 +76,8 @@ describe('LoginForm', () => {
   });
 
   test(`When the login form is submitted with usename and password not found in the database
-  And the login form receives a response with an error
-  Then the error message should appear in the component`, async function () {
+      And the login form receives a response with an error
+      Then the error message should appear in the component`, async function () {
 
     (fetchData as jest.Mock).mockImplementation(() => {
       return Promise.reject(new Error("No such user found"));
