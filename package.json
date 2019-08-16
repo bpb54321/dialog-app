@@ -55,7 +55,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "CI=true yarn test && yarn e2e"
+      "post-merge": "CI=true yarn test && yarn e2e"
     }
   }
 }
