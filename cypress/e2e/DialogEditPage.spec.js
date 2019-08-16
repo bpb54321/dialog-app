@@ -25,7 +25,7 @@ describe("Dialog Edit Page", () => {
     cy.clearLocalStorage();
   });
 
-  specify(`Automatic line numbering when adding, deleting, or moving lines`, () => {
+  specify(`Automatic line numbering when adding or deleting lines`, () => {
 
     // Load database with one user whose token corresponds to the above token
     cy.exec(`cat ${Cypress.env('sql_dump_directory')}one-dialog-with-two-roles.sql | ` +
@@ -201,7 +201,7 @@ describe("Dialog Edit Page", () => {
     });
   });
 
-  specify.only(`Updating line text`, () => {
+  specify(`Updating line text`, () => {
     // Load database with one user whose token corresponds to the above token
     cy.exec(`cat ${Cypress.env('sql_dump_directory')}dialog-with-three-lines.sql | ` +
       `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
