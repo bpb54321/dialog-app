@@ -64,7 +64,7 @@ describe("Dialog Edit Page", () => {
       .then(($line1) => {
         // Verify that the line text matches what we entered in the add new line form
         cy.wrap($line1)
-          .find(`[value="${line1Text}"]`);
+          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
         cy.wrap($line1)
           .find("label")
@@ -106,7 +106,7 @@ describe("Dialog Edit Page", () => {
 
         // Verify that the line text matches what we entered in the add new line form
         cy.wrap($line2)
-          .find(`[value="${line2Text}"]`);
+          .find(`:contains("${line2Text}"), [value="${line2Text}"]`);
 
         cy.wrap($line2)
           .find("label:contains(Line Number)")
@@ -145,7 +145,7 @@ describe("Dialog Edit Page", () => {
       .eq(2).then(($line3) => {
       // Verify that the line text matches what we entered in the add new line form
       cy.wrap($line3)
-        .find(`[value="${line3Text}"]`);
+        .find(`:contains("${line3Text}"), [value="${line3Text}"]`);
 
       cy.wrap($line3)
         .find("label:contains(Line Number)")
@@ -218,7 +218,7 @@ describe("Dialog Edit Page", () => {
     // Wait for the page to request dialogs from the api
     cy.wait('@api');
 
-    cy.get(`[value="${line1Text}"]`)
+    cy.get(`textarea:contains("${line1Text}"), input[value="${line1Text}"]`)
       .as("line-1-text-input")
       .clear()
       .should("have.value", "");
