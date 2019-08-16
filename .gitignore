@@ -26,3 +26,4 @@ yarn-error.log*
 \.vscode/launch\.json
 
 cypress/videos/
+cypress/screenshots/
