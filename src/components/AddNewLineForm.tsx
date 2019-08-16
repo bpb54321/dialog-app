@@ -3,7 +3,7 @@ import fetchData from "../utils/fetch-data";
 import {useGlobalState} from "../contexts/GlobalStateContext";
 import LineData from "../types/LineData";
 import Role from "../types/Role";
-import "../css/AddNewLineForm.css";
+import styles from "../css/shared.module.css";
 
 interface Props {
   numberOfLinesInDialog: number;
@@ -86,7 +86,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
   };
 
   return (
-    <div className="add-new-line-form">
+    <div>
       {props.rolesInDialog.length === 0 ?
         <p>You must add at least one role to the dialog in order to add a line to the dialog.</p> :
         <>
@@ -123,7 +123,7 @@ export const AddNewLineForm: React.FunctionComponent<Props> = (props) => {
             <div>
               <label htmlFor={`new-line-text`}>Line Text</label>
               <textarea
-                className={"add-new-line-form__line-text-input"}
+                className={styles.wideTextInput}
                 id={`new-line-text`}
                 data-testid={`new-line-text`}
                 value={text}
