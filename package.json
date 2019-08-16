@@ -20,7 +20,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --watchAll=false",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "e2e": "cypress open",
     "unit": "jest test/**/*.spec.js"
@@ -55,7 +55,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn test"
+      "pre-commit": "CI=true yarn test"
     }
   }
 }
