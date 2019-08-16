@@ -1,5 +1,5 @@
 import React, {ChangeEvent, FormEvent, useEffect, useState} from 'react';
-import "../css/LineGuess.css";
+import shared from "../css/shared.module.css";
 import SpeechInputButton from "./SpeechInputButton";
 import {SpeechRecognitionState} from "../types/SpeechRecognitionState";
 import Role from "../types/Role";
@@ -75,8 +75,6 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
     }
   }, [props.dialogLanguageCode]);
 
-  debugger;
-
   return (
     <form
       data-testid={"line-guess"}
@@ -84,7 +82,7 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
     >
       <label htmlFor="line-guess__text-input" data-testid={"line-guess__label"}>Line Guess</label>
       <textarea
-        className={"line-guess__text-input"}
+        className={shared.wideTextInput}
         data-testid={"line-guess__text-input"}
         id={"line-guess__text-input"}
         onChange={handleInputChange}
