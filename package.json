@@ -20,7 +20,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
     "e2e": "cypress open",
     "unit": "jest test/**/*.spec.js"
@@ -52,5 +52,10 @@
     "jest-fetch-mock": "^2.1.2",
     "react-test-renderer": "^16.8.6",
     "react-testing-library": "^8.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn test"
+    }
   }
 }
