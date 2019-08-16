@@ -13,25 +13,24 @@ describe("Dialog Edit Page", () => {
 
   const dialogId = "cjz63uiqi001a0766afqkfuec";
 
-  before(() => {
+  beforeEach(() => {
+    // Set up Cypress to record outgoing and incoming AJAX requests
     cy.server();
     cy.route({
       method: 'POST',
       url: 'localhost:4000',
     }).as('api');
-  });
-
-  beforeEach(() => {
-    // Load database with one user whose token corresponds to the above token
-    cy.exec(`cat ${Cypress.env('sql_dump_directory')}one-dialog-with-two-roles.sql | ` +
-      `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
-      `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
 
     // Clear local storage of the user's token
     cy.clearLocalStorage();
   });
 
   specify(`Automatic line numbering when adding, deleting, or moving lines`, () => {
+
+    // Load database with one user whose token corresponds to the above token
+    cy.exec(`cat ${Cypress.env('sql_dump_directory')}one-dialog-with-two-roles.sql | ` +
+      `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
+      `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
 
     cy.visit(`/dialogs/${dialogId}/edit`, {
       onBeforeLoad: function(window){
@@ -158,6 +157,7 @@ describe("Dialog Edit Page", () => {
     cy.wait('@api').then((xhr) => {
       expect(xhr.response.body.data.createLine).to.have.property("text", line3Text);
       expect(xhr.response.body.data.createLine).to.have.property("number", 3);
+      debugger;
     });
 
     // Delete the 2nd line
@@ -199,5 +199,32 @@ describe("Dialog Edit Page", () => {
       expect(lineNumbers).to.have.length(2);
       expect(lineNumbers).to.have.members([1, 2]);
     });
-  })
+  });
+
+  specify.only(`Updating line text`, () => {
+    // Load database with one user whose token corresponds to the above token
+    cy.exec(`cat ${Cypress.env('sql_dump_directory')}dialog-with-three-lines.sql | ` +
+      `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
+      `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
+
+    cy.visit(`/dialogs/${dialogId}/edit`, {
+      onBeforeLoad: function(window){
+        // and before the page finishes loading
+        // set the id_token in local storage
+        window.sessionStorage.setItem('token', token);
+      }
+    });
+
+    // Wait for the page to request dialogs from the api
+    cy.wait('@api');
+
+    const line1UpdatedText = "This is an update to the text for line 1.";
+    cy.get(`[value="${line1Text}"]`)
+      .type(line1UpdatedText)
+      .should("have.value", line1UpdatedText);
+
+    cy.wait("@api").then((xhr) => {
+      expect(xhr.response.body.data.updateLine.text).to.equal(line1UpdatedText);
+    })
+  });
 });
