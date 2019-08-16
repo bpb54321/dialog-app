@@ -22,7 +22,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "e2e": "cypress open",
+    "e2e": "cypress run",
     "unit": "jest test/**/*.spec.js"
   },
   "eslintConfig": {
@@ -55,7 +55,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "CI=true yarn test"
+      "pre-commit": "CI=true yarn test && yarn e2e"
     }
   }
 }
