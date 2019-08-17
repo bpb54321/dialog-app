@@ -1,13 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Dialog} from "../types/Dialog";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
 import fetchData from "../utils/fetch-data";
 import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
-import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
+import {LineDirection, LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
 import {AddNewLineForm} from "../components/AddNewLineForm";
 import {AddNewRoleForm} from "../components/AddNewRoleForm";
 import {useGlobalState} from "../contexts/GlobalStateContext";
+
 
 interface Props {
   match: any;
@@ -211,6 +212,33 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
     }
   };
 
+  const changeLineOrder = async (lineToUpdate: LineData, direction: LineDirection): Promise<void> => {
+
+    let lineToUpdateCurrentNumber = lineToUpdate.number;
+    const updatedLines = dialog.lines.map((line) => {
+      if (direction === LineDirection.Up) {
+        if (line.number === lineToUpdateCurrentNumber) {
+          line.number--;
+        } else if (line.number === (lineToUpdateCurrentNumber - 1)) {
+          line.number++;
+        }
+        return line;
+      } else {
+        if (line.number === lineToUpdateCurrentNumber) {
+          line.number++;
+        } else if (line.number === (lineToUpdateCurrentNumber + 1)) {
+          line.number--;
+        }
+        return line;
+      }
+    });
+
+    setDialog({
+      ...dialog,
+      lines: updatedLines,
+    });
+  };
+
   const {dialogId} = props.match.params;
 
   return (
@@ -249,7 +277,8 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
                       rolesInDialog={dialog.roles}
                       key={line.id}
                       deleteLineInDialog={deleteLineInDialog}
-                      updateLines={updateLines}
+                      updateLine={updateLine}
+                      changeLineOrder={changeLineOrder}
                     />
                   );
                 })}
