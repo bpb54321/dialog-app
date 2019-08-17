@@ -344,10 +344,10 @@ describe('DialogEditPage', () => {
           return Promise.resolve({});
         });
 
-        act(() => {
+        await act((async () => {
           // Move line 3 up to line 2
           fireEvent.click(wrapper.getAllByText(/move line up/i)[2]);
-        });
+        }) as () => void);
         //endregion
 
         //region ASSERT
