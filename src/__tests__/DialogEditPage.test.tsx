@@ -7,12 +7,14 @@ import {
   wait,
   waitForElementToBeRemoved
 } from "@testing-library/react";
+import { within } from '@testing-library/dom';
 import {act} from "react-dom/test-utils";
 import {GlobalProvider} from "../contexts/GlobalStateContext";
 import fetchData from "../utils/fetch-data";
 import {BrowserRouter} from "react-router-dom";
 import {DialogEditPage} from "../pages/DialogEditPage";
 import LineData from "../types/LineData";
+
 
 jest.mock("../utils/fetch-data", () => {
   return {
@@ -265,6 +267,99 @@ describe('DialogEditPage', () => {
         //endregion
 
     });
+  });
+
+  describe(`Moving lines up and down in the dialog`, () => {
+    test(
+      `Given a dialog with 3 lines
+        When I click the Move Line Up button on line 3
+        Then line 3 becomes line 2
+        And line 2 becomes line 3`,
+      async function() {
+        //region ARRANGE
+        // Initial dialog that is loaded, this time 3 lines are already created
+        (fetchData as jest.Mock).mockImplementationOnce(() => {
+          return Promise.resolve({
+            id: dialogId,
+            name: "Test Dialog",
+            languageCode: "en-US",
+            roles: [
+              role1,
+              role2,
+            ],
+            lines: [
+              {
+                id: "a",
+                text: line1Text,
+                role: role1,
+                guess: "",
+                number: 1,
+              },
+              {
+                id: "b",
+                text: line2Text,
+                role: role2,
+                guess: "",
+                number: 2,
+              },
+              {
+                id: "c",
+                text: line3Text,
+                role: role1,
+                guess: "",
+                number: 3,
+              },
+            ] as LineData[],
+          });
+        });
+        //endregion
+
+        //region ACT
+        await act((async () => {
+          wrapper = render(
+            <GlobalProvider
+              children={
+                <BrowserRouter>
+                  <DialogEditPage
+                    match={{
+                      params: {
+                        dialogId: dialogId
+                      }
+                    }}
+                    location={{}}
+                    history={{}}
+                  />
+                </BrowserRouter>
+              }
+            />
+          );
+
+          await waitForElementToBeRemoved(() => {
+            return wrapper.getByText(/loading dialog/i);
+          });
+        }) as () => void);
+
+        // Prepare for call to UpdateLine query
+        (fetchData as jest.Mock).mockImplementationOnce(() => {
+          return Promise.resolve({});
+        });
+
+        act(() => {
+          // Move line 3 up to line 2
+          fireEvent.click(wrapper.getAllByText(/move line up/i)[2]);
+        });
+        //endregion
+
+        //region ASSERT
+        // Expect the new second line to have line3text
+        await wait(() => {
+          const line2 = within(wrapper.getAllByTestId("line-with-update-and-delete")[1]);
+          line2.getByText(line3Text);
+        });
+        //endregion
+      }
+    );
+
   });
 });
 
