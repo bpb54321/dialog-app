@@ -3,11 +3,17 @@ import LineData from "../types/LineData";
 import Role from "../types/Role";
 import styles from "../css/shared.module.css";
 
+enum LineDirection {
+  Up,
+  Down,
+}
+
 interface Props {
   line: LineData;
   rolesInDialog: Role[];
   deleteLineInDialog: (line: LineData) => Promise<void>;
   updateLine: (line: LineData) => Promise<void>;
+  changeLineOrder: (line: LineData, direction: LineDirection) => Promise<void>;
 }
 
 export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
@@ -54,6 +60,15 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
               });
             }}
           />
+        </div>
+        <div>
+          <button
+            onClick={async () => {
+              await props.changeLineOrder(props.line, LineDirection.Up);
+            }}
+          >
+            Move Line Up
+          </button>
         </div>
         <div>
           <label htmlFor={`line-number-${props.line.id}`}>Line Number</label>
