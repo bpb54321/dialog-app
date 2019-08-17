@@ -239,19 +239,21 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
             </div>
             <div>
               <h2>Lines</h2>
-              <ul>
-                {dialog.lines.map((line: LineData) => {
+              <ol>
+                {dialog.lines.sort((firstLine, secondLine) => {
+                  return firstLine.number - secondLine.number;
+                }).map((line: LineData) => {
                   return (
                     <LineWithUpdateAndDelete
                       line={line}
                       rolesInDialog={dialog.roles}
                       key={line.id}
                       deleteLineInDialog={deleteLineInDialog}
-                      updateLine={updateLine}
+                      updateLines={updateLines}
                     />
                   );
                 })}
-              </ul>
+              </ol>
               <AddNewLineForm
                 numberOfLinesInDialog={dialog.lines.length}
                 dialogId={dialogId}
