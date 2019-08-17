@@ -69,6 +69,13 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
           >
             Move Line Up
           </button>
+          <button
+            onClick={async () => {
+              await props.changeLineOrder(props.line, LineDirection.Down);
+            }}
+          >
+            Move Line Down
+          </button>
         </div>
         <div>
           <label htmlFor={`line-number-${props.line.id}`}>Line Number</label>

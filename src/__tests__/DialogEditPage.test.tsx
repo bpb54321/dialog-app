@@ -272,9 +272,9 @@ describe('DialogEditPage', () => {
   describe(`Moving lines up and down in the dialog`, () => {
     test(
       `Given a dialog with 3 lines
-        When I click the Move Line Up button on line 3
-        Then line 3 becomes line 2
-        And line 2 becomes line 3`,
+        When I click the Move Line Up button on the third line
+        Then the third line moves to position 2
+        And the second line moves to position 3`,
       async function() {
         //region ARRANGE
         // Initial dialog that is loaded, this time 3 lines are already created
@@ -351,11 +351,98 @@ describe('DialogEditPage', () => {
         //endregion
 
         //region ASSERT
-        // Expect the new second line to have line3text
-        await wait(() => {
-          const line2 = within(wrapper.getAllByTestId("line-with-update-and-delete")[1]);
-          line2.getByText(line3Text);
+        const line2 = within(wrapper.getAllByTestId("line-with-update-and-delete")[1]);
+        line2.getByText(line3Text);
+        const line3 = within(wrapper.getAllByTestId("line-with-update-and-delete")[2]);
+        line3.getByText(line2Text);
+        //endregion
+      }
+    );
+
+    test(
+      `Given a dialog with 3 lines
+        When I click the Move Line Down button on the first line
+        Then the first line moves to position 2
+        And the second line moves to position 1`,
+      async function() {
+        //region ARRANGE
+        // Initial dialog that is loaded, this time 3 lines are already created
+        (fetchData as jest.Mock).mockImplementationOnce(() => {
+          return Promise.resolve({
+            id: dialogId,
+            name: "Test Dialog",
+            languageCode: "en-US",
+            roles: [
+              role1,
+              role2,
+            ],
+            lines: [
+              {
+                id: "a",
+                text: line1Text,
+                role: role1,
+                guess: "",
+                number: 1,
+              },
+              {
+                id: "b",
+                text: line2Text,
+                role: role2,
+                guess: "",
+                number: 2,
+              },
+              {
+                id: "c",
+                text: line3Text,
+                role: role1,
+                guess: "",
+                number: 3,
+              },
+            ] as LineData[],
+          });
         });
+        //endregion
+
+        //region ACT
+        await act((async () => {
+          wrapper = render(
+            <GlobalProvider
+              children={
+                <BrowserRouter>
+                  <DialogEditPage
+                    match={{
+                      params: {
+                        dialogId: dialogId
+                      }
+                    }}
+                    location={{}}
+                    history={{}}
+                  />
+                </BrowserRouter>
+              }
+            />
+          );
+
+          await waitForElementToBeRemoved(() => {
+            return wrapper.getByText(/loading dialog/i);
+          });
+        }) as () => void);
+
+        // Prepare for call to UpdateLine query
+        (fetchData as jest.Mock).mockImplementationOnce(() => {
+          return Promise.resolve({});
+        });
+
+        await act((async () => {
+          fireEvent.click(wrapper.getAllByText(/move line down/i)[0]);
+        }) as () => void);
+        //endregion
+
+        //region ASSERT
+        const line1 = within(wrapper.getAllByTestId("line-with-update-and-delete")[0]);
+        line1.getByText(line2Text);
+        const line2 = within(wrapper.getAllByTestId("line-with-update-and-delete")[1]);
+        line2.getByText(line1Text);
         //endregion
       }
     );
