@@ -3,7 +3,7 @@ import LineData from "../types/LineData";
 import Role from "../types/Role";
 import styles from "../css/shared.module.css";
 
-enum LineDirection {
+export enum LineDirection {
   Up,
   Down,
 }
