@@ -266,8 +266,11 @@ describe('DialogEditPage', () => {
         //endregion
 
         //region ASSERT
-        expect((wrapper.getAllByLabelText(/line number/i)[0] as HTMLInputElement).value).toBe("1");
-        expect((wrapper.getAllByLabelText(/line number/i)[1] as HTMLInputElement).value).toBe("2");
+        let line1 = within(wrapper.getAllByTestId("line-with-update-and-delete")[0]);
+        line1.getByText(line1Text);
+
+        let updatedLine3 = within(wrapper.getAllByTestId("line-with-update-and-delete")[1]);
+        updatedLine3.getByText(line3Text);
         //endregion
 
     });
