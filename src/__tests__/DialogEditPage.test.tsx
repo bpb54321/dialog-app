@@ -353,7 +353,8 @@ describe('DialogEditPage', () => {
 
         await act((async () => {
           // Move line 3 up to line 2
-          fireEvent.click(wrapper.getAllByText(/move line up/i)[2]);
+          const line3 = within(wrapper.getAllByTestId("line-with-update-and-delete")[2]);
+          fireEvent.click(line3.getByText(/move line up/i));
         }) as () => void);
         //endregion
 
