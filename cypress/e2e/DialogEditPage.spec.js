@@ -25,7 +25,7 @@ describe("Dialog Edit Page", () => {
     cy.clearLocalStorage();
   });
 
-  specify.only(`Automatic line numbering when adding or deleting lines`, () => {
+  specify(`Automatic line numbering when adding or deleting lines`, () => {
     
     let originalLine1Id;
     let originalLine2Id;
