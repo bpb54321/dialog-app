@@ -14,6 +14,8 @@ interface Props {
   deleteLineInDialog: (line: LineData) => Promise<void>;
   updateLine: (line: LineData) => Promise<void>;
   changeLineOrder: (line: LineData, direction: LineDirection) => Promise<void>;
+  hasMoveLineUpButton: boolean;
+  hasMoveLineDownButton: boolean;
 }
 
 export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
@@ -62,20 +64,28 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
           />
         </div>
         <div>
-          <button
-            onClick={async () => {
-              await props.changeLineOrder(props.line, LineDirection.Up);
-            }}
-          >
-            Move Line Up
-          </button>
-          <button
-            onClick={async () => {
-              await props.changeLineOrder(props.line, LineDirection.Down);
-            }}
-          >
-            Move Line Down
-          </button>
+          {
+            props.hasMoveLineUpButton ?
+              <button
+                onClick={async () => {
+                  await props.changeLineOrder(props.line, LineDirection.Up);
+                }}
+              >
+                Move Line Up
+              </button> :
+              null
+          }
+          {
+            props.hasMoveLineDownButton ?
+              <button
+                onClick={async () => {
+                  await props.changeLineOrder(props.line, LineDirection.Down);
+                }}
+              >
+                Move Line Down
+              </button> :
+              null
+          }
         </div>
         <div>
           <label htmlFor={`line-number-${props.line.id}`}>Line Number</label>

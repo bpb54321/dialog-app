@@ -179,7 +179,6 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
 
   const updateLine = async (lineToUpdate: LineData): Promise<void> => {
 
-    console.log("Update line has been called");
     const linesWithUpdatedLine = dialog.lines.map((line) => {
       if (line.id === lineToUpdate.id) {
         return lineToUpdate;
@@ -270,7 +269,7 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
               <ol>
                 {dialog.lines.sort((firstLine, secondLine) => {
                   return firstLine.number - secondLine.number;
-                }).map((line: LineData) => {
+                }).map((line: LineData, index: number, lines: LineData[]) => {
                   return (
                     <LineWithUpdateAndDelete
                       line={line}
@@ -279,6 +278,8 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
                       deleteLineInDialog={deleteLineInDialog}
                       updateLine={updateLine}
                       changeLineOrder={changeLineOrder}
+                      hasMoveLineUpButton={index !== 0}
+                      hasMoveLineDownButton={index !== (lines.length - 1)}
                     />
                   );
                 })}

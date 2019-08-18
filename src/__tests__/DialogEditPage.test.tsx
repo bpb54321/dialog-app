@@ -447,6 +447,95 @@ describe('DialogEditPage', () => {
       }
     );
 
+    test(
+      `Given a dialog with 3 lines
+        Then the first line has a Move Line Down button but not Move Line Up button
+        And the second line has both a Move Line Down and Move Line Up button
+        And the third line has a Move Line Up button but no Move Line Down button`,
+      async function() {
+        //region ARRANGE
+        // Initial dialog that is loaded, this time 3 lines are already created
+        (fetchData as jest.Mock).mockImplementationOnce(() => {
+          return Promise.resolve({
+            id: dialogId,
+            name: "Test Dialog",
+            languageCode: "en-US",
+            roles: [
+              role1,
+              role2,
+            ],
+            lines: [
+              {
+                id: "a",
+                text: line1Text,
+                role: role1,
+                guess: "",
+                number: 1,
+              },
+              {
+                id: "b",
+                text: line2Text,
+                role: role2,
+                guess: "",
+                number: 2,
+              },
+              {
+                id: "c",
+                text: line3Text,
+                role: role1,
+                guess: "",
+                number: 3,
+              },
+            ] as LineData[],
+          });
+        });
+        //endregion
+
+        //region ACT
+        await act((async () => {
+          wrapper = render(
+            <GlobalProvider
+              children={
+                <BrowserRouter>
+                  <DialogEditPage
+                    match={{
+                      params: {
+                        dialogId: dialogId
+                      }
+                    }}
+                    location={{}}
+                    history={{}}
+                  />
+                </BrowserRouter>
+              }
+            />
+          );
+
+          await waitForElementToBeRemoved(() => {
+            return wrapper.getByText(/loading dialog/i);
+          });
+        }) as () => void);
+        //endregion
+
+        wrapper.debug();
+        
+        //region ASSERT
+        const line1 = within(wrapper.getAllByTestId("line-with-update-and-delete")[0]);
+        line1.getByText(/move line down/i);
+        expect(line1.queryByText(/move line up/i)).toBeNull();
+
+        const line2 = within(wrapper.getAllByTestId("line-with-update-and-delete")[1]);
+        line2.getByText(/move line up/i);
+        line2.getByText(/move line down/i);
+
+        const line3 = within(wrapper.getAllByTestId("line-with-update-and-delete")[2]);
+        line3.getByText(/move line up/i);
+        expect(line3.queryByText(/move line down/i)).toBeNull();
+
+        //endregion
+      }
+    );
+
   });
 });
 
