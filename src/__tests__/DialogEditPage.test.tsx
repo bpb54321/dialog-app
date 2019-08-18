@@ -140,7 +140,8 @@ describe('DialogEditPage', () => {
           });
         }) as () => void);
 
-        expect((wrapper.getAllByLabelText(/line number/i)[0] as HTMLInputElement).value).toBe("1");
+        let line1 = within(wrapper.getAllByTestId("line-with-update-and-delete")[0]);
+        line1.getByText(line1Text);
 
         // --------Add Second Line --------------------  //
 
@@ -171,8 +172,11 @@ describe('DialogEditPage', () => {
           });
         }) as () => void);
 
-        expect((wrapper.getAllByLabelText(/line number/i)[0] as HTMLInputElement).value).toBe("1");
-        expect((wrapper.getAllByLabelText(/line number/i)[1] as HTMLInputElement).value).toBe("2");
+        line1 = within(wrapper.getAllByTestId("line-with-update-and-delete")[0]);
+        line1.getByText(line1Text);
+
+        let line2 = within(wrapper.getAllByTestId("line-with-update-and-delete")[1]);
+        line2.getByText(line2Text);
       }
     );
 
