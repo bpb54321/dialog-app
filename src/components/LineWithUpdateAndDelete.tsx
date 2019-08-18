@@ -3,11 +3,19 @@ import LineData from "../types/LineData";
 import Role from "../types/Role";
 import styles from "../css/shared.module.css";
 
+export enum LineDirection {
+  Up,
+  Down,
+}
+
 interface Props {
   line: LineData;
   rolesInDialog: Role[];
   deleteLineInDialog: (line: LineData) => Promise<void>;
   updateLine: (line: LineData) => Promise<void>;
+  changeLineOrder: (line: LineData, direction: LineDirection) => void;
+  hasMoveLineUpButton: boolean;
+  hasMoveLineDownButton: boolean;
 }
 
 export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) => {
@@ -56,22 +64,28 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
           />
         </div>
         <div>
-          <label htmlFor={`line-number-${props.line.id}`}>Line Number</label>
-          <input
-            id={`line-number-${props.line.id}`}
-            type={"number"}
-            step={1}
-            min={1}
-            value={props.line.number}
-            onChange={async (event: ChangeEvent<HTMLInputElement>) => {
-              if (!(event.target.value === "")) {
-                await props.updateLine({
-                  ...props.line,
-                  number: parseInt(event.target.value)
-                });
-              }
-            }}
-          />
+          {
+            props.hasMoveLineUpButton ?
+              <button
+                onClick={async () => {
+                  await props.changeLineOrder(props.line, LineDirection.Up);
+                }}
+              >
+                Move Line Up
+              </button> :
+              null
+          }
+          {
+            props.hasMoveLineDownButton ?
+              <button
+                onClick={async () => {
+                  await props.changeLineOrder(props.line, LineDirection.Down);
+                }}
+              >
+                Move Line Down
+              </button> :
+              null
+          }
         </div>
         <button
           type={"button"}

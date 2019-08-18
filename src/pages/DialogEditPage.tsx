@@ -1,13 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Dialog} from "../types/Dialog";
 import Role from "../types/Role";
 import LineData from "../types/LineData";
 import fetchData from "../utils/fetch-data";
 import {RoleWithUpdateAndDelete} from "../components/RoleWithUpdateAndDelete";
-import {LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
+import {LineDirection, LineWithUpdateAndDelete} from "../components/LineWithUpdateAndDelete";
 import {AddNewLineForm} from "../components/AddNewLineForm";
 import {AddNewRoleForm} from "../components/AddNewRoleForm";
 import {useGlobalState} from "../contexts/GlobalStateContext";
+
 
 interface Props {
   match: any;
@@ -178,7 +179,6 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
 
   const updateLine = async (lineToUpdate: LineData): Promise<void> => {
 
-    console.log("Update line has been called");
     const linesWithUpdatedLine = dialog.lines.map((line) => {
       if (line.id === lineToUpdate.id) {
         return lineToUpdate;
@@ -211,6 +211,55 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
     }
   };
 
+  const changeLineOrder = (lineToUpdate: LineData, direction: LineDirection): void => {
+
+    let lineToUpdateCurrentNumber = lineToUpdate.number;
+    let linesToUpdateInApiQuery: LineData[] = [];
+    const updatedLines = dialog.lines.map((line) => {
+      if (direction === LineDirection.Up) {
+        if (line.number === lineToUpdateCurrentNumber) {
+          line.number--;
+          linesToUpdateInApiQuery.push(line);
+        } else if (line.number === (lineToUpdateCurrentNumber - 1)) {
+          line.number++;
+          linesToUpdateInApiQuery.push(line);
+        }
+        return line;
+      } else {
+        if (line.number === lineToUpdateCurrentNumber) {
+          line.number++;
+          linesToUpdateInApiQuery.push(line);
+        } else if (line.number === (lineToUpdateCurrentNumber + 1)) {
+          line.number--;
+          linesToUpdateInApiQuery.push(line);
+        }
+        return line;
+      }
+    });
+
+    setDialog({
+      ...dialog,
+      lines: updatedLines,
+    });
+
+    const linesFormattedForQuery = linesToUpdateInApiQuery.map((line) => {
+      return {
+        id: line.id,
+        number: line.number,
+      };
+    });
+
+    const queryVariables = {
+      lines: linesFormattedForQuery,
+    };
+
+    fetchData(updateLineQuery, queryVariables, "updateLine", globalState)
+      .catch((error) => {
+        setErrorMessage(error.message);
+      });
+
+  };
+
   const {dialogId} = props.match.params;
 
   return (
@@ -239,8 +288,10 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
             </div>
             <div>
               <h2>Lines</h2>
-              <ul>
-                {dialog.lines.map((line: LineData) => {
+              <ol>
+                {dialog.lines.sort((firstLine, secondLine) => {
+                  return firstLine.number - secondLine.number;
+                }).map((line: LineData, index: number, lines: LineData[]) => {
                   return (
                     <LineWithUpdateAndDelete
                       line={line}
@@ -248,10 +299,13 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
                       key={line.id}
                       deleteLineInDialog={deleteLineInDialog}
                       updateLine={updateLine}
+                      changeLineOrder={changeLineOrder}
+                      hasMoveLineUpButton={index !== 0}
+                      hasMoveLineDownButton={index !== (lines.length - 1)}
                     />
                   );
                 })}
-              </ul>
+              </ol>
               <AddNewLineForm
                 numberOfLinesInDialog={dialog.lines.length}
                 dialogId={dialogId}

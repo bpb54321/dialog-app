@@ -26,6 +26,10 @@ describe("Dialog Edit Page", () => {
   });
 
   specify(`Automatic line numbering when adding or deleting lines`, () => {
+    
+    let originalLine1Id;
+    let originalLine2Id;
+    let originalLine3Id;
 
     // Load database with one user whose token corresponds to the above token
     cy.exec(`cat ${Cypress.env('sql_dump_directory')}one-dialog-with-two-roles.sql | ` +
@@ -57,24 +61,15 @@ describe("Dialog Edit Page", () => {
           .submit();
       });
 
-    // Verify generated line number is correct
+    // Verify line order is correct
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 1)
       .eq(0)
-      .then(($line1) => {
-        // Verify that the line text matches what we entered in the add new line form
-        cy.wrap($line1)
-          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
-
-        cy.wrap($line1)
-          .find("label")
-          .contains(/line number/i)
-          .siblings("input")
-          .should("have.value", "1");
-      });
+      .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
     // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
+      originalLine1Id = xhr.response.body.data.createLine.id;
       expect(xhr.response.body.data.createLine).to.have.property("text", line1Text);
       expect(xhr.response.body.data.createLine).to.have.property("number", 1);
     });
@@ -102,20 +97,19 @@ describe("Dialog Edit Page", () => {
 
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 2)
-      .eq(1).then(($line2) => {
+      .then(($lines) => {
+        cy.wrap($lines)
+          .eq(0)
+          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
-        // Verify that the line text matches what we entered in the add new line form
-        cy.wrap($line2)
+        cy.wrap($lines)
+          .eq(1)
           .find(`:contains("${line2Text}"), [value="${line2Text}"]`);
-
-        cy.wrap($line2)
-          .find("label:contains(Line Number)")
-          .siblings("input")
-          .should("have.value", "2");
       });
 
     // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
+      originalLine2Id = xhr.response.body.data.createLine.id;
       expect(xhr.response.body.data.createLine).to.have.property("text", line2Text);
       expect(xhr.response.body.data.createLine).to.have.property("number", 2);
     });
@@ -142,47 +136,42 @@ describe("Dialog Edit Page", () => {
 
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 3)
-      .eq(2).then(($line3) => {
-      // Verify that the line text matches what we entered in the add new line form
-      cy.wrap($line3)
-        .find(`:contains("${line3Text}"), [value="${line3Text}"]`);
+      .then(($lines) => {
+        cy.wrap($lines)
+          .eq(0)
+          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
-      cy.wrap($line3)
-        .find("label:contains(Line Number)")
-        .siblings("input")
-        .should("have.value", "3");
-    });
+        cy.wrap($lines)
+          .eq(1)
+          .find(`:contains("${line2Text}"), [value="${line2Text}"]`);
+
+        cy.wrap($lines)
+          .eq(2)
+          .find(`:contains("${line3Text}"), [value="${line3Text}"]`);
+      });
 
     // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
+      originalLine3Id = xhr.response.body.data.createLine.id;
       expect(xhr.response.body.data.createLine).to.have.property("text", line3Text);
       expect(xhr.response.body.data.createLine).to.have.property("number", 3);
-      debugger;
     });
 
     // Delete the 2nd line
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .eq(1)
       .contains("Delete Line")
-      .click();
-
-    cy.get(`[data-testid="line-with-update-and-delete"]`)
-      .should("have.lengthOf", 2);
-
-    // Verify new line numbers of remaining two lines after the middle line was deleted
-    cy.get(`[data-testid="line-with-update-and-delete"]`)
+      .click()
+      .get(`[data-testid="line-with-update-and-delete"]`)
+      .should("have.lengthOf", 2)
       .then(($lines) => {
         cy.wrap($lines)
           .eq(0)
-          .find("label:contains(Line Number)")
-          .siblings("input")
-          .should("have.value", "1");
+          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
         cy.wrap($lines)
           .eq(1)
-          .find("label:contains(Line Number)")
-          .siblings("input")
-          .should("have.value", "2");
+          .find(`:contains("${line3Text}"), [value="${line3Text}"]`);
       });
 
     // deleteLine query
@@ -192,12 +181,19 @@ describe("Dialog Edit Page", () => {
 
     // updateLine query
     cy.wait('@api').then((xhr) => {
+      debugger;
       const lines = xhr.response.body.data.updateLine;
-      const lineNumbers = lines.map((line) => {
-        return line.number;
+      
+      const line1AfterUpdate = lines.find((line) => {
+        return (line.id === originalLine1Id);
       });
-      expect(lineNumbers).to.have.length(2);
-      expect(lineNumbers).to.have.members([1, 2]);
+
+      const line3AfterUpdate = lines.find((line) => {
+        return (line.id === originalLine3Id);
+      });
+
+      expect(line1AfterUpdate.number).to.equal(1);
+      expect(line3AfterUpdate.number).to.equal(2);
     });
   });
 
@@ -241,6 +237,125 @@ describe("Dialog Edit Page", () => {
 
     cy.wait("@api").then((xhr) => {
       expect(xhr.response.body.data.updateLine[0].text).to.equal("ab");
+    });
+  });
+
+  describe(`Moving lines up and down`, () => {
+    specify(`Given a dialog with 3 lines
+      When I click the Move Line Up button on the third line
+      Then the third line moves to position 2
+      And the second line moves to position 3
+      And the lines' numbers are updated in the database`, () => {
+
+      cy.exec(`cat ${Cypress.env('sql_dump_directory')}dialog-with-three-lines.sql | ` +
+        `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
+        `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
+
+      cy.visit(`/dialogs/${dialogId}/edit`, {
+        onBeforeLoad: function(window){
+          // and before the page finishes loading
+          // set the id_token in local storage
+          window.sessionStorage.setItem('token', token);
+        }
+      });
+
+      let originalLine2;
+      let originalLine3;
+
+      // Wait for the page to request dialogs from the api
+      cy.wait('@api').then((xhr) => {
+
+        originalLine2 = xhr.response.body.data.dialog.lines.filter((line) => {
+          return (line.number === 2);
+        })[0];
+
+        originalLine3 = xhr.response.body.data.dialog.lines.filter((line) => {
+          return (line.number === 3);
+        })[0];
+
+      });
+
+      cy.get(`[data-testid="line-with-update-and-delete"]`)
+        .eq(2)
+        .contains(/move line up/i)
+        .click()
+        .get(`[data-testid="line-with-update-and-delete"]`)
+        .eq(1)
+        // Assert that the second line has line3text
+        .find(`textarea:contains("${line3Text}"), input[value="${line3Text}"]`);
+
+      cy.wait("@api").then((xhr) => {
+
+        const updatedLine2 = xhr.response.body.data.updateLine.filter((line) => {
+          return (line.id === originalLine2.id);
+        })[0];
+
+        const updatedLine3 = xhr.response.body.data.updateLine.filter((line) => {
+          return (line.id === originalLine3.id);
+        })[0];
+
+        expect(updatedLine3.number).to.equal(2);
+        expect(updatedLine2.number).to.equal(3);
+      });
+
+    });
+
+    specify(`Given a dialog with 3 lines
+      When I click the Move Line Down button on the first line
+      Then the first line moves to position 2
+      And the second line moves to position 1`, () => {
+
+      cy.exec(`cat ${Cypress.env('sql_dump_directory')}dialog-with-three-lines.sql | ` +
+        `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
+        `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
+
+      cy.visit(`/dialogs/${dialogId}/edit`, {
+        onBeforeLoad: function(window){
+          // and before the page finishes loading
+          // set the id_token in local storage
+          window.sessionStorage.setItem('token', token);
+        }
+      });
+
+      let originalLine1;
+      let originalLine2;
+
+      // Wait for the page to request dialogs from the api
+      cy.wait('@api').then((xhr) => {
+
+        originalLine1 = xhr.response.body.data.dialog.lines.filter((line) => {
+          return (line.number === 1);
+        })[0];
+
+        originalLine2 = xhr.response.body.data.dialog.lines.filter((line) => {
+          return (line.number === 2);
+        })[0];
+
+      });
+
+      cy.get(`[data-testid="line-with-update-and-delete"]`)
+        .eq(0)
+        .contains(/move line down/i)
+        .click()
+        .get(`[data-testid="line-with-update-and-delete"]`)
+        .eq(1)
+        // Assert that the second line has line1Text
+        .find(`textarea:contains("${line1Text}"), input[value="${line1Text}"]`);
+
+      cy.wait("@api").then((xhr) => {
+
+        const updatedLine1 = xhr.response.body.data.updateLine.filter((line) => {
+          return (line.id === originalLine1.id);
+        })[0];
+
+        const updatedLine2 = xhr.response.body.data.updateLine.filter((line) => {
+          return (line.id === originalLine2.id);
+        })[0];
+
+        expect(updatedLine1.number).to.equal(2);
+        expect(updatedLine2.number).to.equal(1);
+      });
+
     });
   });
 });
