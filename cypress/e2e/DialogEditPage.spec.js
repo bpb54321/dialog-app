@@ -25,7 +25,7 @@ describe("Dialog Edit Page", () => {
     cy.clearLocalStorage();
   });
 
-  specify(`Automatic line numbering when adding or deleting lines`, () => {
+  specify.only(`Automatic line numbering when adding or deleting lines`, () => {
 
     // Load database with one user whose token corresponds to the above token
     cy.exec(`cat ${Cypress.env('sql_dump_directory')}one-dialog-with-two-roles.sql | ` +
@@ -57,21 +57,11 @@ describe("Dialog Edit Page", () => {
           .submit();
       });
 
-    // Verify generated line number is correct
+    // Verify line order is correct
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 1)
       .eq(0)
-      .then(($line1) => {
-        // Verify that the line text matches what we entered in the add new line form
-        cy.wrap($line1)
-          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
-
-        cy.wrap($line1)
-          .find("label")
-          .contains(/line number/i)
-          .siblings("input")
-          .should("have.value", "1");
-      });
+      .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
     // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
@@ -102,16 +92,14 @@ describe("Dialog Edit Page", () => {
 
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 2)
-      .eq(1).then(($line2) => {
+      .then(($lines) => {
+        cy.wrap($lines)
+          .eq(0)
+          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
-        // Verify that the line text matches what we entered in the add new line form
-        cy.wrap($line2)
+        cy.wrap($lines)
+          .eq(1)
           .find(`:contains("${line2Text}"), [value="${line2Text}"]`);
-
-        cy.wrap($line2)
-          .find("label:contains(Line Number)")
-          .siblings("input")
-          .should("have.value", "2");
       });
 
     // Wait for confirmation that the new line has been added to the database
@@ -142,47 +130,41 @@ describe("Dialog Edit Page", () => {
 
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .should("have.lengthOf", 3)
-      .eq(2).then(($line3) => {
-      // Verify that the line text matches what we entered in the add new line form
-      cy.wrap($line3)
-        .find(`:contains("${line3Text}"), [value="${line3Text}"]`);
+      .then(($lines) => {
+        cy.wrap($lines)
+          .eq(0)
+          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
-      cy.wrap($line3)
-        .find("label:contains(Line Number)")
-        .siblings("input")
-        .should("have.value", "3");
-    });
+        cy.wrap($lines)
+          .eq(1)
+          .find(`:contains("${line2Text}"), [value="${line2Text}"]`);
+
+        cy.wrap($lines)
+          .eq(2)
+          .find(`:contains("${line3Text}"), [value="${line3Text}"]`);
+      });
 
     // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
       expect(xhr.response.body.data.createLine).to.have.property("text", line3Text);
       expect(xhr.response.body.data.createLine).to.have.property("number", 3);
-      debugger;
     });
 
     // Delete the 2nd line
     cy.get(`[data-testid="line-with-update-and-delete"]`)
       .eq(1)
       .contains("Delete Line")
-      .click();
-
-    cy.get(`[data-testid="line-with-update-and-delete"]`)
-      .should("have.lengthOf", 2);
-
-    // Verify new line numbers of remaining two lines after the middle line was deleted
-    cy.get(`[data-testid="line-with-update-and-delete"]`)
+      .click()
+      .get(`[data-testid="line-with-update-and-delete"]`)
+      .should("have.lengthOf", 2)
       .then(($lines) => {
         cy.wrap($lines)
           .eq(0)
-          .find("label:contains(Line Number)")
-          .siblings("input")
-          .should("have.value", "1");
+          .find(`:contains("${line1Text}"), [value="${line1Text}"]`);
 
         cy.wrap($lines)
           .eq(1)
-          .find("label:contains(Line Number)")
-          .siblings("input")
-          .should("have.value", "2");
+          .find(`:contains("${line3Text}"), [value="${line3Text}"]`);
       });
 
     // deleteLine query
