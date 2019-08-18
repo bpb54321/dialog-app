@@ -87,24 +87,6 @@ export const LineWithUpdateAndDelete: React.FunctionComponent<Props> = (props) =
               null
           }
         </div>
-        <div>
-          <label htmlFor={`line-number-${props.line.id}`}>Line Number</label>
-          <input
-            id={`line-number-${props.line.id}`}
-            type={"number"}
-            step={1}
-            min={1}
-            value={props.line.number}
-            onChange={async (event: ChangeEvent<HTMLInputElement>) => {
-              if (!(event.target.value === "")) {
-                await props.updateLine({
-                  ...props.line,
-                  number: parseInt(event.target.value)
-                });
-              }
-            }}
-          />
-        </div>
         <button
           type={"button"}
           onClick={async () => {
