@@ -26,6 +26,10 @@ describe("Dialog Edit Page", () => {
   });
 
   specify.only(`Automatic line numbering when adding or deleting lines`, () => {
+    
+    let originalLine1Id;
+    let originalLine2Id;
+    let originalLine3Id;
 
     // Load database with one user whose token corresponds to the above token
     cy.exec(`cat ${Cypress.env('sql_dump_directory')}one-dialog-with-two-roles.sql | ` +
@@ -65,6 +69,7 @@ describe("Dialog Edit Page", () => {
 
     // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
+      originalLine1Id = xhr.response.body.data.createLine.id;
       expect(xhr.response.body.data.createLine).to.have.property("text", line1Text);
       expect(xhr.response.body.data.createLine).to.have.property("number", 1);
     });
@@ -104,6 +109,7 @@ describe("Dialog Edit Page", () => {
 
     // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
+      originalLine2Id = xhr.response.body.data.createLine.id;
       expect(xhr.response.body.data.createLine).to.have.property("text", line2Text);
       expect(xhr.response.body.data.createLine).to.have.property("number", 2);
     });
@@ -146,6 +152,7 @@ describe("Dialog Edit Page", () => {
 
     // Wait for confirmation that the new line has been added to the database
     cy.wait('@api').then((xhr) => {
+      originalLine3Id = xhr.response.body.data.createLine.id;
       expect(xhr.response.body.data.createLine).to.have.property("text", line3Text);
       expect(xhr.response.body.data.createLine).to.have.property("number", 3);
     });
@@ -174,12 +181,19 @@ describe("Dialog Edit Page", () => {
 
     // updateLine query
     cy.wait('@api').then((xhr) => {
+      debugger;
       const lines = xhr.response.body.data.updateLine;
-      const lineNumbers = lines.map((line) => {
-        return line.number;
+      
+      const line1AfterUpdate = lines.find((line) => {
+        return (line.id === originalLine1Id);
       });
-      expect(lineNumbers).to.have.length(2);
-      expect(lineNumbers).to.have.members([1, 2]);
+
+      const line3AfterUpdate = lines.find((line) => {
+        return (line.id === originalLine3Id);
+      });
+
+      expect(line1AfterUpdate.number).to.equal(1);
+      expect(line3AfterUpdate.number).to.equal(2);
     });
   });
 
