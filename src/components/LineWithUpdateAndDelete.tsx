@@ -13,7 +13,7 @@ interface Props {
   rolesInDialog: Role[];
   deleteLineInDialog: (line: LineData) => Promise<void>;
   updateLine: (line: LineData) => Promise<void>;
-  changeLineOrder: (line: LineData, direction: LineDirection) => Promise<void>;
+  changeLineOrder: (line: LineData, direction: LineDirection) => void;
   hasMoveLineUpButton: boolean;
   hasMoveLineDownButton: boolean;
 }

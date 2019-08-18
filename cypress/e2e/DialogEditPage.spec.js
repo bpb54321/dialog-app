@@ -245,11 +245,12 @@ describe("Dialog Edit Page", () => {
   });
 
   describe(`Moving lines up and down`, () => {
-    specify.only(`Given a dialog with 3 lines
-    When I click the Move Line Up button on the third line
-    Then the third line moves to position 2
-    And the second line moves to position 3
-    And the lines' numbers are updated in the database`, () => {
+    specify(`Given a dialog with 3 lines
+      When I click the Move Line Up button on the third line
+      Then the third line moves to position 2
+      And the second line moves to position 3
+      And the lines' numbers are updated in the database`, () => {
+
       cy.exec(`cat ${Cypress.env('sql_dump_directory')}dialog-with-three-lines.sql | ` +
         `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
         `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
@@ -262,8 +263,21 @@ describe("Dialog Edit Page", () => {
         }
       });
 
+      let originalLine2;
+      let originalLine3;
+
       // Wait for the page to request dialogs from the api
-      cy.wait('@api');
+      cy.wait('@api').then((xhr) => {
+
+        originalLine2 = xhr.response.body.data.dialog.lines.filter((line) => {
+          return (line.number === 2);
+        })[0];
+
+        originalLine3 = xhr.response.body.data.dialog.lines.filter((line) => {
+          return (line.number === 3);
+        })[0];
+
+      });
 
       cy.get(`[data-testid="line-with-update-and-delete"]`)
         .eq(2)
@@ -275,26 +289,21 @@ describe("Dialog Edit Page", () => {
         .find(`textarea:contains("${line3Text}"), input[value="${line3Text}"]`);
 
       cy.wait("@api").then((xhr) => {
-        const originalLine2 = xhr.request.queryVariables.filter((line) => {
-          return (line.number === 2);
-        });
-
-        const originalLine3 = xhr.request.queryVariables.filter((line) => {
-          return (line.number === 3);
-        });
 
         const updatedLine2 = xhr.response.body.data.updateLine.filter((line) => {
           return (line.id === originalLine2.id);
-        });
+        })[0];
 
         const updatedLine3 = xhr.response.body.data.updateLine.filter((line) => {
           return (line.id === originalLine3.id);
-        });
+        })[0];
+
         expect(updatedLine3.number).to.equal(2);
         expect(updatedLine2.number).to.equal(3);
       });
 
-
     });
+
+    
   });
 });

@@ -211,22 +211,27 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
     }
   };
 
-  const changeLineOrder = async (lineToUpdate: LineData, direction: LineDirection): Promise<void> => {
+  const changeLineOrder = (lineToUpdate: LineData, direction: LineDirection): void => {
 
     let lineToUpdateCurrentNumber = lineToUpdate.number;
+    let linesToUpdateInApiQuery: LineData[] = [];
     const updatedLines = dialog.lines.map((line) => {
       if (direction === LineDirection.Up) {
         if (line.number === lineToUpdateCurrentNumber) {
           line.number--;
+          linesToUpdateInApiQuery.push(line);
         } else if (line.number === (lineToUpdateCurrentNumber - 1)) {
           line.number++;
+          linesToUpdateInApiQuery.push(line);
         }
         return line;
       } else {
         if (line.number === lineToUpdateCurrentNumber) {
           line.number++;
+          linesToUpdateInApiQuery.push(line);
         } else if (line.number === (lineToUpdateCurrentNumber + 1)) {
           line.number--;
+          linesToUpdateInApiQuery.push(line);
         }
         return line;
       }
@@ -236,6 +241,23 @@ export const DialogEditPage: React.FunctionComponent<Props> = (props) => {
       ...dialog,
       lines: updatedLines,
     });
+
+    const linesFormattedForQuery = linesToUpdateInApiQuery.map((line) => {
+      return {
+        id: line.id,
+        number: line.number,
+      };
+    });
+
+    const queryVariables = {
+      lines: linesFormattedForQuery,
+    };
+
+    fetchData(updateLineQuery, queryVariables, "updateLine", globalState)
+      .catch((error) => {
+        setErrorMessage(error.message);
+      });
+
   };
 
   const {dialogId} = props.match.params;
