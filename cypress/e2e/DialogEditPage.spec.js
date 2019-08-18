@@ -304,6 +304,62 @@ describe("Dialog Edit Page", () => {
 
     });
 
-    
+    specify(`Given a dialog with 3 lines
+      When I click the Move Line Down button on the first line
+      Then the first line moves to position 2
+      And the second line moves to position 1`, () => {
+
+      cy.exec(`cat ${Cypress.env('sql_dump_directory')}dialog-with-three-lines.sql | ` +
+        `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
+        `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
+
+      cy.visit(`/dialogs/${dialogId}/edit`, {
+        onBeforeLoad: function(window){
+          // and before the page finishes loading
+          // set the id_token in local storage
+          window.sessionStorage.setItem('token', token);
+        }
+      });
+
+      let originalLine1;
+      let originalLine2;
+
+      // Wait for the page to request dialogs from the api
+      cy.wait('@api').then((xhr) => {
+
+        originalLine1 = xhr.response.body.data.dialog.lines.filter((line) => {
+          return (line.number === 1);
+        })[0];
+
+        originalLine2 = xhr.response.body.data.dialog.lines.filter((line) => {
+          return (line.number === 2);
+        })[0];
+
+      });
+
+      cy.get(`[data-testid="line-with-update-and-delete"]`)
+        .eq(0)
+        .contains(/move line down/i)
+        .click()
+        .get(`[data-testid="line-with-update-and-delete"]`)
+        .eq(1)
+        // Assert that the second line has line1Text
+        .find(`textarea:contains("${line1Text}"), input[value="${line1Text}"]`);
+
+      cy.wait("@api").then((xhr) => {
+
+        const updatedLine1 = xhr.response.body.data.updateLine.filter((line) => {
+          return (line.id === originalLine1.id);
+        })[0];
+
+        const updatedLine2 = xhr.response.body.data.updateLine.filter((line) => {
+          return (line.id === originalLine2.id);
+        })[0];
+
+        expect(updatedLine1.number).to.equal(2);
+        expect(updatedLine2.number).to.equal(1);
+      });
+
+    });
   });
 });
