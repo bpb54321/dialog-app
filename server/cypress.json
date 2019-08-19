@@ -1,0 +1,9 @@
+{
+  "baseUrl": "http://localhost:4000",
+  "env": {
+    "sql_dump_directory": "~/Sites/dialog-api-node/prisma/seed-data/",
+    "docker_mysql_service_name": "dialog-api-node_mysql_1",
+    "docker_mysql_password": "prisma",
+    "docker_mysql_db_name": "localhost@dev"
+  }
+}
