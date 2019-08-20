@@ -22,6 +22,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - name: npm install, build, and test
       run: |
-        npm install
-        npm run build --if-present
-        npm test
+        cd front-end
+        yarn install
+        yarn build --if-present
+        yarn test
+    - name: GitHub Action for Heroku
+      uses: actions/heroku@1.0.0
+
