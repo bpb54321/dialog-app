@@ -1,4 +1,13 @@
 {
+  "name": "dialog-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:bpb54321/dialog-app.git",
+  "author": "Brian Blosser <bpb54321@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "e2e": "cypress run"
+  },
   "devDependencies": {
     "cypress": "^3.4.1"
   }
