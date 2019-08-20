@@ -525,8 +525,6 @@ describe('DialogEditPage', () => {
         }) as () => void);
         //endregion
 
-        wrapper.debug();
-        
         //region ASSERT
         const line1 = within(wrapper.getAllByTestId("line-with-update-and-delete")[0]);
         line1.getByText(/move line down/i);
