@@ -1,26 +1,24 @@
 /// <reference types="Cypress" />
 
 context('createDialog', () => {
-  specify(`When I send a createDialog mutation, ` +
-    `Then I should get the correct response`, () => {
+  specify(`When I send a createDialog mutation
+      Then I should get the correct response`, () => {
 
     // Seed the database with a single user
-    cy.exec('prisma reset --force').its('code').should('eq', 0);
-    cy.exec('prisma import --data ./prisma/seed-data/single-user.zip')
-      .its('code').should('eq', 0);
+    cy.exec(`cat ${Cypress.env('sql_dump_directory')}single-user.sql | ` +
+      `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
+      `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
 
     const variables = {
       name: "Dialog 1.1",
       languageCode: "en-US",
     };
 
-    const userToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjanluY3Y4MTFnZHMzMGI5OXB0dTcxYzNtIiwiaWF0IjoxNTY0MzQyMDUxfQ.JM22aW4z2exbQuJuHcMUxY4DGqP2-LDyJNtILWvzlW8";
-
     cy.request({
-      url: "http://localhost:4000",
+      url: Cypress.env("api_url"),
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${userToken}`,
+        "Authorization": `Bearer ${Cypress.env("test_user_token")}`,
       },
       body: {
         "operationName": "CreateDialog",

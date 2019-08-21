@@ -1,9 +1,6 @@
 
 describe("Dialog Edit Page", () => {
 
-  // user token
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjano1aWlkbGIwMDAzMDc2NmNxYzJwbDFvIiwiaWF0IjoxNTY1NDM5OTIxfQ.DGZ3m6mZftHS5LODRKhl80DzHfFPXyxzpE-vKgHdQKY";
-
   const role1Name = "John";
   const role2Name = "Jane";
 
@@ -40,7 +37,7 @@ describe("Dialog Edit Page", () => {
       onBeforeLoad: function(window){
         // and before the page finishes loading
         // set the id_token in local storage
-        window.sessionStorage.setItem('token', token);
+        window.sessionStorage.setItem('token', Cypress.env("test_user_token"));
       }
     });
 
@@ -207,7 +204,7 @@ describe("Dialog Edit Page", () => {
       onBeforeLoad: function(window){
         // and before the page finishes loading
         // set the id_token in local storage
-        window.sessionStorage.setItem('token', token);
+        window.sessionStorage.setItem('token', Cypress.env("test_user_token"));
       }
     });
 
@@ -255,7 +252,7 @@ describe("Dialog Edit Page", () => {
         onBeforeLoad: function(window){
           // and before the page finishes loading
           // set the id_token in local storage
-          window.sessionStorage.setItem('token', token);
+          window.sessionStorage.setItem('token', Cypress.env("test_user_token"));
         }
       });
 
@@ -313,7 +310,7 @@ describe("Dialog Edit Page", () => {
         onBeforeLoad: function(window){
           // and before the page finishes loading
           // set the id_token in local storage
-          window.sessionStorage.setItem('token', token);
+          window.sessionStorage.setItem('token', Cypress.env("test_user_token"));
         }
       });
 
