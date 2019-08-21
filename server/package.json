@@ -1,5 +1,5 @@
 {
-  "name": "dialog-api-node",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -19,8 +19,5 @@
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
-  },
-  "engines": {
-    "node": "10.14.0"
   }
 }
