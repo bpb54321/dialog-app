@@ -37,6 +37,10 @@ jobs:
           # Start up prisma and mysql servers using Docker
           docker-compose up -d
 
+          # Deploy prisma to set up database
+          cd server
+          cd npx prisma deploy
+
           # Start up front end and back end servers
           cd front-end
           yarn start & npx wait-on http://127.0.0.1:3000
