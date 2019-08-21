@@ -42,12 +42,12 @@ jobs:
           npx prisma deploy
 
           # Start up front end and back end servers
-          cd front-end
+          cd ../front-end
           yarn start & npx wait-on http://127.0.0.1:3000
           cd ../server
           yarn start & npx wait-on http://127.0.0.1:4000
-          cd ../
 
           # Run Cypress in headless mode
+          cd ../
           npx cypress run
 
