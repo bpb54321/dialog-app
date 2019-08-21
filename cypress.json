@@ -1,11 +1,12 @@
 {
   "baseUrl": "http://localhost:3000",
-  "apiUrl": "http://localhost:4000",
   "env": {
     "sql_dump_directory": "./seed-data/",
     "docker_mysql_service_name": "mysql",
     "docker_mysql_password": "prisma",
-    "docker_mysql_db_name": "localhost@dev"
+    "docker_mysql_db_name": "localhost@dev",
+    "test_user_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjano1aWlkbGIwMDAzMDc2NmNxYzJwbDFvIiwiaWF0IjoxNTY1NDM5OTIxfQ.DGZ3m6mZftHS5LODRKhl80DzHfFPXyxzpE-vKgHdQKY",
+    "api_url": "http://localhost:4000"
   },
-  "integrationFolder": "cypress/e2e"
+  "integrationFolder": "cypress/tests"
 }
