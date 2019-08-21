@@ -20,18 +20,30 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: yarn install and test
+      - name: "Front End: yarn install and test"
         run: |
           cd front-end
           yarn install
           yarn test:ci
+      - name: "Back End: yarn install"
+        run: |
+          cd server
+          yarn install
       - name: Cypress tests (e2e) and endpoint
         run: |
+          # npm modules for root of project
+          yarn install
+
+          # Start up prisma and mysql servers using Docker
           docker-compose up -d
+
+          # Start up front end and back end servers
           cd front-end
           yarn start & npx wait-on http://127.0.0.1:3000
           cd ../server
           yarn start & npx wait-on http://127.0.0.1:4000
           cd ../
+
+          # Run Cypress in headless mode
           npx cypress run
 
