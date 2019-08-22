@@ -1,6 +1,6 @@
 import React from "react";
 import {cleanup, render, RenderResult} from "@testing-library/react";
-import Line from "../components/Line";
+import {Line} from "../components/Line";
 
 describe('Line', () => {
 
@@ -36,5 +36,20 @@ describe('Line', () => {
   it('should display the name of the role that is assigned to the line', function () {
     wrapper.getByText(role.name);
   });
+
+  test(`When the component is rendered with showNext = true,
+      Then it should render a Next button`, () => {
+        wrapper = render(
+          <Line
+            key={0}
+            text={lineText}
+            guess={guess}
+            role={role}
+            showNext={true}
+          />
+        );
+
+        // wrapper.getByText(/show next/i);
+  })
 });
 
