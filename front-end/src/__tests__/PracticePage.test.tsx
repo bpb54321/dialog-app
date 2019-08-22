@@ -102,8 +102,8 @@ describe('PracticePage', () => {
 
     act(() => {
       wrapper = render(
-        <GlobalProvider speechRecognition={mockSpeechRecognition}
-                        children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        <GlobalProvider
+          children={<PracticePage match={match} chosenRole={chosenRole}/>}
         />
       );
     });
@@ -126,7 +126,7 @@ describe('PracticePage', () => {
 
     act(() => {
       wrapper = render(
-        <GlobalProvider speechRecognition={mockSpeechRecognition}
+        <GlobalProvider
           children={<PracticePage match={match} chosenRole={chosenRole}/>}
         />
       );
@@ -158,8 +158,8 @@ describe('PracticePage', () => {
 
     act(() => {
       wrapper = render(
-        <GlobalProvider speechRecognition={mockSpeechRecognition}
-                        children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        <GlobalProvider
+          children={<PracticePage match={match} chosenRole={chosenRole}/>}
         />
       );
     });

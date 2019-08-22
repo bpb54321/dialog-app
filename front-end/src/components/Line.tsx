@@ -6,20 +6,15 @@ interface Props {
     key: number;
     guess?: string;
     role: Role;
+    showNext?: boolean;
 }
 
-interface State {
-    name: string;
-}
-
-export default class Line extends React.Component<Props, State> {
-    render() {
-        return (
-          <li data-testid={"line"}>
-            <span>{this.props.role.name}</span>
-            {this.props.guess ? <div>Guess: {this.props.guess}</div> : null}
-            <div>Line text: {this.props.text}</div>
-          </li>
-        );
-    };
+export const Line : React.FunctionComponent<Props> = ({role, guess = null, text, showNext = false}) => {
+    return (
+      <li data-testid={"line"}>
+        <span>{role.name}</span>
+        {guess ? <div>Guess: {guess}</div> : null}
+        <div>Line text: {text}</div>
+      </li>
+    );
 }
