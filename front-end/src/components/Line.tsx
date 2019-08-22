@@ -15,6 +15,7 @@ export const Line : React.FunctionComponent<Props> = ({role, guess = null, text,
         <span>{role.name}</span>
         {guess ? <div>Guess: {guess}</div> : null}
         <div>Line text: {text}</div>
+          {showNext ? <button>Next Line</button> : null}
       </li>
     );
-}
+};
