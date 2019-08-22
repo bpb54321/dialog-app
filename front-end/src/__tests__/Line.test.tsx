@@ -1,5 +1,10 @@
 import React from "react";
-import {cleanup, render, RenderResult} from "@testing-library/react";
+import {
+  cleanup,
+  render,
+  RenderResult,
+  fireEvent
+} from "@testing-library/react";
 import {Line} from "../components/Line";
 
 describe('Line', () => {
@@ -11,6 +16,7 @@ describe('Line', () => {
     id: "test-role-id",
     name: "Role 0",
   };
+  let mockIncrementLine = jest.fn();
 
   beforeEach(() => {
     wrapper = render(
@@ -37,8 +43,9 @@ describe('Line', () => {
     wrapper.getByText(role.name);
   });
 
-  test(`When the component is rendered with showNext = true,
-      Then it should render a Next button`, () => {
+  test(`When the component is rendered with showNext = true
+      When I click on the Next Line button,
+      Then it should call a function passed to it`, () => {
         wrapper = render(
           <Line
             key={0}
@@ -46,10 +53,13 @@ describe('Line', () => {
             guess={guess}
             role={role}
             showNext={true}
+            incrementLine={mockIncrementLine}
           />
         );
+        
+        fireEvent.click(wrapper.getByText(/next line/i));
 
-        wrapper.getByText(/next line/i);
+        expect(mockIncrementLine).toHaveBeenCalledTimes(1);
   })
 });
 
