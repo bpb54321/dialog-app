@@ -44,6 +44,11 @@ describe('Line', () => {
     wrapper.getByText(role.name);
   });
 
+  test(`When the component is rendered with showNext not set
+      Then the Next Line button should not be rendered`, () => {
+    expect(wrapper.queryByText(/next line/i)).toBeNull();
+  });
+
   test(`When the component is rendered with showNext = true
       When I click on the Next Line button,
       Then it should call a function passed to it`, () => {
