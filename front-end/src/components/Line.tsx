@@ -15,7 +15,10 @@ export const Line : React.FunctionComponent<Props> = ({role, guess = null, text,
     <li data-testid={"line"}>
       <span>{role.name}</span>
       {guess ? <div>Guess: {guess}</div> : null}
-      <div>Line text: {text}</div>
+      <div>
+        <span>Line text: </span>
+        <span>{text}</span>
+      </div>
       {
         showNext ?
           <button
