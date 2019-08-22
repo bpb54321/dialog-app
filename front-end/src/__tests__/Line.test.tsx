@@ -49,7 +49,7 @@ describe('Line', () => {
           />
         );
 
-        // wrapper.getByText(/show next/i);
+        wrapper.getByText(/show next/i);
   })
 });
 
