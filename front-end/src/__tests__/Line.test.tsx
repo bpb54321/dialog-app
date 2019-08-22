@@ -25,6 +25,7 @@ describe('Line', () => {
         text={lineText}
         guess={guess}
         role={role}
+        incrementLine={mockIncrementLine}
       />
     );
   });
@@ -56,7 +57,7 @@ describe('Line', () => {
             incrementLine={mockIncrementLine}
           />
         );
-        
+
         fireEvent.click(wrapper.getByText(/next line/i));
 
         expect(mockIncrementLine).toHaveBeenCalledTimes(1);
