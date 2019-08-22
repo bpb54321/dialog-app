@@ -33,7 +33,7 @@ describe('Line', () => {
   afterEach(cleanup);
 
   it('should render the text passed to it', function () {
-    wrapper.getByText(`Line text: ${lineText}`);
+    wrapper.getByText(lineText);
   });
 
   it('should display the guess passed to it', function () {
