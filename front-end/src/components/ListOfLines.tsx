@@ -15,6 +15,10 @@ export default class ListOfLines extends React.Component<Props, State> {
 
   state = {};
 
+  incrementLine = () => {
+
+  };
+
   render() {
     return (
       <ul data-testid={"lines"} >
@@ -27,6 +31,7 @@ export default class ListOfLines extends React.Component<Props, State> {
               text={lineData.text}
               guess={lineData.guess}
               role={lineData.role}
+              incrementLine={this.incrementLine}
             />
           );
         })}
