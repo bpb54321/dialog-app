@@ -77,21 +77,16 @@ export const PracticePage: PracticePageInterface = (props) => {
       return line;
     });
 
-    let nextLineIndex = state.userLineNumberIndex + 1;
-
     let nextMode: InteractionMode;
-    let nextLineNumber: number;
+    let nextLineNumber = ++state.currentLineNumber;
 
-    if (nextLineIndex < state.userLineNumbers.length) {
-
-      nextMode = InteractionMode.DisplayingOtherLines;
-      nextLineNumber = state.userLineNumbers[nextLineIndex];
-
-    } else {
-
+    if (nextLineNumber > state.dialog.lines.length) {
       nextMode = InteractionMode.DialogComplete;
-      nextLineNumber = state.dialog.lines.slice(-1)[0].number; // Last line in dialog
-
+      nextLineNumber = state.dialog.lines.length;
+    } else if (state.userLineNumbers.includes(nextLineNumber)) {
+      nextMode = InteractionMode.GuessingOurLine;
+    } else {
+      nextMode = InteractionMode.DisplayingOtherLines;
     }
 
     setState({
@@ -100,7 +95,6 @@ export const PracticePage: PracticePageInterface = (props) => {
         ...state.dialog,
         lines: linesUpdatedWithGuess,
       },
-      userLineNumberIndex: nextLineIndex,
       currentLineNumber: nextLineNumber,
       mode: nextMode,
     });

@@ -6,7 +6,6 @@ import {
   RenderResult,
   waitForElement,
   waitForElementToBeRemoved,
-  within
 } from "@testing-library/react";
 import {PracticePage} from "../pages/PracticePage";
 import {act} from "react-dom/test-utils";
@@ -89,7 +88,10 @@ describe('PracticePage', () => {
       And the second line is assigned to Role 2
       And Role 2 is the chosen role
       Then the first line should be displayed
-      And the user should be presented with the line guess input`, async function () {
+      And the user should be presented with the Next Line button
+      And the line guess input should not be displayed
+      When the user clicks on the Next Line button
+      Then the user should be presented with the line guess input`, async function () {
 
     (fetchData as jest.Mock).mockImplementationOnce(() => {
       return Promise.resolve({
@@ -131,22 +133,29 @@ describe('PracticePage', () => {
 
     await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
 
-    await waitForElement(() => wrapper.getByText(/this is the text for line 1/i));
+    expect(wrapper.queryByText(/this is the text for line 1/i)).not.toBeNull();
 
-    wrapper.getByPlaceholderText(/text of the next line for role 2/i);
+    expect(wrapper.queryAllByText(/next line/i)).toHaveLength(1);
+
+    expect(wrapper.queryByTestId("line-guess")).toBeNull();
+
+    act(() => {
+      fireEvent.click(wrapper.getByText(/next line/i));
+    });
+
+    await waitForElement(() => wrapper.getByTestId("line-guess"));
   });
 
-  test(`When Role 1 enters a guess for Line 1
-    And he submits the guess
-    Then the submitted guess and the correct text for the line should be displayed
-    And Role 1 should be presented with a guess input
-    When Role 1 enters a guess for Line 3
-    And he submits the guess
-    Then the submitted guess and the correct text for the line should be displayed
-    And Role 1 should be presented with a guess input
-    When Role 1 enters a guess for Line 5
-    Then all the line guesses and correct answers should be displayed
-    And there should be no guess input on the page`, async function () {
+  test(`Given a dialog where Role 1 and Role 2 alternate lines
+      And Role 1 is the chosen role
+      When Role 1 enters a guess for Line 1
+      And he submits the guess
+      Then the submitted guess and the correct text for the line should be displayed
+      When Role 1 enters a guess for Line 3
+      And he submits the guess
+      Then all the line guesses and correct answers should be displayed
+      And there should be no guess input on the page`, async function () {
+
 
     (fetchData as jest.Mock).mockImplementationOnce(() => {
       return Promise.resolve({
@@ -176,22 +185,6 @@ describe('PracticePage', () => {
               "id": "abc",
               "name": "Role 1"
             }
-          },
-          {
-            "text": "This is the text for line 4.",
-            "number": 4,
-            "role": {
-              "id": "def",
-              "name": "Role 2"
-            }
-          },
-          {
-            "text": "This is the text for line 5.",
-            "number": 5,
-            "role": {
-              "id": "abc",
-              "name": "Role 1"
-            }
           }
         ]
       });
@@ -211,61 +204,66 @@ describe('PracticePage', () => {
     });
 
     let guessInput = await waitForElement(() => {
-      return wrapper.getByPlaceholderText(/text of the next line for role 1/i);
+      return wrapper.getByLabelText(/line guess/i);
     });
 
-    fireEvent.change(guessInput, {
-      target: {
-        value: "This is my guess for Line 1",
-      }
+    act(() => {
+      fireEvent.change(guessInput, {
+        target: {
+          value: "Guess for Line 1",
+        }
+      });
     });
 
-    fireEvent.click(wrapper.getByDisplayValue(/submit guess/i));
+    act(() => {
+      fireEvent.submit(wrapper.getByTestId("line-guess"));
+    });
 
     await waitForElement(() => [
       wrapper.getByText(/this is the text for line 1/i),
-      wrapper.getByText(/this is my guess for line 1/i),
+      wrapper.getByText(/guess for line 1/i),
     ]);
+
+    // Assert that line 2, assigned to Role 2, is displayed
+    expect(wrapper.queryByText(/this is the text for line 2/i)).not.toBeNull();
+
+    // Click the Next Line button
+    act(() => {
+      fireEvent.click(wrapper.getByText(/next line/i));
+    });
+
+    // Assert Line Guess is displayed again
+    guessInput = await waitForElement(() => {
+      return wrapper.getByLabelText(/line guess/i);
+    });
 
     // Second guess
-    fireEvent.change(wrapper.getByPlaceholderText(/text of the next line for role 1/i), {
+    fireEvent.change(guessInput, {
       target: {
-        value: "This is my guess for Line 3"
+        value: "Guess for Line 3"
       }
     });
 
-    fireEvent.click(wrapper.getByDisplayValue(/submit guess/i));
-
-    await waitForElement(() => [
-      wrapper.getByText(/this is the text for line 3/i),
-      wrapper.getByText(/this is my guess for line 3/i),
-    ]);
-
-    // Third guess
-    fireEvent.change(wrapper.getByPlaceholderText(/text of the next line for role 1/i), {
-      target: {
-        value: "This is my guess for Line 5"
-      }
+    act(() => {
+      fireEvent.submit(wrapper.getByTestId("line-guess"));
     });
 
-    fireEvent.click(wrapper.getByDisplayValue(/submit guess/i));
-
+    // Assert all lines are now displayed
     await waitForElement(() => [
-      wrapper.getByText(/this is the text for line 1/i),
       wrapper.getByText(/this is the text for line 3/i),
-      wrapper.getByText(/this is the text for line 5/i),
-      wrapper.getByText(/this is my guess for line 1/i),
-      wrapper.getByText(/this is my guess for line 3/i),
-      wrapper.getByText(/this is my guess for line 5/i),
+      wrapper.getByText(/guess for line 3/i),
     ]);
-
-    expect(wrapper.queryByPlaceholderText(/text of the next line for role 1/i)).toBeNull();
+    
+    // Assert that next line button and line guess are not displayed
+    expect(wrapper.queryByText(/next line/i)).toBeNull();
+    expect(wrapper.queryByTestId("line-guess")).toBeNull();
 
   });
 
-  test(`Given a dialog with at least three lines
+  test(`Given a dialog with at least four lines
       And the first two lines are assigned to Role 1
       And the third line is assigned to Role 2
+      And the fourth line is assigned to Role 1
       And the user has chosen Role 2
       When the dialog practice starts
       Then line 1 should be displayed
