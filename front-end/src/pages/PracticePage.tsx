@@ -111,8 +111,6 @@ export const PracticePage: PracticePageInterface = (props) => {
   };
 
   useEffect(() => {
-    debugger;
-
     const {dialogId} = props.match.params;
 
     const queryVariables = {
@@ -153,7 +151,6 @@ export const PracticePage: PracticePageInterface = (props) => {
     })
   }, [props.match.params, globalState, props.chosenRole]);
 
-  debugger;
   switch (state.mode) {
     case InteractionMode.PracticingLines:
       return (
