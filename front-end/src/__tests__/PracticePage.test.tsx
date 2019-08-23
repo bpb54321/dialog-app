@@ -81,7 +81,7 @@ describe('PracticePage', () => {
 
     expect(wrapper.queryByText(/this is the text for line 1/i)).toBeNull();
 
-    wrapper.getByPlaceholderText(/text of the next line for role 1/i);
+    wrapper.getByTestId("line-guess");
   });
 
   test(`Given a dialog with at least 2 lines
