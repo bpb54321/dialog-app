@@ -319,7 +319,9 @@ describe('PracticePage', () => {
 
     await waitForElement(() => wrapper.getByText(/this is the text for line 1/i));
 
-    expect(wrapper.queryByText(/next line/i)).not.toBeNull();
+    wrapper.debug();
+
+    expect(wrapper.queryAllByText(/next line/i).length).toBe(1);
 
     expect(wrapper.queryByText(/this is the text for line 2/i)).toBeNull();
 

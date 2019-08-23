@@ -48,8 +48,6 @@ export const PracticePage: PracticePageInterface = (props) => {
 
   const globalState = useGlobalState();
 
-  debugger;
-
   /**
    * Given a dialog and a role, returns an array of the line numbers that the role has in the dialog.
    *
@@ -88,7 +86,7 @@ export const PracticePage: PracticePageInterface = (props) => {
 
     if (nextLineIndex < state.userLineNumbers.length) {
 
-      nextMode = InteractionMode.PracticingLines;
+      nextMode = InteractionMode.DisplayingOtherLines;
       nextLineNumber = state.userLineNumbers[nextLineIndex];
 
     } else {
@@ -125,8 +123,8 @@ export const PracticePage: PracticePageInterface = (props) => {
       let mode: InteractionMode;
 
       if (userLineNumbers.length > 0) {
-        mode = InteractionMode.PracticingLines;
-        currentLineNumber = userLineNumbers[0];
+        mode = InteractionMode.DisplayingOtherLines;
+        currentLineNumber = dialog.lines[0].number;
       } else {
         mode = InteractionMode.DialogComplete;
         currentLineNumber = dialog.lines.slice(-1)[0].number;
@@ -152,7 +150,19 @@ export const PracticePage: PracticePageInterface = (props) => {
   }, [props.match.params, globalState, props.chosenRole]);
 
   switch (state.mode) {
-    case InteractionMode.PracticingLines:
+    case InteractionMode.DisplayingOtherLines:
+      return (
+        <>
+          <ListOfLines
+            dialog={state.dialog}
+            lastLineToDisplay={state.currentLineNumber}
+          />
+          <button>Next Line</button>
+          {state.errorMessage ? <p>{state.errorMessage}</p> : null}
+        </>
+      );
+
+    case InteractionMode.GuessingOurLine:
       return (
         <>
           <ListOfLines

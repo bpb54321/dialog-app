@@ -32,7 +32,6 @@ export default class ListOfLines extends React.Component<Props, State> {
               guess={lineData.guess}
               role={lineData.role}
               incrementLine={this.incrementLine}
-              showNext={index === lines.length -1}
             />
           );
         })}
