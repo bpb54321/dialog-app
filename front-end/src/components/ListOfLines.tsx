@@ -24,7 +24,7 @@ export default class ListOfLines extends React.Component<Props, State> {
       <ul data-testid={"lines"} >
         {this.props.dialog.lines.filter((lineData: LineData) => {
           return lineData.number <= this.props.lastLineToDisplay;
-        }).map((lineData: LineData) => {
+        }).map((lineData: LineData, index, lines) => {
           return (
             <Line
               key={lineData.number}
@@ -32,7 +32,7 @@ export default class ListOfLines extends React.Component<Props, State> {
               guess={lineData.guess}
               role={lineData.role}
               incrementLine={this.incrementLine}
-              showNext={true}
+              showNext={index === lines.length -1}
             />
           );
         })}
