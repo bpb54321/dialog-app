@@ -334,6 +334,15 @@ describe('PracticePage', () => {
 
     await waitForElement(() => wrapper.getByText(/this is the text for line 2/i));
 
+    expect(wrapper.queryAllByText(/next line/i).length).toBe(1);
+
+    act(() => {
+      fireEvent.click(wrapper.getByText(/next line/i));
+    });
+
+    expect(wrapper.queryByTestId("line-guess")).not.toBeNull();
+    expect(wrapper.queryByText(/next line/i)).toBeNull();
+
   });
 });
 
