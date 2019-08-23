@@ -269,7 +269,12 @@ describe('PracticePage', () => {
       And the user has chosen Role 2
       When the dialog practice starts
       Then line 1 should be displayed
-      And the user should be presented with the Next Line button`, async () => {
+      And the user should be presented with the Next Line button
+      When the user clicks the Next Line Button
+      Then line 2 should be displayed
+      And the user should be presented with the Next line button
+      When the user clicks the Next Line Button
+      Then the user should be presented with the guess input for line 3`, async () => {
 
     (fetchData as jest.Mock).mockImplementationOnce(() => {
       return Promise.resolve({
@@ -319,11 +324,15 @@ describe('PracticePage', () => {
 
     await waitForElement(() => wrapper.getByText(/this is the text for line 1/i));
 
-    wrapper.debug();
-
     expect(wrapper.queryAllByText(/next line/i).length).toBe(1);
 
     expect(wrapper.queryByText(/this is the text for line 2/i)).toBeNull();
+
+    act(() => {
+      fireEvent.click(wrapper.getByText(/next line/i));
+    });
+
+    await waitForElement(() => wrapper.getByText(/this is the text for line 2/i));
 
   });
 });

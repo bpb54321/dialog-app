@@ -35,12 +35,11 @@ interface Props {
 export type PracticePageInterface = React.FunctionComponent<Props>;
 
 export const PracticePage: PracticePageInterface = (props) => {
-  debugger;
 
   const [state, setState] = useState({
     userLineNumberIndex: 0,
     userLineNumbers: [] as number[],
-    currentLineNumber: 0,
+    currentLineNumber: 1,
     dialog: {} as Dialog,
     mode: InteractionMode.LoadingData,
     errorMessage: "",
@@ -57,7 +56,6 @@ export const PracticePage: PracticePageInterface = (props) => {
    * @return {number[]} An array of line numbers of the lines that are assigned to the given role in the dialog.
    */
   const calculateUserLineNumbers = (dialog: Dialog, role: Role): number[] => {
-    debugger;
     const {lines} = dialog;
 
     let userLines: LineData[] = lines.filter((line: LineData) => {
@@ -103,6 +101,21 @@ export const PracticePage: PracticePageInterface = (props) => {
         lines: linesUpdatedWithGuess,
       },
       userLineNumberIndex: nextLineIndex,
+      currentLineNumber: nextLineNumber,
+      mode: nextMode,
+    });
+  };
+
+  const handleNextLineClick = () => {
+    const nextLineNumber = ++state.currentLineNumber;
+    let nextMode = state.mode;
+
+    if (state.userLineNumbers.includes(nextLineNumber)) {
+      nextMode = InteractionMode.GuessingOurLine;
+    }
+
+    setState({
+      ...state,
       currentLineNumber: nextLineNumber,
       mode: nextMode,
     });
@@ -157,7 +170,11 @@ export const PracticePage: PracticePageInterface = (props) => {
             dialog={state.dialog}
             lastLineToDisplay={state.currentLineNumber}
           />
-          <button>Next Line</button>
+          <button
+            onClick={handleNextLineClick}
+          >
+            Next Line
+          </button>
           {state.errorMessage ? <p>{state.errorMessage}</p> : null}
         </>
       );
