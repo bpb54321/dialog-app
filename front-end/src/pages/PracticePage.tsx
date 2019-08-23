@@ -132,15 +132,18 @@ export const PracticePage: PracticePageInterface = (props) => {
       // Calculate the user line numbers
       const userLineNumbers = calculateUserLineNumbers(dialog, props.chosenRole);
 
-      let currentLineNumber: number;
+      let currentLineNumber = state.currentLineNumber;
       let mode: InteractionMode;
 
-      if (userLineNumbers.length > 0) {
-        mode = InteractionMode.DisplayingOtherLines;
-        currentLineNumber = dialog.lines[0].number;
-      } else {
+      if (userLineNumbers.length === 0) {
         mode = InteractionMode.DialogComplete;
         currentLineNumber = dialog.lines.slice(-1)[0].number;
+      } else {
+        if (userLineNumbers.includes(currentLineNumber)) {
+          mode = InteractionMode.GuessingOurLine;
+        } else {
+          mode = InteractionMode.DisplayingOtherLines;
+        }
       }
 
       setState((previousState) => {
