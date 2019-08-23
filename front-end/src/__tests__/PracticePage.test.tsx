@@ -6,6 +6,7 @@ import {
   RenderResult,
   waitForElement,
   waitForElementToBeRemoved,
+  within
 } from "@testing-library/react";
 import {PracticePage} from "../pages/PracticePage";
 import {act} from "react-dom/test-utils";
@@ -262,11 +263,65 @@ describe('PracticePage', () => {
 
   });
 
-  test(`Given Role 1 has two lines in a row at the beginning of the dialog
+  test(`Given a dialog with at least three lines
+      And the first two lines are assigned to Role 1
+      And the third line is assigned to Role 2
       And the user has chosen Role 2
       When the dialog practice starts
       Then line 1 should be displayed
-      And the user should be presented with the Next Line button`, () => {
+      And the user should be presented with the Next Line button`, async () => {
+
+    (fetchData as jest.Mock).mockImplementationOnce(() => {
+      return Promise.resolve({
+        "name": "Test Dialog",
+        "languageCode": "en-US",
+        "lines": [
+          {
+            "text": "This is the text for line 1.",
+            "number": 1,
+            "role": {
+              "id": "abc",
+              "name": "Role 1"
+            }
+          },
+          {
+            "text": "This is the text for line 2.",
+            "number": 2,
+            "role": {
+              "id": "abc",
+              "name": "Role 1"
+            }
+          },
+          {
+            "text": "This is the text for line 3.",
+            "number": 3,
+            "role": {
+              "id": "def",
+              "name": "Role 2"
+            }
+          },
+        ]
+      });
+    });
+
+    chosenRole = {
+      "id": "def",
+      "name": "Role 2"
+    };
+
+    act(() => {
+      wrapper = render(
+        <GlobalProvider
+          children={<PracticePage match={match} chosenRole={chosenRole}/>}
+        />
+      );
+    });
+
+    await waitForElement(() => wrapper.getByText(/this is the text for line 1/i));
+
+    expect(wrapper.queryByText(/next line/i)).not.toBeNull();
+
+    expect(wrapper.queryByText(/this is the text for line 2/i)).toBeNull();
 
   });
 });
