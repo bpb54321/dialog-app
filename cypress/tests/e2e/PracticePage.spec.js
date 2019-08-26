@@ -9,6 +9,7 @@ describe("Practice Page", () => {
   let line1;
   let line2;
   let line3;
+  let line4;
 
   beforeEach(() => {
     // Set up Cypress to record outgoing and incoming AJAX requests
@@ -72,7 +73,75 @@ describe("Practice Page", () => {
           }
         });
 
+        line1 = await prisma.createLine({
+          number: 1,
+          role: {
+            connect: {
+              id: role1.id,
+            }
+          },
+          text: "This is the text for line 1.",
+          dialog: {
+            connect: {
+              id: dialog.id,
+            }
+          }
+        });
+
+        line2 = await prisma.createLine({
+          number: 2,
+          role: {
+            connect: {
+              id: role1.id,
+            }
+          },
+          text: "This is the text for line 2.",
+          dialog: {
+            connect: {
+              id: dialog.id,
+            }
+          }
+        });
+
+        line3 = await prisma.createLine({
+          number: 3,
+          role: {
+            connect: {
+              id: role2.id,
+            }
+          },
+          text: "This is the text for line 3.",
+          dialog: {
+            connect: {
+              id: dialog.id,
+            }
+          }
+        });
+
+        line4 = await prisma.createLine({
+          number: 4,
+          role: {
+            connect: {
+              id: role2.id,
+            }
+          },
+          text: "This is the text for line 4.",
+          dialog: {
+            connect: {
+              id: dialog.id,
+            }
+          }
+        });
+
+      })
+      .then(() => {
+        cy.visit(`dialogs/${dialog.id}/practice`, {
+          onBeforeLoad: function (window) {
+            // and before the page finishes loading
+            // set the id_token in local storage
+            window.sessionStorage.setItem('token', user.token);
+          },
+        });
       });
   });
-
 });
