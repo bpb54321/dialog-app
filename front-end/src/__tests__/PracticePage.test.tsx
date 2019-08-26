@@ -146,7 +146,7 @@ describe('PracticePage', () => {
     await waitForElement(() => wrapper.getByTestId("line-guess"));
   });
 
-  test(`Given a dialog where Role 1 and Role 2 alternate lines
+  test(`Given a dialog 3 lines long where Role 1 and Role 2 alternate lines
       And Role 1 is the chosen role
       When Role 1 enters a guess for Line 1
       And he submits the guess
@@ -260,50 +260,66 @@ describe('PracticePage', () => {
 
   });
 
-  test(`Given a dialog with at least four lines
+  test(`Given a dialog with 4 lines
       And the first two lines are assigned to Role 1
       And the third line is assigned to Role 2
       And the fourth line is assigned to Role 1
       And the user has chosen Role 2
       When the dialog practice starts
       Then line 1 should be displayed
-      And the user should be presented with the Next Line button
+      And the user should be presented with a single Next Line button
       When the user clicks the Next Line Button
       Then line 2 should be displayed
-      And the user should be presented with the Next line button
+      And the user should be presented with a single Next Line button
       When the user clicks the Next Line Button
-      Then the user should be presented with the guess input for line 3`, async () => {
+      Then the user should be presented with the guess input for line 3
+      When the user makes a guess for line 3 and submits the guess
+      Then the submitted guess and the correct text for the line should be displayed
+      And the user should be presented with a single Next Line button
+      When the user clicks the Next Line button
+      Then all the lines should be displayed in the dialog
+      And neither the Next Line button nor the guess input should be displayed.`, async () => {
+
+    const lines = [
+      {
+        "text": "This is the text for line 1.",
+        "number": 1,
+        "role": {
+          "id": "abc",
+          "name": "Role 1"
+        }
+      },
+      {
+        "text": "This is the text for line 2.",
+        "number": 2,
+        "role": {
+          "id": "abc",
+          "name": "Role 1"
+        }
+      },
+      {
+        "text": "This is the text for line 3.",
+        "number": 3,
+        "role": {
+          "id": "def",
+          "name": "Role 2"
+        }
+      },
+      {
+        "text": "This is the text for line 4.",
+        "number": 4,
+        "role": {
+          "id": "abc",
+          "name": "Role 1"
+        }
+      },
+    ];
 
     (fetchData as jest.Mock).mockImplementationOnce(() => {
       return Promise.resolve({
         "name": "Test Dialog",
         "languageCode": "en-US",
-        "lines": [
-          {
-            "text": "This is the text for line 1.",
-            "number": 1,
-            "role": {
-              "id": "abc",
-              "name": "Role 1"
-            }
-          },
-          {
-            "text": "This is the text for line 2.",
-            "number": 2,
-            "role": {
-              "id": "abc",
-              "name": "Role 1"
-            }
-          },
-          {
-            "text": "This is the text for line 3.",
-            "number": 3,
-            "role": {
-              "id": "def",
-              "name": "Role 2"
-            }
-          },
-        ]
+        "lines": lines,
       });
     });
 
@@ -338,8 +354,37 @@ describe('PracticePage', () => {
       fireEvent.click(wrapper.getByText(/next line/i));
     });
 
-    expect(wrapper.queryByTestId("line-guess")).not.toBeNull();
+    const lineGuessInput = await waitForElement(() => wrapper.getByLabelText(/line guess/i));
+
     expect(wrapper.queryByText(/next line/i)).toBeNull();
+
+    const guessForLine3 = "Guess for Line 3";
+    act(() => {
+      fireEvent.change(lineGuessInput, {
+        target: {
+          value: guessForLine3,
+        }
+      });
+    });
+
+    await waitForElement(() => [
+      wrapper.getByText(guessForLine3),
+      wrapper.getByText(lines[2].text),
+    ]);
+
+    act(() => {
+      fireEvent.click(wrapper.getByText(/next line/i));
+    });
+
+    await waitForElement(() => [
+      wrapper.getByText(lines[0].text),
+      wrapper.getByText(lines[1].text),
+      wrapper.getByText(lines[2].text),
+      wrapper.getByText(lines[3].text),
+    ]);
+
+    expect(wrapper.queryByText(/next line/i)).toBeNull();
+    expect(wrapper.queryByLabelText(/line guess/i)).toBeNull();
 
   });
 });
