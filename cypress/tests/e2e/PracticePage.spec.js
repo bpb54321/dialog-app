@@ -2,8 +2,13 @@ import {prisma} from "../../../server/src/generated/prisma-client";
 
 describe("Practice Page", () => {
 
-  const role1Name = "Role 1";
-  const role2Name = "Role 2";
+  let user;
+  let dialog;
+  let role1;
+  let role2;
+  let line1;
+  let line2;
+  let line3;
 
   beforeEach(() => {
     // Set up Cypress to record outgoing and incoming AJAX requests
@@ -33,13 +38,40 @@ describe("Practice Page", () => {
 
     cy.exec(`cd server && prisma reset -f`)
       .then(async () => {
-        const userToken = await prisma.createUser({
+        user = await prisma.createUser({
           email: Cypress.env("test_user_email"),
           password: Cypress.env("test_user_password"),
           name: "Test User",
         });
 
-        console.log(userToken);
+        dialog = await prisma.createDialog({
+          name: "Test Dialog",
+          user: {
+            connect: {
+              id: user.id,
+            }
+          },
+          languageCode: "en-US",
+        });
+
+        role1 = await prisma.createRole({
+          name: "Role 1",
+          dialog: {
+            connect: {
+              id: dialog.id,
+            }
+          }
+        });
+
+        role2 = await prisma.createRole({
+          name: "Role 2",
+          dialog: {
+            connect: {
+              id: dialog.id,
+            }
+          }
+        });
+
       });
   });
 
