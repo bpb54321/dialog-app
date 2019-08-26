@@ -6,6 +6,7 @@ import {
   RenderResult,
   waitForElement,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import {PracticePage} from "../pages/PracticePage";
 import {act} from "react-dom/test-utils";
@@ -354,17 +355,20 @@ describe('PracticePage', () => {
       fireEvent.click(wrapper.getByText(/next line/i));
     });
 
-    const lineGuessInput = await waitForElement(() => wrapper.getByLabelText(/line guess/i));
+    const lineGuessElement = await waitForElement(() => wrapper.getByTestId("line-guess"));
+    const lineGuessWrapper = within(lineGuessElement);
 
     expect(wrapper.queryByText(/next line/i)).toBeNull();
 
     const guessForLine3 = "Guess for Line 3";
     act(() => {
-      fireEvent.change(lineGuessInput, {
+      fireEvent.change(lineGuessWrapper.getByLabelText(/line guess/i), {
         target: {
           value: guessForLine3,
         }
       });
+
+      fireEvent.click(lineGuessWrapper.getByDisplayValue(/submit guess/i));
     });
 
     await waitForElement(() => [
