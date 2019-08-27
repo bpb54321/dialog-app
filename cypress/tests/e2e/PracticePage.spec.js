@@ -171,9 +171,25 @@ describe("Practice Page", () => {
             window.sessionStorage.setItem('token', user.token);
           },
         }).should((window) => {
-          expect(window.location.pathname).to.equal(`/dialogs/${dialog.id}/practice`);
+          expect(window.location.pathname).to.equal(`/dialogs/${dialog.id}/choose-role`);
         });
+      })
+      .then(() => {
+        cy.get(`[data-testid="role-picker"]`)
+          .within(($rolePicker) => {
+            cy.get("select")
+              .select("Role 2");
+
+            cy.wrap($rolePicker)
+              .submit();
+          });
+
+        cy.location("pathname")
+          .should("equal", `/dialogs/${dialog.id}/practice`);
       });
-    
+
+
+
+
   });
 });
