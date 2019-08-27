@@ -9,6 +9,7 @@ describe("Practice Page", () => {
   let line1;
   let line2;
   let line3;
+  const line3Guess = "This is my guess for Line 3";
   let line4;
 
   beforeEach(() => {
@@ -29,13 +30,20 @@ describe("Practice Page", () => {
       And the fourth line is assigned to Role 1
       And the user has chosen Role 2
       When the dialog practice starts
-      Then line 1 should be displayed
-      And the user should be presented with the Next Line button
+      Then only line 1 should be displayed
+      And the user should be presented with a single Next Line button
       When the user clicks the Next Line Button
-      Then line 2 should be displayed
-      And the user should be presented with the Next line button
+      Then only line 1 and line 2 should be displayed
+      And the user should be presented with a single Next line button
       When the user clicks the Next Line Button
-      Then the user should be presented with the guess input for line 3`, () => {
+      Then the user should be presented with the guess input for line 3
+      When the user makes a guess for line 3 and submits the guess
+      Then the submitted guess and the correct text for line 3 should be displayed
+      And line 1 and line 2 should also still be displayed
+      And the user should be presented with a single Next Line button
+      When the user clicks the Next Line button
+      Then all the lines should be displayed in the dialog
+      And neither the Next Line button nor the guess input should be displayed.`, () => {
 
     cy.exec(`cd server && prisma reset -f`)
       .then(() => {
@@ -151,7 +159,7 @@ describe("Practice Page", () => {
           number: 4,
           role: {
             connect: {
-              id: role2.id,
+              id: role1.id,
             }
           },
           text: "This is the text for line 4.",
@@ -186,7 +194,86 @@ describe("Practice Page", () => {
 
         cy.location("pathname")
           .should("equal", `/dialogs/${dialog.id}/practice`);
+      })
+      .then(() => {
+        cy.contains(line1.text);
+
+        cy.contains(line2.text)
+          .should("not.exist");
+
+        cy.contains(line3.text)
+          .should("not.exist");
+
+        cy.contains(line4.text)
+          .should("not.exist");
+
+        cy.contains(/next line/i)
+          .should("have.lengthOf", 1)
+          .click();
+
+      })
+      .then(() => {
+
+        cy.contains(line1.text);
+
+        cy.contains(line2.text);
+
+        cy.contains(line3.text)
+          .should("not.exist");
+
+        cy.contains(line4.text)
+          .should("not.exist");
+
+        cy.contains(/next line/i)
+          .should("have.lengthOf", 1)
+          .click();
+      })
+      .then(() => {
+        cy.get(`[data-testid="line-guess"]`)
+          .within(($lineGuess) => {
+            cy.get(`[data-testid="line-guess__text-input"]`)
+              .type(line3Guess);
+
+            cy.wrap($lineGuess)
+              .submit();
+          });
+
+        cy.contains(line1.text);
+
+        cy.contains(line2.text);
+
+        cy.contains(line3.text);
+
+        cy.contains(line3Guess);
+
+        cy.contains(line4.text)
+          .should("not.exist");
+
+        cy.contains(/next line/i)
+          .should("have.lengthOf", 1)
+          .click();
+
+      })
+      .then(() => {
+        cy.contains(line1.text);
+
+        cy.contains(line2.text);
+
+        cy.contains(line3.text);
+
+        cy.contains(line3Guess);
+
+        cy.contains(line4.text);
+
+        cy.contains(/next line/i)
+          .should("not.exist");
+
+        cy.get(`[data-testid="line-guess"]`)
+          .should("not.exist");
       });
+
+
+
 
 
 
