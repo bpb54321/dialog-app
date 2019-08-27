@@ -38,13 +38,42 @@ describe("Practice Page", () => {
       Then the user should be presented with the guess input for line 3`, () => {
 
     cy.exec(`cd server && prisma reset -f`)
-      .then(async () => {
-        user = await prisma.createUser({
-          email: Cypress.env("test_user_email"),
-          password: Cypress.env("test_user_password"),
-          name: "Test User",
+      .then(() => {
+        // Must create a new user using the API, otherwise I felt like doing the password encrypion manually
+        // was tying the test too much to the internal implementation of the API
+        cy.request({
+          url: Cypress.env("api_url"),
+          method: "POST",
+          body: {
+            variables: {
+              email: Cypress.env("test_user_email"),
+              password: Cypress.env("test_user_password"),
+              name: "Test User",
+            },
+            query:
+              `
+                mutation Signup($email: String!, $password: String!, $name: String!) {
+                  signup(email: $email, password: $password, name: $name) {
+                    token,
+                    user {
+                      id
+                      name
+                      email
+                    }
+                  }
+                }
+              `,
+          }
+        })
+        .then((response) => {
+          const data = response.body.data.signup;
+          user = data.user;
+          user.token = data.token;
         });
+      })
+      .then(async () => {
 
+        // Use ORM to create Dialogs, Roles, and Lines
         dialog = await prisma.createDialog({
           name: "Test Dialog",
           user: {
@@ -141,7 +170,10 @@ describe("Practice Page", () => {
             // set the id_token in local storage
             window.sessionStorage.setItem('token', user.token);
           },
+        }).should((window) => {
+          expect(window.location.pathname).to.equal(`/dialogs/${dialog.id}/practice`);
         });
       });
+    
   });
 });
