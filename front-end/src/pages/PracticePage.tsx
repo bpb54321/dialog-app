@@ -39,7 +39,7 @@ export const PracticePage: PracticePageInterface = (props) => {
   const [state, setState] = useState({
     userLineNumberIndex: 0,
     userLineNumbers: [] as number[],
-    currentLineNumber: 1,
+    lastLineNumberToDisplay: 1,
     dialog: {} as Dialog,
     mode: InteractionMode.LoadingData,
     errorMessage: "",
@@ -67,27 +67,16 @@ export const PracticePage: PracticePageInterface = (props) => {
     });
   };
 
-  const addGuessToCurrentLineAndIncrementLineNumber = (lineGuess: string) => {
+  const addGuessToCurrentLineAndDisplayCurrentLine = (lineGuess: string) => {
+    debugger;
 
     const linesUpdatedWithGuess = state.dialog.lines.map((line: LineData) => {
-      if (line.number === state.currentLineNumber) {
+      if (line.number === state.lastLineNumberToDisplay) {
         line.guess = lineGuess;
       }
 
       return line;
     });
-
-    let nextMode: InteractionMode;
-    let nextLineNumber = ++state.currentLineNumber;
-
-    if (nextLineNumber > state.dialog.lines.length) {
-      nextMode = InteractionMode.DialogComplete;
-      nextLineNumber = state.dialog.lines.length;
-    } else if (state.userLineNumbers.includes(nextLineNumber)) {
-      nextMode = InteractionMode.GuessingOurLine;
-    } else {
-      nextMode = InteractionMode.DisplayingOtherLines;
-    }
 
     setState({
       ...state,
@@ -95,22 +84,28 @@ export const PracticePage: PracticePageInterface = (props) => {
         ...state.dialog,
         lines: linesUpdatedWithGuess,
       },
-      currentLineNumber: nextLineNumber,
-      mode: nextMode,
+      lastLineNumberToDisplay: state.lastLineNumberToDisplay,
+      mode: InteractionMode.DisplayingOtherLines,
     });
   };
 
   const handleNextLineClick = () => {
-    const nextLineNumber = ++state.currentLineNumber;
-    let nextMode = state.mode;
 
-    if (state.userLineNumbers.includes(nextLineNumber)) {
+    let nextMode: InteractionMode;
+    let newLastLineNumberToDisplay = state.lastLineNumberToDisplay + 1;
+
+    if (newLastLineNumberToDisplay > state.dialog.lines.length) {
+      nextMode = InteractionMode.DialogComplete;
+      newLastLineNumberToDisplay = state.dialog.lines.length;
+    } else if (state.userLineNumbers.includes(newLastLineNumberToDisplay)) {
       nextMode = InteractionMode.GuessingOurLine;
+    } else {
+      nextMode = InteractionMode.DisplayingOtherLines;
     }
 
     setState({
       ...state,
-      currentLineNumber: nextLineNumber,
+      lastLineNumberToDisplay: newLastLineNumberToDisplay,
       mode: nextMode,
     });
   };
@@ -126,7 +121,7 @@ export const PracticePage: PracticePageInterface = (props) => {
       // Calculate the user line numbers
       const userLineNumbers = calculateUserLineNumbers(dialog, props.chosenRole);
 
-      let currentLineNumber = state.currentLineNumber;
+      let currentLineNumber = state.lastLineNumberToDisplay;
       let mode: InteractionMode;
 
       if (userLineNumbers.length === 0) {
@@ -165,7 +160,7 @@ export const PracticePage: PracticePageInterface = (props) => {
         <>
           <ListOfLines
             dialog={state.dialog}
-            lastLineToDisplay={state.currentLineNumber}
+            lastLineToDisplay={state.lastLineNumberToDisplay}
           />
           <button
             onClick={handleNextLineClick}
@@ -181,10 +176,10 @@ export const PracticePage: PracticePageInterface = (props) => {
         <>
           <ListOfLines
             dialog={state.dialog}
-            lastLineToDisplay={state.currentLineNumber - 1}
+            lastLineToDisplay={state.lastLineNumberToDisplay - 1}
           />
           <LineGuess
-            addLineGuessToLastLine={addGuessToCurrentLineAndIncrementLineNumber}
+            addLineGuessToLastLine={addGuessToCurrentLineAndDisplayCurrentLine}
             chosenRole={props.chosenRole}
             dialogLanguageCode={state.dialog.languageCode}
           />
@@ -196,7 +191,7 @@ export const PracticePage: PracticePageInterface = (props) => {
         <>
           <ListOfLines
             dialog={state.dialog}
-            lastLineToDisplay={state.currentLineNumber}
+            lastLineToDisplay={state.lastLineNumberToDisplay}
           />
           {state.errorMessage ? <p>{state.errorMessage}</p> : null}
         </>
