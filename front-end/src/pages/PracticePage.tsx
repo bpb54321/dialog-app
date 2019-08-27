@@ -68,7 +68,6 @@ export const PracticePage: PracticePageInterface = (props) => {
   };
 
   const addGuessToCurrentLineAndDisplayCurrentLine = (lineGuess: string) => {
-    debugger;
 
     const linesUpdatedWithGuess = state.dialog.lines.map((line: LineData) => {
       if (line.number === state.lastLineNumberToDisplay) {
@@ -87,6 +86,7 @@ export const PracticePage: PracticePageInterface = (props) => {
       lastLineNumberToDisplay: state.lastLineNumberToDisplay,
       mode: InteractionMode.DisplayingOtherLines,
     });
+
   };
 
   const handleNextLineClick = () => {
@@ -94,7 +94,7 @@ export const PracticePage: PracticePageInterface = (props) => {
     let nextMode: InteractionMode;
     let newLastLineNumberToDisplay = state.lastLineNumberToDisplay + 1;
 
-    if (newLastLineNumberToDisplay > state.dialog.lines.length) {
+    if (newLastLineNumberToDisplay >= state.dialog.lines.length) {
       nextMode = InteractionMode.DialogComplete;
       newLastLineNumberToDisplay = state.dialog.lines.length;
     } else if (state.userLineNumbers.includes(newLastLineNumberToDisplay)) {

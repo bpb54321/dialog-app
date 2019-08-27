@@ -13,13 +13,6 @@ describe("Practice Page", () => {
   let line4;
 
   beforeEach(() => {
-    // Set up Cypress to record outgoing and incoming AJAX requests
-    cy.server();
-    cy.route({
-      method: 'POST',
-      url: 'localhost:4000',
-    }).as('api');
-
     // Clear local storage of the user's token
     cy.clearLocalStorage();
   });
@@ -271,12 +264,6 @@ describe("Practice Page", () => {
         cy.get(`[data-testid="line-guess"]`)
           .should("not.exist");
       });
-
-
-
-
-
-
 
   });
 });
