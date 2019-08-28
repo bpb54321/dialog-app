@@ -41,7 +41,7 @@ describe('PracticePage', () => {
   });
 
   it(
-    `should not initially print the first line of the dialog when the chosen role is assigned to the first line`,
+    `should not initially display the first line of the dialog when the chosen role is assigned to the first line`,
     async () => {
 
       //region Arrange
@@ -81,7 +81,8 @@ describe('PracticePage', () => {
       //region Assert
       expect(wrapper.queryByText(/this is the text for line 1/i)).toBeNull();
       //endregion
-  });
+    }
+  );
 
   it(
     `should display the line guess input when the chosen role is assigned to the first line`,
@@ -124,71 +125,236 @@ describe('PracticePage', () => {
       //region Assert
       wrapper.getByTestId("line-guess");
       //endregion
-    });
+    }
+  );
 
-  test(`Given a dialog with at least 2 lines
-      And the first line is assigned to Role 1
-      And the second line is assigned to Role 2
-      And Role 2 is the chosen role
-      Then the first line should be displayed
-      And the user should be presented with the Next Line button
-      And the line guess input should not be displayed
-      When the user clicks on the Next Line button
-      Then the user should be presented with the line guess input`, async function () {
+  it(
+    `should display the first line of the dialog when the chosen role is assigned to the second line`,
+    async () => {
 
-    (fetchData as jest.Mock).mockImplementationOnce(() => {
-      return Promise.resolve({
-        "name": "Test Dialog",
-        "languageCode": "en-US",
-        "lines": [
-          {
-            "text": "This is the text for line 1.",
-            "number": 1,
-            "role": {
-              "id": "abc",
-              "name": "Role 1"
-            }
-          },
-          {
-            "text": "This is the text for line 2.",
-            "number": 2,
-            "role": {
-              "id": "def",
-              "name": "Role 2"
-            }
-          },
-        ]
+      //region Arrange
+      (fetchData as jest.Mock).mockImplementationOnce(() => {
+        return Promise.resolve({
+          "name": "Test Dialog",
+          "languageCode": "en-US",
+          "lines": [
+            {
+              "text": "This is the text for line 1.",
+              "number": 1,
+              "role": {
+                "id": "abc",
+                "name": "Role 1"
+              }
+            },
+            {
+              "text": "This is the text for line 2.",
+              "number": 2,
+              "role": {
+                "id": "def",
+                "name": "Role 2"
+              }
+            },
+          ]
+        });
       });
-    });
 
-    chosenRole = {
-      "id": "def",
-      "name": "Role 2"
-    };
+      chosenRole = {
+        "id": "def",
+        "name": "Role 2"
+      };
 
-    act(() => {
-      wrapper = render(
-        <GlobalProvider
-          children={<PracticePage match={match} chosenRole={chosenRole}/>}
-        />
-      );
-    });
+      act(() => {
+        wrapper = render(
+          <GlobalProvider
+            children={<PracticePage match={match} chosenRole={chosenRole}/>}
+          />
+        );
+      });
 
-    await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
+      await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
+      //endregion
 
-    expect(wrapper.queryByText(/this is the text for line 1/i)).not.toBeNull();
+      //region Act
+      //endregion
 
-    expect(wrapper.queryAllByText(/next line/i)).toHaveLength(1);
+      //region Assert
+      expect(wrapper.queryByText(/this is the text for line 1/i)).not.toBeNull();
+      //endregion
 
-    expect(wrapper.queryByTestId("line-guess")).toBeNull();
+    }
+  );
 
-    act(() => {
-      fireEvent.click(wrapper.getByText(/next line/i));
-    });
+  it(
+    `should display a single Next Line button when the chosen role is assigned to the second line`,
+    async () => {
 
-    await waitForElement(() => wrapper.getByTestId("line-guess"));
-  });
+      //region Arrange
+      (fetchData as jest.Mock).mockImplementationOnce(() => {
+        return Promise.resolve({
+          "name": "Test Dialog",
+          "languageCode": "en-US",
+          "lines": [
+            {
+              "text": "This is the text for line 1.",
+              "number": 1,
+              "role": {
+                "id": "abc",
+                "name": "Role 1"
+              }
+            },
+            {
+              "text": "This is the text for line 2.",
+              "number": 2,
+              "role": {
+                "id": "def",
+                "name": "Role 2"
+              }
+            },
+          ]
+        });
+      });
 
+      chosenRole = {
+        "id": "def",
+        "name": "Role 2"
+      };
+
+      act(() => {
+        wrapper = render(
+          <GlobalProvider
+            children={<PracticePage match={match} chosenRole={chosenRole}/>}
+          />
+        );
+      });
+
+      await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
+      //endregion
+
+      //region Act
+      //endregion
+
+      //region Assert
+      expect(wrapper.queryAllByText(/next line/i)).toHaveLength(1);
+      //endregion
+
+    }
+  );
+
+  it(
+    `should not initially display a line guess input when the chosen role is assigned to the second line`,
+    async () => {
+
+      //region Arrange
+      (fetchData as jest.Mock).mockImplementationOnce(() => {
+        return Promise.resolve({
+          "name": "Test Dialog",
+          "languageCode": "en-US",
+          "lines": [
+            {
+              "text": "This is the text for line 1.",
+              "number": 1,
+              "role": {
+                "id": "abc",
+                "name": "Role 1"
+              }
+            },
+            {
+              "text": "This is the text for line 2.",
+              "number": 2,
+              "role": {
+                "id": "def",
+                "name": "Role 2"
+              }
+            },
+          ]
+        });
+      });
+
+      chosenRole = {
+        "id": "def",
+        "name": "Role 2"
+      };
+
+      act(() => {
+        wrapper = render(
+          <GlobalProvider
+            children={<PracticePage match={match} chosenRole={chosenRole}/>}
+          />
+        );
+      });
+
+      await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
+      //endregion
+
+      //region Act
+      //endregion
+
+      //region Assert
+      expect(wrapper.queryByTestId("line-guess")).toBeNull();
+      //endregion
+
+    }
+  );
+
+  it(
+    `should display a line guess input when the user clicks the next line button immediately prior to one of his lines`,
+    async () => {
+
+      //region Arrange
+      (fetchData as jest.Mock).mockImplementationOnce(() => {
+        return Promise.resolve({
+          "name": "Test Dialog",
+          "languageCode": "en-US",
+          "lines": [
+            {
+              "text": "This is the text for line 1.",
+              "number": 1,
+              "role": {
+                "id": "abc",
+                "name": "Role 1"
+              }
+            },
+            {
+              "text": "This is the text for line 2.",
+              "number": 2,
+              "role": {
+                "id": "def",
+                "name": "Role 2"
+              }
+            },
+          ]
+        });
+      });
+
+      chosenRole = {
+        "id": "def",
+        "name": "Role 2"
+      };
+
+      act(() => {
+        wrapper = render(
+          <GlobalProvider
+            children={<PracticePage match={match} chosenRole={chosenRole}/>}
+          />
+        );
+      });
+
+      await waitForElementToBeRemoved(() => wrapper.getByText(/waiting for data to load/i));
+      //endregion
+
+      //region Act
+      act(() => {
+        fireEvent.click(wrapper.getByText(/next line/i));
+      });
+      //endregion
+
+      //region Assert
+      await waitForElement(() => wrapper.getByTestId("line-guess"));
+      //endregion
+
+    }
+  );
+  
   test(`Given a dialog 3 lines long where Role 1 and Role 2 alternate lines
       And Role 1 is the chosen role
       When Role 1 enters a guess for Line 1
