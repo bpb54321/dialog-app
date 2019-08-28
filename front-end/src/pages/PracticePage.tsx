@@ -94,11 +94,11 @@ export const PracticePage: PracticePageInterface = (props) => {
     let nextMode: InteractionMode;
     let newLastLineNumberToDisplay = state.lastLineNumberToDisplay + 1;
 
-    if (newLastLineNumberToDisplay >= state.dialog.lines.length) {
+    if (state.userLineNumbers.includes(newLastLineNumberToDisplay)) {
+      nextMode = InteractionMode.GuessingOurLine;
+    } else if (newLastLineNumberToDisplay >= state.dialog.lines.length) {
       nextMode = InteractionMode.DialogComplete;
       newLastLineNumberToDisplay = state.dialog.lines.length;
-    } else if (state.userLineNumbers.includes(newLastLineNumberToDisplay)) {
-      nextMode = InteractionMode.GuessingOurLine;
     } else {
       nextMode = InteractionMode.DisplayingOtherLines;
     }
