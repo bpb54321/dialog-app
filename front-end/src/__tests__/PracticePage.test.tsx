@@ -4,6 +4,7 @@ import {
   fireEvent,
   render,
   RenderResult,
+  wait,
   waitForElement,
   waitForElementToBeRemoved,
   within,
@@ -354,20 +355,12 @@ describe('PracticePage', () => {
 
     }
   );
-  
-  test(`Given a dialog 3 lines long where Role 1 and Role 2 alternate lines
-      And Role 1 is the chosen role
-      When Role 1 enters a guess for Line 1
-      And he submits the guess
-      Then the submitted guess and the correct text for the line should be displayed
-      When Role 1 enters a guess for Line 3
-      And he submits the guess
-      Then all the line guesses and correct answers should be displayed
-      And there should be no guess input on the page`, async function () {
 
-
-    (fetchData as jest.Mock).mockImplementationOnce(() => {
-      return Promise.resolve({
+  it(
+    `should display the submitted guess and the correct line text when the user submits her guess`,
+    async () => {
+      //region Arrange
+      const dialog = {
         "name": "Test Dialog",
         "languageCode": "en-US",
         "lines": [
@@ -378,96 +371,93 @@ describe('PracticePage', () => {
               "id": "abc",
               "name": "Role 1"
             }
-          },
-          {
-            "text": "This is the text for line 2.",
-            "number": 2,
-            "role": {
-              "id": "def",
-              "name": "Role 2"
-            }
-          },
-          {
-            "text": "This is the text for line 3.",
-            "number": 3,
-            "role": {
-              "id": "abc",
-              "name": "Role 1"
-            }
           }
         ]
+      };
+
+      (fetchData as jest.Mock).mockImplementationOnce(() => {
+        return Promise.resolve(dialog);
       });
-    });
 
-    chosenRole = {
-      "id": "abc",
-      "name": "Role 1"
-    };
+      chosenRole = {
+        "id": "abc",
+        "name": "Role 1"
+      };
 
-    act(() => {
-      wrapper = render(
-        <GlobalProvider
-          children={<PracticePage match={match} chosenRole={chosenRole}/>}
-        />
-      );
-    });
-
-    let guessInput = await waitForElement(() => {
-      return wrapper.getByLabelText(/line guess/i);
-    });
-
-    act(() => {
-      fireEvent.change(guessInput, {
-        target: {
-          value: "Guess for Line 1",
-        }
+      act(() => {
+        wrapper = render(
+          <GlobalProvider
+            children={<PracticePage match={match} chosenRole={chosenRole}/>}
+          />
+        );
       });
-    });
 
-    act(() => {
-      fireEvent.submit(wrapper.getByTestId("line-guess"));
-    });
+      let guessInput = await waitForElement(() => wrapper.getByLabelText(/line guess/i));
+      //endregion
 
-    await waitForElement(() => [
-      wrapper.getByText(/this is the text for line 1/i),
-      wrapper.getByText(/guess for line 1/i),
-    ]);
+      //region Act
+      const guess = "Guess for Line 1";
+      act(() => {
+        fireEvent.change(guessInput, {
+          target: {
+            value: guess,
+          }
+        });
+      });
 
-    // Assert that line 2, assigned to Role 2, is displayed
-    expect(wrapper.queryByText(/this is the text for line 2/i)).not.toBeNull();
+      await waitForElement(() => wrapper.getByText(guess));
 
-    // Click the Next Line button
-    act(() => {
-      fireEvent.click(wrapper.getByText(/next line/i));
-    });
+      act(() => {
+        fireEvent.submit(wrapper.getByTestId("line-guess"));
+      });
+      //endregion
 
-    // Assert Line Guess is displayed again
-    guessInput = await waitForElement(() => {
-      return wrapper.getByLabelText(/line guess/i);
-    });
+      //region Assert
+      let lines: HTMLElement[] = [];
 
-    // Second guess
-    fireEvent.change(guessInput, {
-      target: {
-        value: "Guess for Line 3"
-      }
-    });
+      await wait(() => {
+        lines = wrapper.getAllByTestId("line");
+        expect(lines).toHaveLength(1);
+      });
 
-    act(() => {
-      fireEvent.submit(wrapper.getByTestId("line-guess"));
-    });
+      const lineWrapper = within(lines[0]);
 
-    // Assert all lines are now displayed
-    await waitForElement(() => [
-      wrapper.getByText(/this is the text for line 3/i),
-      wrapper.getByText(/guess for line 3/i),
-    ]);
-    
-    // Assert that next line button and line guess are not displayed
-    expect(wrapper.queryByText(/next line/i)).toBeNull();
-    expect(wrapper.queryByTestId("line-guess")).toBeNull();
+      lineWrapper.getByText(dialog.lines[0].text);
+      lineWrapper.getByText(guess);
+      //endregion
+    }
+  );
 
-  });
+  // // Click the Next Line button
+  // act(() => {
+  //   fireEvent.click(wrapper.getByText(/next line/i));
+  // });
+  //
+  // // Assert Line Guess is displayed again
+  // guessInput = await waitForElement(() => {
+  //   return wrapper.getByLabelText(/line guess/i);
+  // });
+  //
+  // // Second guess
+  // fireEvent.change(guessInput, {
+  //   target: {
+  //     value: "Guess for Line 3"
+  //   }
+  // });
+  //
+  // act(() => {
+  //   fireEvent.submit(wrapper.getByTestId("line-guess"));
+  // });
+  //
+  // // Assert all lines are now displayed
+  // await waitForElement(() => [
+  //   wrapper.getByText(/this is the text for line 3/i),
+  //   wrapper.getByText(/guess for line 3/i),
+  // ]);
+  //
+  // // Assert that next line button and line guess are not displayed
+  // expect(wrapper.queryByText(/next line/i)).toBeNull();
+  // expect(wrapper.queryByTestId("line-guess")).toBeNull();
 
   test(`Given a dialog with 4 lines
       And the first two lines are assigned to Role 1
