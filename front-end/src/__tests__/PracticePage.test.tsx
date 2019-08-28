@@ -578,6 +578,85 @@ describe('PracticePage', () => {
     }
   );
 
+  it(
+    `should display all the lines in the dialog when the dialog has ended`,
+    async () => {
+      //region Arrange
+      const dialog = {
+        "name": "Test Dialog",
+        "languageCode": "en-US",
+        "lines": [
+          {
+            "text": "This is the text for line 1.",
+            "number": 1,
+            "role": {
+              "id": "abc",
+              "name": "Role 1"
+            }
+          },
+          {
+            "text": "This is the text for line 2.",
+            "number": 2,
+            "role": {
+              "id": "def",
+              "name": "Role 2"
+            }
+          }
+        ]
+      };
+
+      (fetchData as jest.Mock).mockImplementationOnce(() => {
+        return Promise.resolve(dialog);
+      });
+
+      chosenRole = {
+        "id": "abc",
+        "name": "Role 1"
+      };
+
+      act(() => {
+        wrapper = render(
+          <GlobalProvider
+            children={<PracticePage match={match} chosenRole={chosenRole}/>}
+          />
+        );
+      });
+
+      let guessInput = await waitForElement(() => wrapper.getByLabelText(/line guess/i));
+
+      const guess = "Guess for Line 1";
+      act(() => {
+        fireEvent.change(guessInput, {
+          target: {
+            value: guess,
+          }
+        });
+      });
+
+      await waitForElement(() => wrapper.getByText(guess));
+
+      act(() => {
+        fireEvent.submit(wrapper.getByTestId("line-guess"));
+      });
+      //endregion
+
+      //region Act
+      const nextLineButton = await waitForElement(() => wrapper.getByText(/next line/i));
+
+      fireEvent.click(nextLineButton);
+
+      //endregion
+
+      //region Assert
+      await wait(() => {
+        expect(wrapper.getAllByTestId("line")).toHaveLength(2);
+        wrapper.getByText(dialog.lines[0].text);
+        wrapper.getByText(dialog.lines[1].text);
+      });
+      //endregion
+    }
+  );
+
   test(`Given a dialog with 4 lines
       And the first two lines are assigned to Role 1
       And the third line is assigned to Role 2
