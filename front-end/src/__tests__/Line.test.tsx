@@ -37,7 +37,7 @@ describe('Line', () => {
   });
 
   it('should display the guess passed to it', function () {
-    wrapper.getByText(`Guess: ${guess}`);
+    wrapper.getByText(guess);
   });
 
   it('should display the name of the role that is assigned to the line', function () {
