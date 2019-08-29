@@ -2,24 +2,39 @@ import React from 'react';
 import Role from "../types/Role";
 
 interface Props {
-    text: string;
-    key: number;
-    guess?: string;
-    role: Role;
+  text: string;
+  key: number;
+  guess?: string;
+  role: Role;
+  showNext?: boolean;
+  incrementLine: () => void;
 }
 
-interface State {
-    name: string;
-}
-
-export default class Line extends React.Component<Props, State> {
-    render() {
-        return (
-          <li data-testid={"line"}>
-            <span>{this.props.role.name}</span>
-            {this.props.guess ? <div>Guess: {this.props.guess}</div> : null}
-            <div>Line text: {this.props.text}</div>
-          </li>
-        );
-    };
-}
+export const Line : React.FunctionComponent<Props> = ({role, guess = null, text, showNext = false, incrementLine}) => {
+  return (
+    <li data-testid={"line"}>
+      <span>{role.name}</span>
+      {
+        guess ?
+        <div>
+          <span>Guess: </span>
+          <span>{guess}</span>
+        </div> :
+        null
+      }
+      <div>
+        <span>Line text: </span>
+        <span>{text}</span>
+      </div>
+      {
+        showNext ?
+          <button
+            onClick={incrementLine}
+          >
+            Next Line
+          </button> :
+          null
+      }
+    </li>
+  );
+};

@@ -11,12 +11,9 @@ interface Props {
 }
 
 export const LineGuess: React.FunctionComponent<Props> = (props) => {
-  debugger;
   const [guess, setGuess] = useState("");
   const [speechRecognitionState, setSpeechRecognitionState] = useState(SpeechRecognitionState.Stopped);
   const [speechRecognition, setSpeechRecognition] = useState(null as (SpeechRecognition | null));
-
-  debugger;
 
   const handleSpeechRecognitionResult = (event: any) => {
     debugger;
@@ -31,12 +28,10 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    debugger;
     setGuess(event.target.value);
   };
 
   const handleSubmit = (event: FormEvent) => {
-    debugger;
     event.preventDefault();
 
     if(speechRecognition) {
@@ -50,7 +45,6 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
   };
 
   const updateSpeechRecognitionState = () => {
-    debugger;
     if (speechRecognition) {
       if (speechRecognitionState === SpeechRecognitionState.Stopped) {
         speechRecognition.start();
@@ -63,7 +57,6 @@ export const LineGuess: React.FunctionComponent<Props> = (props) => {
   };
 
   useEffect(() => {
-    debugger;
     if((window as any).webkitSpeechRecognition) {
       const newSpeechRecognition: SpeechRecognition = new (window as any).webkitSpeechRecognition();
       newSpeechRecognition.onresult = handleSpeechRecognitionResult;

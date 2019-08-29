@@ -1,7 +1,6 @@
 export enum InteractionMode {
     LoadingData = "LOADING_DATA",
-    ChoosingDialog = "CHOOSING_DIALOG",
-    ChoosingRole = "CHOOSING_ROLE",
-    PracticingLines = "PRACTICING_LINES",
+    DisplayingOtherLines = "DISPLAYING_OTHER_LINES",
+    GuessingOurLine = "GUESSING_OUR_LINE",
     DialogComplete = "DIALOG_COMPLETE",
 }
