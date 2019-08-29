@@ -17,28 +17,10 @@ describe("Practice Page", () => {
     cy.clearLocalStorage();
   });
 
-  specify(`Given a dialog with at least four lines
-      And the first two lines are assigned to Role 1
-      And the third line is assigned to Role 2
-      And the fourth line is assigned to Role 1
-      And the user has chosen Role 2
-      When the dialog practice starts
-      Then only line 1 should be displayed
-      And the user should be presented with a single Next Line button
-      When the user clicks the Next Line Button
-      Then only line 1 and line 2 should be displayed
-      And the user should be presented with a single Next line button
-      When the user clicks the Next Line Button
-      Then the user should be presented with the guess input for line 3
-      When the user makes a guess for line 3 and submits the guess
-      Then the submitted guess and the correct text for line 3 should be displayed
-      And line 1 and line 2 should also still be displayed
-      And the user should be presented with a single Next Line button
-      When the user clicks the Next Line button
-      Then all the lines should be displayed in the dialog
-      And neither the Next Line button nor the guess input should be displayed.`, () => {
+  specify(`Typical user interaction`, () => {
 
     cy.exec(`cd server && prisma reset -f`)
+      // Create a new user using the API
       .then(() => {
         // Must create a new user using the API, otherwise I felt like doing the password encrypion manually
         // was tying the test too much to the internal implementation of the API
@@ -72,9 +54,9 @@ describe("Practice Page", () => {
           user.token = data.token;
         });
       })
+      // Use ORM to create Dialogs, Roles, and Lines
       .then(async () => {
 
-        // Use ORM to create Dialogs, Roles, and Lines
         dialog = await prisma.createDialog({
           name: "Test Dialog",
           user: {
@@ -164,8 +146,9 @@ describe("Practice Page", () => {
         });
 
       })
+      // Visit the choose role page
       .then(() => {
-        cy.visit(`dialogs/${dialog.id}/practice`, {
+        cy.visit(`dialogs/${dialog.id}/choose-role`, {
           onBeforeLoad: function (window) {
             // and before the page finishes loading
             // set the id_token in local storage
@@ -175,6 +158,7 @@ describe("Practice Page", () => {
           expect(window.location.pathname).to.equal(`/dialogs/${dialog.id}/choose-role`);
         });
       })
+      // Choose role and be redirected to practice page
       .then(() => {
         cy.get(`[data-testid="role-picker"]`)
           .within(($rolePicker) => {
@@ -188,6 +172,7 @@ describe("Practice Page", () => {
         cy.location("pathname")
           .should("equal", `/dialogs/${dialog.id}/practice`);
       })
+      // Verify line 1 is shown and other lines are not shown
       .then(() => {
         cy.contains(line1.text);
 
@@ -199,12 +184,14 @@ describe("Practice Page", () => {
 
         cy.contains(line4.text)
           .should("not.exist");
-
+      })
+      // Assert there is only one next line button and click it
+      .then(() => {
         cy.contains(/next line/i)
           .should("have.lengthOf", 1)
           .click();
-
       })
+      // Verify that line 1 and line 2 are shown and other lines are not shown
       .then(() => {
 
         cy.contains(line1.text);
@@ -216,11 +203,14 @@ describe("Practice Page", () => {
 
         cy.contains(line4.text)
           .should("not.exist");
-
+      })
+      // Assert that there is only one next line button and click it
+      .then(() => {
         cy.contains(/next line/i)
           .should("have.lengthOf", 1)
           .click();
       })
+      // Assert that the line guess input is shown, type a guess in it, then submit the form
       .then(() => {
         cy.get(`[data-testid="line-guess"]`)
           .within(($lineGuess) => {
@@ -230,6 +220,9 @@ describe("Practice Page", () => {
             cy.wrap($lineGuess)
               .submit();
           });
+      })
+      // Assert that lines 1-3 are shown, guess for line 3 is shown, and line 4 is not shown
+      .then(() => {
 
         cy.contains(line1.text);
 
@@ -241,12 +234,14 @@ describe("Practice Page", () => {
 
         cy.contains(line4.text)
           .should("not.exist");
-
+      })
+      // Assert that there is only 1 next line button and click it
+      .then(() => {
         cy.contains(/next line/i)
           .should("have.lengthOf", 1)
           .click();
-
       })
+      // Assert that all the lines and guesses are shown and neither next line button nor line guess input is shown
       .then(() => {
         cy.contains(line1.text);
 
@@ -264,6 +259,5 @@ describe("Practice Page", () => {
         cy.get(`[data-testid="line-guess"]`)
           .should("not.exist");
       });
-
   });
 });
