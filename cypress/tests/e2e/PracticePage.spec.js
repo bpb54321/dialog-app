@@ -15,10 +15,8 @@ describe("Practice Page", () => {
   beforeEach(() => {
     // Clear local storage of the user's token
     cy.clearLocalStorage();
-  });
 
-  specify(`Typical user interaction`, () => {
-
+    // Reset the database
     cy.exec(`cd server && prisma reset -f`)
       // Create a new user using the API
       .then(() => {
@@ -48,11 +46,11 @@ describe("Practice Page", () => {
               `,
           }
         })
-        .then((response) => {
-          const data = response.body.data.signup;
-          user = data.user;
-          user.token = data.token;
-        });
+          .then((response) => {
+            const data = response.body.data.signup;
+            user = data.user;
+            user.token = data.token;
+          });
       })
       // Use ORM to create Dialogs, Roles, and Lines
       .then(async () => {
@@ -145,18 +143,19 @@ describe("Practice Page", () => {
           }
         });
 
-      })
-      // Visit the choose role page
-      .then(() => {
-        cy.visit(`dialogs/${dialog.id}/choose-role`, {
-          onBeforeLoad: function (window) {
-            // and before the page finishes loading
-            // set the id_token in local storage
-            window.sessionStorage.setItem('token', user.token);
-          },
-        }).should((window) => {
-          expect(window.location.pathname).to.equal(`/dialogs/${dialog.id}/choose-role`);
-        });
+      });
+  });
+
+  specify(`Typical user interaction`, () => {
+    // Visit the choose role page
+    cy.visit(`dialogs/${dialog.id}/choose-role`, {
+        onBeforeLoad: function (window) {
+          // and before the page finishes loading
+          // set the id_token in local storage
+          window.sessionStorage.setItem('token', user.token);
+        },
+      }).should((window) => {
+        expect(window.location.pathname).to.equal(`/dialogs/${dialog.id}/choose-role`);
       })
       // Choose role and be redirected to practice page
       .then(() => {
@@ -258,6 +257,81 @@ describe("Practice Page", () => {
 
         cy.get(`[data-testid="line-guess"]`)
           .should("not.exist");
+      });
+  });
+
+  it(`should load the correct dialog`, () => {
+    // Set up Cypress to record outgoing and incoming AJAX requests
+    cy.server();
+    cy.route({
+      method: 'POST',
+      url: 'localhost:4000',
+    }).as('api');
+
+    // Visit the choose role page
+    cy.visit(`dialogs/${dialog.id}/choose-role`, {
+        onBeforeLoad: function (window) {
+          // and before the page finishes loading
+          // set the id_token in local storage
+          window.sessionStorage.setItem('token', user.token);
+        },
+      })
+      .should((window) => {
+        expect(window.location.pathname).to.equal(`/dialogs/${dialog.id}/choose-role`);
+      })
+      // Wait for choose role page to query for the available roles
+      .then(() => {
+        cy.wait("@api");
+      })
+      // Choose role and be redirected to practice page
+      .then(() => {
+        cy.get(`[data-testid="role-picker"]`)
+          .within(($rolePicker) => {
+            cy.get("select")
+              .select("Role 2");
+
+            cy.wrap($rolePicker)
+              .submit();
+          });
+
+        cy.location("pathname")
+          .should("equal", `/dialogs/${dialog.id}/practice`);
+      })
+      // Assert that a request was made for a dialog, and that the dialog in the response matches the one we created
+      .then(() => {
+        cy.wait("@api").then((xhr) => {
+          const responseDialog = xhr.response.body.data.dialog;
+          expect(responseDialog).to.deep.equal({
+            name: dialog.name,
+            languageCode: dialog.languageCode,
+            lines: [
+              {
+                ...line1,
+                role: {
+                  ...role1,
+                }
+              },
+              {
+                ...line2,
+                role: {
+                  ...role1,
+                }
+              },
+              {
+                ...line3,
+                role: {
+                  ...role2,
+                }
+              },
+              {
+                ...line4,
+                role: {
+                  ...role1,
+                }
+              },
+            ]
+          });
+        });
       });
   });
 });
