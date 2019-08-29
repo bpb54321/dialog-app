@@ -48,15 +48,9 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "eslint-plugin-cypress": "^2.2.1",
-    "husky": "^3.0.3",
     "jest-axe": "^3.1.1",
     "jest-fetch-mock": "^2.1.2",
     "react-test-renderer": "^16.8.6",
     "react-testing-library": "^8.0.1"
-  },
-  "husky": {
-    "hooks": {
-      "post-merge": "CI=true yarn test && yarn e2e"
-    }
   }
 }
