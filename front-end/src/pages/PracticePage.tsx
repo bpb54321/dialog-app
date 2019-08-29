@@ -15,6 +15,7 @@ const singleDialogQuery = `
           name
           languageCode
           lines {
+            id
             text
             number
             role {
