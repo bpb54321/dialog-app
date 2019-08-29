@@ -657,6 +657,72 @@ describe('PracticePage', () => {
     }
   );
 
+  it(
+    `should display the second line when the user clicks the next line button after the first line is displayed, and the first two lines are not assigned to the chosen role`,
+    async () => {
+      //region Arrange
+      const dialog = {
+        "name": "Test Dialog",
+        "languageCode": "en-US",
+        "lines": [
+          {
+            "text": "This is the text for line 1.",
+            "number": 1,
+            "role": {
+              "id": "abc",
+              "name": "Role 1"
+            }
+          },
+          {
+            "text": "This is the text for line 2.",
+            "number": 2,
+            "role": {
+              "id": "abc",
+              "name": "Role 1"
+            }
+          },
+          {
+            "text": "This is the text for line 3.",
+            "number": 3,
+            "role": {
+              "id": "def",
+              "name": "Role 2"
+            }
+          }
+        ]
+      };
+
+      (fetchData as jest.Mock).mockImplementationOnce(() => {
+        return Promise.resolve(dialog);
+      });
+
+      chosenRole = {
+        "id": "def",
+        "name": "Role 2"
+      };
+
+      act(() => {
+        wrapper = render(
+          <GlobalProvider
+            children={<PracticePage match={match} chosenRole={chosenRole}/>}
+          />
+        );
+      });
+
+      const nextLineButton = await waitForElement(() => wrapper.getByText(/next line/i));
+      //endregion
+
+      //region Act
+      fireEvent.click(nextLineButton);
+
+      //endregion
+
+      //region Assert
+      await waitForElement(() => wrapper.getByText(dialog.lines[1].text));
+      //endregion
+    }
+  );
+
   test(`Given a dialog with 4 lines
       And the first two lines are assigned to Role 1
       And the third line is assigned to Role 2
