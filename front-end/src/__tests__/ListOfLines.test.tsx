@@ -67,34 +67,28 @@ describe('ListOfLines', () => {
 
   test(`Given a dialog with roles and lines
       And a ListOfLines where lastLineToDisplay is 1
-      Then the first line will be displayed
-      And the Next Line button will be displayed inside of the first line component.`, async function () {
+      Then the first line will be displayed`, async function () {
 
     wrapper = render(<ListOfLines dialog={dialog} lastLineToDisplay={1}/>);
 
     const line1Element = within(wrapper.getAllByTestId("line")[0]);
 
     line1Element.getByText(line1.text);
-    line1Element.getByText(/next line/i);
   });
 
   test(`Given a dialog with roles and lines
       And a ListOfLines where lastLineToDisplay is 2
-      Then Line 1 and Line 2 are displayed
-      And the Next Line button is not displayed inside Line 1
-      And the Next Line button is displayed inside Line 2.`, async function () {
+      Then Line 1 and Line 2 are displayed`, async function () {
 
     wrapper = render(<ListOfLines dialog={dialog} lastLineToDisplay={2}/>);
 
     const line1Element = within(wrapper.getAllByTestId("line")[0]);
 
     expect(line1Element.queryByText(line1.text)).not.toBeNull();
-    expect(line1Element.queryByText(/next line/i)).toBeNull();
 
     const line2Element = within(wrapper.getAllByTestId("line")[1]);
 
     expect(line2Element.queryByText(line2.text)).not.toBeNull();
-    expect(line2Element.queryByText(/next line/i)).not.toBeNull();
   });
 });
 
