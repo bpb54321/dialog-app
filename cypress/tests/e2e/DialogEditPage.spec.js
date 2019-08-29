@@ -379,39 +379,146 @@ describe("Dialog Edit Page", () => {
   });
 
   describe(`Moving lines up and down`, () => {
-    specify(`Given a dialog with 3 lines
-      When I click the Move Line Up button on the third line
-      Then the third line moves to position 2
-      And the second line moves to position 3
-      And the lines' numbers are updated in the database`, () => {
+    specify(`Lines two and three should switch when I click the Move Line Up button on line 3`, () => {
 
-      cy.exec(`cat ${Cypress.env('sql_dump_directory')}dialog-with-three-lines.sql | ` +
-        `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
-        `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
+      let user;
+      let dialog;
+      let role1;
+      let role2;
+      let line1;
+      let line2;
+      let line3;
 
-      cy.visit(`/dialogs/${dialogId}/edit`, {
-        onBeforeLoad: function(window){
-          // and before the page finishes loading
-          // set the id_token in local storage
-          window.sessionStorage.setItem('token', Cypress.env("test_user_token"));
-        }
-      });
+      const line1Text = "This is the text for line 1.";
+      const line2Text = "This is the text for line 2.";
+      const line3Text = "This is the text for line 3.";
 
-      let originalLine2;
-      let originalLine3;
+      // Reset the database
+      cy.exec(`cd server && npx prisma reset -f`)
+      // Create a new user using the API
+        .then(() => {
+          // Must create a new user using the API, otherwise I felt like doing the password encrypion manually
+          // was tying the test too much to the internal implementation of the API
+          cy.request({
+            url: Cypress.env("api_url"),
+            method: "POST",
+            body: {
+              variables: {
+                email: Cypress.env("test_user_email"),
+                password: Cypress.env("test_user_password"),
+                name: "Test User",
+              },
+              query:
+                `
+                mutation Signup($email: String!, $password: String!, $name: String!) {
+                  signup(email: $email, password: $password, name: $name) {
+                    token,
+                    user {
+                      id
+                      name
+                      email
+                    }
+                  }
+                }
+              `,
+            }
+          })
+            .then((response) => {
+              const data = response.body.data.signup;
+              user = data.user;
+              user.token = data.token;
+            });
+        })
+        // Use ORM to create Dialogs, Roles, and Lines
+        .then(async () => {
+
+          dialog = await prisma.createDialog({
+            name: "Test Dialog",
+            user: {
+              connect: {
+                id: user.id,
+              }
+            },
+            languageCode: "en-US",
+          });
+
+          role1 = await prisma.createRole({
+            name: "Role 1",
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+
+          role2 = await prisma.createRole({
+            name: "Role 2",
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+
+
+          line1 = await prisma.createLine({
+            number: 1,
+            role: {
+              connect: {
+                id: role1.id,
+              }
+            },
+            text: line1Text,
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+
+          line2 = await prisma.createLine({
+            number: 2,
+            role: {
+              connect: {
+                id: role2.id,
+              }
+            },
+            text: line2Text,
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+
+          line3 = await prisma.createLine({
+            number: 3,
+            role: {
+              connect: {
+                id: role1.id,
+              }
+            },
+            text: line3Text,
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+        })
+        // Visit dialog edit page
+        .then(() => {
+          cy.visit(`/dialogs/${dialog.id}/edit`, {
+            onBeforeLoad: function(window){
+              // and before the page finishes loading
+              // set the id_token in local storage
+              window.sessionStorage.setItem('token', Cypress.env(user.token));
+            }
+          });
+        });
 
       // Wait for the page to request dialogs from the api
-      cy.wait('@api').then((xhr) => {
-
-        originalLine2 = xhr.response.body.data.dialog.lines.filter((line) => {
-          return (line.number === 2);
-        })[0];
-
-        originalLine3 = xhr.response.body.data.dialog.lines.filter((line) => {
-          return (line.number === 3);
-        })[0];
-
-      });
+      cy.wait('@api');
 
       cy.get(`[data-testid="line-with-update-and-delete"]`)
         .eq(2)
@@ -420,16 +527,16 @@ describe("Dialog Edit Page", () => {
         .get(`[data-testid="line-with-update-and-delete"]`)
         .eq(1)
         // Assert that the second line has line3.text
-        .find(`textarea:contains("${line3.text}"), input[value="${line3.text}"]`);
+        .find(`textarea:contains("${line3Text}"), input[value="${line3Text}"]`);
 
       cy.wait("@api").then((xhr) => {
 
         const updatedLine2 = xhr.response.body.data.updateLine.filter((line) => {
-          return (line.id === originalLine2.id);
+          return (line.id === line2.id);
         })[0];
 
         const updatedLine3 = xhr.response.body.data.updateLine.filter((line) => {
-          return (line.id === originalLine3.id);
+          return (line.id === line3.id);
         })[0];
 
         expect(updatedLine3.number).to.equal(2);
@@ -438,38 +545,147 @@ describe("Dialog Edit Page", () => {
 
     });
 
-    specify(`Given a dialog with 3 lines
-      When I click the Move Line Down button on the first line
-      Then the first line moves to position 2
-      And the second line moves to position 1`, () => {
+    specify(`Lines one and two should switch when I click the Move Line Down button on line 1`, () => {
 
-      cy.exec(`cat ${Cypress.env('sql_dump_directory')}dialog-with-three-lines.sql | ` +
-        `docker exec -i ${Cypress.env('docker_mysql_service_name')} ` +
-        `mysql -uroot -p${Cypress.env('docker_mysql_password')} ${Cypress.env('docker_mysql_db_name')}`);
 
-      cy.visit(`/dialogs/${dialogId}/edit`, {
-        onBeforeLoad: function(window){
-          // and before the page finishes loading
-          // set the id_token in local storage
-          window.sessionStorage.setItem('token', Cypress.env("test_user_token"));
-        }
-      });
+      let user;
+      let dialog;
+      let role1;
+      let role2;
+      let line1;
+      let line2;
+      let line3;
 
-      let originalLine1;
-      let originalLine2;
+      const line1Text = "This is the text for line 1.";
+      const line2Text = "This is the text for line 2.";
+      const line3Text = "This is the text for line 3.";
+
+      // Reset the database
+      cy.exec(`cd server && npx prisma reset -f`)
+      // Create a new user using the API
+        .then(() => {
+          // Must create a new user using the API, otherwise I felt like doing the password encrypion manually
+          // was tying the test too much to the internal implementation of the API
+          cy.request({
+            url: Cypress.env("api_url"),
+            method: "POST",
+            body: {
+              variables: {
+                email: Cypress.env("test_user_email"),
+                password: Cypress.env("test_user_password"),
+                name: "Test User",
+              },
+              query:
+                `
+                mutation Signup($email: String!, $password: String!, $name: String!) {
+                  signup(email: $email, password: $password, name: $name) {
+                    token,
+                    user {
+                      id
+                      name
+                      email
+                    }
+                  }
+                }
+              `,
+            }
+          })
+            .then((response) => {
+              const data = response.body.data.signup;
+              user = data.user;
+              user.token = data.token;
+            });
+        })
+        // Use ORM to create Dialogs, Roles, and Lines
+        .then(async () => {
+
+          dialog = await prisma.createDialog({
+            name: "Test Dialog",
+            user: {
+              connect: {
+                id: user.id,
+              }
+            },
+            languageCode: "en-US",
+          });
+
+          role1 = await prisma.createRole({
+            name: "Role 1",
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+
+          role2 = await prisma.createRole({
+            name: "Role 2",
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+
+
+          line1 = await prisma.createLine({
+            number: 1,
+            role: {
+              connect: {
+                id: role1.id,
+              }
+            },
+            text: line1Text,
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+
+          line2 = await prisma.createLine({
+            number: 2,
+            role: {
+              connect: {
+                id: role2.id,
+              }
+            },
+            text: line2Text,
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+
+          line3 = await prisma.createLine({
+            number: 3,
+            role: {
+              connect: {
+                id: role1.id,
+              }
+            },
+            text: line3Text,
+            dialog: {
+              connect: {
+                id: dialog.id,
+              }
+            }
+          });
+        })
+        // Visit dialog edit page
+        .then(() => {
+          cy.visit(`/dialogs/${dialog.id}/edit`, {
+            onBeforeLoad: function(window){
+              // and before the page finishes loading
+              // set the id_token in local storage
+              window.sessionStorage.setItem('token', Cypress.env(user.token));
+            }
+          });
+        });
 
       // Wait for the page to request dialogs from the api
-      cy.wait('@api').then((xhr) => {
-
-        originalLine1 = xhr.response.body.data.dialog.lines.filter((line) => {
-          return (line.number === 1);
-        })[0];
-
-        originalLine2 = xhr.response.body.data.dialog.lines.filter((line) => {
-          return (line.number === 2);
-        })[0];
-
-      });
+      cy.wait('@api');
 
       cy.get(`[data-testid="line-with-update-and-delete"]`)
         .eq(0)
@@ -477,17 +693,17 @@ describe("Dialog Edit Page", () => {
         .click()
         .get(`[data-testid="line-with-update-and-delete"]`)
         .eq(1)
-        // Assert that the second line has line1.text
-        .find(`textarea:contains("${line1.text}"), input[value="${line1.text}"]`);
+        // Assert that the second line has line1Text
+        .find(`textarea:contains("${line1Text}"), input[value="${line1Text}"]`);
 
       cy.wait("@api").then((xhr) => {
 
         const updatedLine1 = xhr.response.body.data.updateLine.filter((line) => {
-          return (line.id === originalLine1.id);
+          return (line.id === line1.id);
         })[0];
 
         const updatedLine2 = xhr.response.body.data.updateLine.filter((line) => {
-          return (line.id === originalLine2.id);
+          return (line.id === line2.id);
         })[0];
 
         expect(updatedLine1.number).to.equal(2);
