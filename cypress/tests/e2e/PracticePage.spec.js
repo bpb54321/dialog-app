@@ -17,7 +17,7 @@ describe("Practice Page", () => {
     cy.clearLocalStorage();
 
     // Reset the database
-    cy.exec(`cd server && prisma reset -f`)
+    cy.exec(`cd server && npx prisma reset -f`)
       // Create a new user using the API
       .then(() => {
         // Must create a new user using the API, otherwise I felt like doing the password encrypion manually
